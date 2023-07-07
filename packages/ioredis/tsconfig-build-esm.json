@@ -1,13 +1,10 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "module": "ESNext",
     "rootDir": "src",
-    "outDir": "../../build/ioredis/esm",
-    "paths": {
-    },
-    "sourceMap": false,
     "noEmit": false,
+    "outDir": "../../build/ioredis/esm",
+    "declarationDir": "../../build/ioredis/types",
     "declaration": true
   },
   "include": ["src"]

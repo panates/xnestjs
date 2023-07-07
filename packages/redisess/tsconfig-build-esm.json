@@ -1,13 +1,10 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "module": "ESNext",
     "rootDir": "src",
-    "outDir": "../../build/redisess/esm",
-    "paths": {
-    },
-    "sourceMap": false,
     "noEmit": false,
+    "outDir": "../../build/redisess/esm",
+    "declarationDir": "../../build/redisess/types",
     "declaration": true
   },
   "include": ["src"]

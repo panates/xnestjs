@@ -1,15 +1,10 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "moduleResolution": "Node",
     "module": "CommonJS",
     "rootDir": "src",
     "outDir": "../../build/redisess/cjs",
-    "paths": {
-    },
-    "sourceMap": false,
-    "noEmit": false,
-    "declaration": false,
+    "noEmit": false
   },
   "include": ["src"]
 }

@@ -15,7 +15,8 @@ export class S3StorageConnection extends StorageConnection {
   constructor(options: S3StorageOptions) {
     super();
     this._client = new Minio.Client(options);
-    this._client.setRequestOptions({rejectUnauthorized: options.rejectUnauthorized});
+    // todo: remove casting to any later. https://github.com/minio/minio-js/issues/1163
+    (this._client as any).setRequestOptions({rejectUnauthorized: options.rejectUnauthorized});
   }
 
   async putObject(bucketName: string, objectName: string, source: Buffer | Readable | string, options?: PutObjectOptions): Promise<void> {
@@ -23,6 +24,7 @@ export class S3StorageConnection extends StorageConnection {
     if (typeof source === 'string')
       await this._client.fPutObject(bucketName, objectName, source, meta);
     else
+        // eslint-disable-next-line @typescript-eslint/await-thenable
       await this._client.putObject(bucketName, objectName, source, undefined, meta);
   }
 
