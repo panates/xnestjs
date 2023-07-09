@@ -1,20 +1,39 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { RedisModuleAsyncOptions, RedisModuleOptions } from './redis.interface.js';
+import {
+  RedisClientAsyncOptions,
+  RedisClientOptions,
+  RedisClusterAsyncOptions,
+  RedisClusterOptions
+} from './redis.interface.js';
 import { RedisCoreModule } from './redis-core.module.js';
 
 @Module({})
 export class RedisModule {
-  static forRoot(options: RedisModuleOptions): DynamicModule {
+  static registerClient(options: RedisClientOptions): DynamicModule {
     return {
       module: RedisModule,
-      imports: [RedisCoreModule.forRoot(options)]
+      imports: [RedisCoreModule.registerClient(options)]
     };
   }
 
-  static forRootAsync(options: RedisModuleAsyncOptions): DynamicModule {
+  static registerClientAsync(options: RedisClientAsyncOptions): DynamicModule {
     return {
       module: RedisModule,
-      imports: [RedisCoreModule.forRootAsync(options)]
+      imports: [RedisCoreModule.registerClientAsync(options)]
+    };
+  }
+
+  static registerCluster(options: RedisClusterOptions): DynamicModule {
+    return {
+      module: RedisModule,
+      imports: [RedisCoreModule.registerCluster(options)]
+    };
+  }
+
+  static registerClusterAsync(options: RedisClusterAsyncOptions): DynamicModule {
+    return {
+      module: RedisModule,
+      imports: [RedisCoreModule.registerClusterAsync(options)]
     };
   }
 }

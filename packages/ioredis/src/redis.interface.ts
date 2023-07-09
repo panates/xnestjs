@@ -1,23 +1,41 @@
-import { RedisOptions } from 'ioredis';
-import { Type } from '@nestjs/common';
-import { ModuleMetadata } from '@nestjs/common/interfaces';
+import type { RedisOptions } from 'ioredis';
+import type { ClusterOptions } from 'ioredis/built/cluster/ClusterOptions';
+import type { ClusterNode } from 'ioredis/built/cluster/index.js';
+import type { ModuleMetadata } from '@nestjs/common/interfaces';
 
-export interface RedisModuleOptions extends RedisOptions {
+export interface RedisClientOptions extends RedisOptions {
   /**
-   * Connection name
+   * Injection token
    */
-  name?: string;
+  token?: any;
 }
 
-export interface RedisModuleOptionsFactory {
-  createOptions(connectionName?: string): Promise<RedisModuleOptions> | RedisModuleOptions;
-}
-
-export interface RedisModuleAsyncOptions
+export interface RedisClientAsyncOptions
     extends Pick<ModuleMetadata, 'imports'> {
-  name?: string;
-  useExisting?: Type<RedisModuleOptionsFactory>;
-  useClass?: Type<RedisModuleOptionsFactory>;
-  useFactory?: (...args: any[]) => Promise<RedisModuleOptions> | RedisModuleOptions;
+  /**
+   * Injection token
+   */
+  token?: any;
+  useFactory?: (...args: any[]) => Promise<RedisClientOptions> | RedisClientOptions;
+  inject?: any[];
+}
+
+
+export interface RedisClusterOptions extends ClusterOptions {
+  /**
+   * Injection token
+   */
+  token?: any;
+  nodes: ClusterNode[];
+}
+
+
+export interface RedisClusterAsyncOptions
+    extends Pick<ModuleMetadata, 'imports'> {
+  /**
+   * Injection token
+   */
+  token?: any;
+  useFactory?: (...args: any[]) => Promise<RedisClusterOptions> | RedisClusterOptions;
   inject?: any[];
 }
