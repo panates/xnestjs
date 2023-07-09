@@ -26,7 +26,7 @@
   },
   "peerDependencies": {
     "@nestjs/common": ">=8.0.0",
-    "redisess": "^2.1.1"
+    "redisess": "^2.2.0"
   },
   "type": "module",
   "types": "types/index.d.ts",
