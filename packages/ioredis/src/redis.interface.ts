@@ -10,6 +10,14 @@ export interface RedisClientOptions extends RedisOptions {
   token?: any;
 }
 
+export interface RedisClusterOptions extends ClusterOptions {
+  /**
+   * Injection token
+   */
+  token?: any;
+  nodes: ClusterNode[];
+}
+
 export interface RedisClientAsyncOptions
     extends Pick<ModuleMetadata, 'imports'> {
   /**
@@ -19,16 +27,6 @@ export interface RedisClientAsyncOptions
   useFactory?: (...args: any[]) => Promise<RedisClientOptions> | RedisClientOptions;
   inject?: any[];
 }
-
-
-export interface RedisClusterOptions extends ClusterOptions {
-  /**
-   * Injection token
-   */
-  token?: any;
-  nodes: ClusterNode[];
-}
-
 
 export interface RedisClusterAsyncOptions
     extends Pick<ModuleMetadata, 'imports'> {

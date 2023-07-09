@@ -1,15 +1,16 @@
+import { Cluster, Redis } from 'ioredis';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { RedisClient, RedisCluster, RedisModule } from '../src/index.js';
+import { RedisClient, RedisModule } from '../src/index.js';
 
 describe('IORedisModule', function () {
 
   let app: INestApplication;
 
-  it('registerClient', async function () {
+  it('forRoot - standalone', async function () {
     const module = await Test.createTestingModule({
       imports: [
-        RedisModule.registerClient({
+        RedisModule.forRoot({
           host: 'localhost',
           lazyConnect: true
         })
@@ -20,13 +21,18 @@ describe('IORedisModule', function () {
     const redisClient = await app.resolve(RedisClient);
     expect(redisClient).toBeDefined();
     expect(redisClient).toBeInstanceOf(RedisClient);
+    expect(redisClient.isCluster).toStrictEqual(false);
+    expect(redisClient.cluster).not.toBeDefined();
+    expect(redisClient.standalone).toBeInstanceOf(Redis);
+    expect(redisClient.redis).toBeInstanceOf(Redis);
+    expect(typeof redisClient.redis.bzpopmin).toStrictEqual('function');
     await app.close();
   });
 
-  it('registerClientAsync', async function () {
+  it('forRootAsync - standalone', async function () {
     const module = await Test.createTestingModule({
       imports: [
-        RedisModule.registerClientAsync({
+        RedisModule.forRootAsync({
           useFactory: () => ({
             host: 'localhost',
             lazyConnect: true
@@ -39,13 +45,18 @@ describe('IORedisModule', function () {
     const redisClient = await app.resolve(RedisClient);
     expect(redisClient).toBeDefined();
     expect(redisClient).toBeInstanceOf(RedisClient);
+    expect(redisClient.isCluster).toStrictEqual(false);
+    expect(redisClient.cluster).not.toBeDefined();
+    expect(redisClient.standalone).toBeInstanceOf(Redis);
+    expect(redisClient.redis).toBeInstanceOf(Redis);
+    expect(typeof redisClient.redis.bzpopmin).toStrictEqual('function');
     await app.close();
   });
 
-  it('registerCluster', async function () {
+  it('forRoot - cluster', async function () {
     const module = await Test.createTestingModule({
       imports: [
-        RedisModule.registerCluster({
+        RedisModule.forRoot({
           nodes: ['localhost'],
           lazyConnect: true
         })
@@ -53,16 +64,21 @@ describe('IORedisModule', function () {
     }).compile();
     app = module.createNestApplication();
     await app.init();
-    const redisClient = await app.resolve(RedisCluster);
+    const redisClient = await app.resolve(RedisClient);
     expect(redisClient).toBeDefined();
-    expect(redisClient).toBeInstanceOf(RedisCluster);
+    expect(redisClient).toBeInstanceOf(RedisClient);
+    expect(redisClient.isCluster).toStrictEqual(true);
+    expect(redisClient.cluster).toBeInstanceOf(Cluster)
+    expect(redisClient.standalone).not.toBeDefined();
+    expect(redisClient.redis).toBeInstanceOf(Cluster);
+    expect(typeof redisClient.redis.bzpopmin).toStrictEqual('function');
     await app.close();
   });
 
-  it('registerClientAsync', async function () {
+  it('forRootAsync - cluster', async function () {
     const module = await Test.createTestingModule({
       imports: [
-        RedisModule.registerClusterAsync({
+        RedisModule.forRootAsync({
           useFactory: () => ({
             nodes: ['localhost'],
             lazyConnect: true
@@ -72,23 +88,28 @@ describe('IORedisModule', function () {
     }).compile();
     app = module.createNestApplication();
     await app.init();
-    const redisClient = await app.resolve(RedisCluster);
+    const redisClient = await app.resolve(RedisClient);
     expect(redisClient).toBeDefined();
-    expect(redisClient).toBeInstanceOf(RedisCluster);
+    expect(redisClient).toBeInstanceOf(RedisClient);
+    expect(redisClient.isCluster).toStrictEqual(true);
+    expect(redisClient.cluster).toBeInstanceOf(Cluster)
+    expect(redisClient.standalone).not.toBeDefined();
+    expect(redisClient.redis).toBeInstanceOf(Cluster);
+    expect(typeof redisClient.redis.bzpopmin).toStrictEqual('function');
     await app.close();
   });
 
-  it('registerClient multiple clients', async function () {
+  it('forRoot - multiple clients', async function () {
     const module = await Test.createTestingModule({
       imports: [
-        RedisModule.registerClient({
+        RedisModule.forRoot({
           token: 'client1',
           host: 'localhost',
           lazyConnect: true
         }),
-        RedisModule.registerClient({
+        RedisModule.forRoot({
           token: 'client2',
-          host: 'localhost',
+          nodes: ['localhost'],
           lazyConnect: true
         })
       ],
@@ -98,27 +119,29 @@ describe('IORedisModule', function () {
     const client1 = await app.resolve('client1');
     expect(client1).toBeDefined();
     expect(client1).toBeInstanceOf(RedisClient);
+    expect(client1.isCluster).toStrictEqual(false);
     const client2 = await app.resolve('client2');
     expect(client2).toBeDefined();
     expect(client2).toBeInstanceOf(RedisClient);
+    expect(client2.isCluster).toStrictEqual(true);
     expect(client2).not.toBe(client1);
     await app.close();
   });
 
-  it('registerClientAsync multiple clients', async function () {
+  it('forRootAsync - multiple clients', async function () {
     const module = await Test.createTestingModule({
       imports: [
-        RedisModule.registerClientAsync({
+        RedisModule.forRootAsync({
           token: 'client1',
           useFactory: () => ({
             host: 'localhost',
             lazyConnect: true
           })
         }),
-        RedisModule.registerClientAsync({
+        RedisModule.forRootAsync({
           token: 'client2',
           useFactory: () => ({
-            host: 'localhost',
+            nodes: ['localhost'],
             lazyConnect: true
           })
         })
@@ -129,9 +152,11 @@ describe('IORedisModule', function () {
     const client1 = await app.resolve('client1');
     expect(client1).toBeDefined();
     expect(client1).toBeInstanceOf(RedisClient);
+    expect(client1.isCluster).toStrictEqual(false);
     const client2 = await app.resolve('client2');
     expect(client2).toBeDefined();
     expect(client2).toBeInstanceOf(RedisClient);
+    expect(client2.isCluster).toStrictEqual(true);
     expect(client2).not.toBe(client1);
     await app.close();
   });
@@ -139,7 +164,7 @@ describe('IORedisModule', function () {
   it('registerClient - parse host url', async function () {
     const module = await Test.createTestingModule({
       imports: [
-        RedisModule.registerClient({
+        RedisModule.forRoot({
           host: 'rediss://127.0.0.1:1234/2',
           lazyConnect: true
         })
@@ -150,10 +175,10 @@ describe('IORedisModule', function () {
     const redisClient = await app.resolve(RedisClient);
     expect(redisClient).toBeDefined();
     expect(redisClient).toBeInstanceOf(RedisClient);
-    expect(redisClient.options.host).toStrictEqual('127.0.0.1');
-    expect(redisClient.options.port).toStrictEqual(1234);
-    expect(redisClient.options.db).toStrictEqual(2);
-    expect(redisClient.options.tls).toStrictEqual(true);
+    expect(redisClient.standalone?.options.host).toStrictEqual('127.0.0.1');
+    expect(redisClient.standalone?.options.port).toStrictEqual(1234);
+    expect(redisClient.standalone?.options.db).toStrictEqual(2);
+    expect(redisClient.standalone?.options.tls).toStrictEqual(true);
     await app.close();
   });
 

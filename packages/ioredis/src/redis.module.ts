@@ -9,31 +9,18 @@ import { RedisCoreModule } from './redis-core.module.js';
 
 @Module({})
 export class RedisModule {
-  static registerClient(options: RedisClientOptions): DynamicModule {
+  static forRoot(options: RedisClientOptions | RedisClusterOptions): DynamicModule {
     return {
       module: RedisModule,
-      imports: [RedisCoreModule.registerClient(options)]
+      imports: [RedisCoreModule.forRoot(options)]
     };
   }
 
-  static registerClientAsync(options: RedisClientAsyncOptions): DynamicModule {
+  static forRootAsync(options: RedisClientAsyncOptions | RedisClusterAsyncOptions): DynamicModule {
     return {
       module: RedisModule,
-      imports: [RedisCoreModule.registerClientAsync(options)]
+      imports: [RedisCoreModule.forRootAsync(options)]
     };
   }
 
-  static registerCluster(options: RedisClusterOptions): DynamicModule {
-    return {
-      module: RedisModule,
-      imports: [RedisCoreModule.registerCluster(options)]
-    };
-  }
-
-  static registerClusterAsync(options: RedisClusterAsyncOptions): DynamicModule {
-    return {
-      module: RedisModule,
-      imports: [RedisCoreModule.registerClusterAsync(options)]
-    };
-  }
 }

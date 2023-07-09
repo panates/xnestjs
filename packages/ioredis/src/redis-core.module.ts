@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
 import Redis, { Cluster } from 'ioredis';
-import type { ClusterOptions } from 'ioredis/built/cluster/ClusterOptions';
+import { ClusterOptions } from 'ioredis/built/cluster/ClusterOptions';
 import {
   DynamicModule, Global, Inject, Module,
   OnApplicationShutdown,
@@ -14,7 +14,8 @@ import {
   RedisClientAsyncOptions, RedisClientOptions,
   RedisClusterAsyncOptions, RedisClusterOptions,
 } from './redis.interface.js';
-import { RedisClient, RedisCluster } from './redis-client.js';
+import { RedisClient } from './redis-client.js';
+import { isClusterOptions } from './utils.js';
 
 @Global()
 @Module({})
@@ -27,13 +28,14 @@ export class RedisCoreModule implements OnApplicationShutdown {
   ) {
   }
 
-  static registerClient(options: RedisClientOptions = {}): DynamicModule {
+  static forRoot(options: RedisClientOptions | RedisClusterOptions): DynamicModule {
     const optionsProvider = {
       provide: IOREDIS_MODULE_OPTIONS,
       useValue: options
     };
+    const token = options.token || RedisClient;
     const connectionProvider = {
-      provide: options.token || RedisClient,
+      provide: token,
       useFactory: () => this._createClient(options)
     };
 
@@ -44,12 +46,14 @@ export class RedisCoreModule implements OnApplicationShutdown {
     };
   }
 
-  static registerClientAsync(asyncOptions: RedisClientAsyncOptions): DynamicModule {
+  static forRootAsync(asyncOptions: RedisClientAsyncOptions | RedisClusterAsyncOptions): DynamicModule {
     if (!asyncOptions.useFactory)
       throw new Error('Invalid configuration. Must provide "useFactory"');
 
+    const token = asyncOptions.token || RedisClient;
+
     const connectionProvider = {
-      provide: asyncOptions.token || RedisClient,
+      provide: token,
       inject: [IOREDIS_MODULE_OPTIONS],
       useFactory: async (moduleOptions: RedisClientOptions) => {
         return this._createClient(moduleOptions);
@@ -75,80 +79,54 @@ export class RedisCoreModule implements OnApplicationShutdown {
     };
   }
 
-  static registerCluster(options: RedisClusterOptions): DynamicModule {
-    const optionsProvider = {
-      provide: IOREDIS_MODULE_OPTIONS,
-      useValue: options
-    };
-    const connectionProvider = {
-      provide: options.token || RedisCluster,
-      useFactory: () => this._createCluster(options)
-    };
-
-    return {
-      module: RedisCoreModule,
-      providers: [connectionProvider, optionsProvider],
-      exports: [connectionProvider]
-    };
-  }
-
-  static registerClusterAsync(asyncOptions: RedisClusterAsyncOptions): DynamicModule {
-    if (!asyncOptions.useFactory)
-      throw new Error('Invalid configuration. Must provide "useFactory"');
-
-    const connectionProvider = {
-      provide: asyncOptions.token || RedisCluster,
-      inject: [IOREDIS_MODULE_OPTIONS],
-      useFactory: async (moduleOptions: RedisClusterOptions) => {
-        return this._createCluster(moduleOptions);
-      }
-    };
-
-    return {
-      module: RedisCoreModule,
-      imports: asyncOptions.imports,
-      providers: [
-        {
-          provide: IOREDIS_MODULE_OPTIONS,
-          useFactory: asyncOptions.useFactory,
-          inject: asyncOptions.inject || []
-        },
-        connectionProvider,
-        {
-          provide: IOREDIS_MODULE_TOKEN,
-          useValue: crypto.randomUUID()
+  private static async _createClient(options: RedisClientOptions): Promise<RedisClient> {
+    if (options.host && (options as any).nodes)
+      throw new TypeError(`You should set either "host" or "nodes", not both`);
+    const isCluster = isClusterOptions(options);
+    let client: RedisClient;
+    if (isCluster) {
+      const clusterOptions: ClusterOptions = {
+        ...options
+      };
+      delete (clusterOptions as any).name;
+      delete (clusterOptions as any).nodes;
+      const cluster = new Cluster(options.nodes, clusterOptions);
+      client = new RedisClient({
+        isCluster,
+        cluster
+      })
+    } else {
+      if (options.host && options.host.includes('://')) {
+        const url = new URL(options.host);
+        options.host = url.hostname;
+        if (url.port)
+          options.port = parseInt(url.port, 10);
+        if (url.username)
+          options.username = url.username;
+        if (url.password)
+          options.password = url.password;
+        if (url.protocol === 'rediss:') { // @ts-ignore
+          options.tls = true;
         }
-      ],
-      exports: [connectionProvider]
-    };
-  }
-
-  private static async _createClient(options: RedisClientOptions): Promise<Redis> {
-    if (options.host && options.host.includes('://')) {
-      const url = new URL(options.host);
-      options.host = url.hostname;
-      if (url.port)
-        options.port = parseInt(url.port, 10);
-      if (url.username)
-        options.username = url.username;
-      if (url.password)
-        options.password = url.password;
-      if (url.protocol === 'rediss:') { // @ts-ignore
-        options.tls = true;
+        const db = parseInt(url.pathname.substring(1), 10);
+        if (db > 0)
+          options.db = db;
       }
-      const db = parseInt(url.pathname.substring(1), 10);
-      if (db > 0)
-        options.db = db;
+      const standalone = new Redis(options) as any;
+      client = new RedisClient({
+        isCluster,
+        standalone
+      })
     }
-    const client = new RedisClient(options);
+
     if (!options.lazyConnect) {
       await new Promise<void>((resolve, reject) => {
-        client.once('ready', () => {
-          client.removeListener('error', reject);
+        client.redis.once('ready', () => {
+          client.redis.removeListener('error', reject);
           resolve();
         });
-        client.once('error', (e) => {
-          client.removeListener('ready', resolve);
+        client.redis.once('error', (e) => {
+          client.redis.removeListener('ready', resolve);
           reject(e);
         });
       });
@@ -156,38 +134,10 @@ export class RedisCoreModule implements OnApplicationShutdown {
     return client;
   }
 
-  private static async _createCluster(options: RedisClusterOptions): Promise<Cluster> {
-    const clusterOptions: ClusterOptions = {
-      ...options
-    };
-    delete (clusterOptions as any).name;
-    delete (clusterOptions as any).nodes;
-    const cluster = new RedisCluster(options.nodes, clusterOptions);
-    if (!options.lazyConnect) {
-      await new Promise<void>((resolve, reject) => {
-        cluster.once('ready', () => {
-          cluster.removeListener('error', reject);
-          resolve();
-        });
-        cluster.once('error', (e) => {
-          cluster.removeListener('ready', resolve);
-          reject(e);
-        });
-      });
-    }
-    return cluster;
-  }
-
   async onApplicationShutdown() {
     try {
-      const client = this.moduleRef.get(this.options.token || RedisClient);
-      await client.quit();
-    } catch {
-      //
-    }
-    try {
-      const cluster = this.moduleRef.get(this.options.token || RedisCluster);
-      await cluster.quit();
+      const client: RedisClient = this.moduleRef.get(this.options.token || RedisClient);
+      await client.redis.quit();
     } catch {
       //
     }
