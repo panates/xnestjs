@@ -1,11 +1,8 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": ["./tsconfig.json", "../../tsconfig-build.json"],
   "compilerOptions": {
     "rootDir": "src",
-    "noEmit": false,
     "outDir": "../../build/ioredis/esm",
-    "declarationDir": "../../build/ioredis/types",
-    "declaration": true
-  },
-  "include": ["src"]
+    "declarationDir": "../../build/ioredis/types"
+  }
 }

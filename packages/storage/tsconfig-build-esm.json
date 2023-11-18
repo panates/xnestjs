@@ -1,11 +1,8 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": ["./tsconfig.json", "../../tsconfig-build.json"],
   "compilerOptions": {
     "rootDir": "src",
-    "noEmit": false,
     "outDir": "../../build/storage/esm",
-    "declarationDir": "../../build/storage/types",
-    "declaration": true
-  },
-  "include": ["src"]
+    "declarationDir": "../../build/storage/types"
+  }
 }

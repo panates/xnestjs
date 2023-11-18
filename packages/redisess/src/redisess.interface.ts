@@ -1,7 +1,7 @@
 import Redis, {Cluster} from 'ioredis';
-import { SessionManager } from 'redisess';
-import { Type } from '@nestjs/common';
-import { ModuleMetadata } from '@nestjs/common/interfaces';
+import type { SessionManager } from 'redisess';
+import type { Type } from '@nestjs/common';
+import type { ModuleMetadata } from '@nestjs/common/interfaces';
 
 export interface RedisessModuleOptions extends SessionManager.Options {
   /**
