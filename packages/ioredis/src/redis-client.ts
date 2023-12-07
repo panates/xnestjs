@@ -1,17 +1,10 @@
 import { Cluster as IORedisCluster, Redis as IORedisClient } from 'ioredis';
-import Redlock, { Settings as RedlockSettings } from 'redlock';
+import Redlock from 'redlock';
+import type { LockSettings } from './redis.interface.js';
 
-export interface LockOptions {
-  expire?: number;
-  retryInterval?: number;
-  maxRetries?: number;
-}
 
 export namespace RedisClient {
 
-  export interface LockSettings extends RedlockSettings {
-
-  }
 
   export interface Options {
     cluster?: IORedisCluster;
