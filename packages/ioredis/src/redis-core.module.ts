@@ -1,6 +1,5 @@
 import * as crypto from 'crypto';
 import Redis, { Cluster } from 'ioredis';
-import { ClusterOptions } from 'ioredis/built/cluster/ClusterOptions';
 import {
   DynamicModule, Global, Inject, Module,
   OnApplicationShutdown,
@@ -82,19 +81,14 @@ export class RedisCoreModule implements OnApplicationShutdown {
   private static async _createClient(options: RedisClientOptions): Promise<RedisClient> {
     if (options.host && (options as any).nodes)
       throw new TypeError(`You should set either "host" or "nodes", not both`);
-    const isCluster = isClusterOptions(options);
+    const opts = {...options};
+    const isCluster = isClusterOptions(opts);
     let client: RedisClient;
     if (isCluster) {
-      const clusterOptions: ClusterOptions = {
-        ...options
-      };
-      delete (clusterOptions as any).name;
-      delete (clusterOptions as any).nodes;
-      const cluster = new Cluster(options.nodes, clusterOptions);
-      client = new RedisClient({
-        isCluster,
-        cluster
-      })
+      delete (opts as any).name;
+      delete (opts as any).nodes;
+      const cluster = new Cluster(opts.nodes, opts);
+      client = new RedisClient({cluster, lock: options.lock})
     } else {
       if (options.host && options.host.includes('://')) {
         const url = new URL(options.host);
@@ -113,10 +107,7 @@ export class RedisCoreModule implements OnApplicationShutdown {
           options.db = db;
       }
       const standalone = new Redis(options) as any;
-      client = new RedisClient({
-        isCluster,
-        standalone
-      })
+      client = new RedisClient({standalone, lock: options.lock})
     }
 
     if (!options.lazyConnect) {

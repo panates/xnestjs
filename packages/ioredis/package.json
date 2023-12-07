@@ -28,10 +28,10 @@
     "clean:dist": "rimraf ../../build/ioredis",
     "clean:cover": "rimraf ../../coverage/ioredis"
   },
-  "dependencies": {},
   "peerDependencies": {
-    "@nestjs/common": ">=7.4.0",
-    "ioredis": "^5.3.2"
+    "@nestjs/common": "^10.2.10",
+    "ioredis": "^5.3.2",
+    "redlock": "^5.0.0-beta.2"
   },
   "devDependencies": {
     "@types/ioredis": "^5.0.0"

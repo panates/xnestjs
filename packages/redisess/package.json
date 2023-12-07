@@ -29,9 +29,9 @@
     "clean:cover": "rimraf ../../coverage/redisess"
   },
   "peerDependencies": {
-    "@nestjs/common": ">=7.4.0",
+    "@nestjs/common": "^10.2.10",
     "@xnestjs/ioredis": "^0.6.1",
-    "redisess": ">= ^2.2.0"
+    "redisess": "^2.2.0"
   },
   "devDependencies": {
     "@types/ioredis": "^5.0.0"
