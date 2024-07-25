@@ -1,4 +1,4 @@
-export * from './redisess.decorators.js';
-export * from './redisess.interface.js';
+export * from './decorators/inject-session-manager.decorators.js';
+export * from './interfaces/module-options.interface.js';
 export * from './redisess.module.js';
-export * from './redisess.utils.js';
+export * from './utils/get-session-manager-token.util.js';

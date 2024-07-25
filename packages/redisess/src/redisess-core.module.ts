@@ -2,13 +2,13 @@ import { DynamicModule, Global, Inject, Module, OnApplicationShutdown, Provider 
 import { ModuleRef } from '@nestjs/core';
 import * as crypto from 'crypto';
 import { SessionManager } from 'redisess';
-import { REDISESS_MODULE_OPTIONS, REDISESS_MODULE_TOKEN } from './redisess.constants.js';
+import { REDISESS_MODULE_OPTIONS, REDISESS_MODULE_TOKEN } from './constants';
 import {
-  RedisesModuleAsyncOptions,
+  RedisessModuleAsyncOptions,
   RedisessModuleOptions,
   RedisessModuleOptionsFactory,
-} from './redisess.interface.js';
-import { getSessionManagerToken } from './redisess.utils.js';
+} from './interfaces/module-options.interface.js';
+import { getSessionManagerToken } from './utils/get-session-manager-token.util.js';
 
 @Global()
 @Module({})
@@ -36,7 +36,7 @@ export class RedisessCoreModule implements OnApplicationShutdown {
     };
   }
 
-  static forRootAsync(asyncOptions: RedisesModuleAsyncOptions): DynamicModule {
+  static forRootAsync(asyncOptions: RedisessModuleAsyncOptions): DynamicModule {
     const connectionProvider = {
       provide: getSessionManagerToken(asyncOptions.name),
       inject: [REDISESS_MODULE_OPTIONS],
@@ -70,7 +70,7 @@ export class RedisessCoreModule implements OnApplicationShutdown {
     if (sessionManager) sessionManager.quit();
   }
 
-  private static createAsyncProviders(asyncOptions: RedisesModuleAsyncOptions): Provider[] {
+  private static createAsyncProviders(asyncOptions: RedisessModuleAsyncOptions): Provider[] {
     if (asyncOptions.useExisting || asyncOptions.useFactory) return [this.createAsyncOptionsProvider(asyncOptions)];
 
     if (asyncOptions.useClass) {
@@ -86,7 +86,7 @@ export class RedisessCoreModule implements OnApplicationShutdown {
     throw new Error('Invalid configuration. Must provide useFactory, useClass or useExisting');
   }
 
-  private static createAsyncOptionsProvider(asyncOptions: RedisesModuleAsyncOptions): Provider {
+  private static createAsyncOptionsProvider(asyncOptions: RedisessModuleAsyncOptions): Provider {
     if (asyncOptions.useFactory) {
       return {
         provide: REDISESS_MODULE_OPTIONS,
