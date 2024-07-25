@@ -1,0 +1,56 @@
+{
+  "name": "@xnestjs/logger",
+  "version": "0.0.1",
+  "description": "NestJS extension library for better logging solution",
+  "author": "Panates",
+  "license": "MIT",
+  "repository": {
+    "registry": "https://github.com/panates/xnestjs.git",
+    "directory": "packages/logger"
+  },
+  "type": "module",
+  "module": "./esm/index.js",
+  "main": "./cjs/index.js",
+  "types": "./types/index.d.ts",
+  "scripts": {
+    "compile": "tsc",
+    "prebuild": "npm run check && npm run lint && npm run clean",
+    "build": "npm run build:cjs && npm run build:esm",
+    "build:cjs": "tsc -b tsconfig-build-cjs.json",
+    "build:esm": "tsc -b tsconfig-build-esm.json",
+    "postbuild": "cp package.json README.md ../../LICENSE ../../build/logger && cp ../../package.cjs.json ../../build/logger/cjs/package.json",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --max-warnings=0 --fix",
+    "format": "prettier . --write --log-level=warn",
+    "check": "madge --circular src/**",
+    "test": "jest",
+    "cover": "jest --collect-coverage",
+    "clean": "npm run clean:src && npm run clean:dist && npm run clean:cover",
+    "clean:src": "ts-cleanup -s src --all && ts-cleanup -s test --all",
+    "clean:dist": "rimraf ../../build/logger",
+    "clean:cover": "rimraf ../../coverage/logger"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^10.3.10"
+  },
+  "optionalDependencies": {
+    "minio": "^8.0.1"
+  },
+  "engines": {
+    "node": ">=16.0",
+    "npm": ">=7.0.0"
+  },
+  "files": [
+    "bin/",
+    "cjs/",
+    "esm/",
+    "types/",
+    "LICENSE",
+    "README.md"
+  ],
+  "keywords": [
+    "nestjs",
+    "logger",
+    "json"
+  ]
+}
