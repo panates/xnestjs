@@ -32,7 +32,7 @@
   },
   "peerDependencies": {
     "@nestjs/common": "^10.3.10",
-    "@xnestjs/ioredis": "^0.7.1",
+    "@xnestjs/ioredis": "^0.8.0",
     "redisess": "^2.4.0",
     "ioredis": "^5.4.1"
   },
