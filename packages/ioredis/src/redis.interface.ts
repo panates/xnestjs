@@ -1,8 +1,8 @@
+import type { ModuleMetadata } from '@nestjs/common/interfaces';
 import type { RedisOptions } from 'ioredis';
 import type { ClusterOptions } from 'ioredis/built/cluster/ClusterOptions';
 import type { ClusterNode } from 'ioredis/built/cluster/index.js';
 import type { Lock, Settings as RedlockSettings } from 'redlock';
-import type { ModuleMetadata } from '@nestjs/common/interfaces';
 
 export interface RedisClientOptions extends RedisOptions {
   /**
@@ -21,8 +21,7 @@ export interface RedisClusterOptions extends ClusterOptions {
   nodes: ClusterNode[];
 }
 
-export interface RedisClientAsyncOptions
-    extends Pick<ModuleMetadata, 'imports'> {
+export interface RedisClientAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
   /**
    * Injection token
    */
@@ -31,8 +30,7 @@ export interface RedisClientAsyncOptions
   inject?: any[];
 }
 
-export interface RedisClusterAsyncOptions
-    extends Pick<ModuleMetadata, 'imports'> {
+export interface RedisClusterAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
   /**
    * Injection token
    */
@@ -41,8 +39,6 @@ export interface RedisClusterAsyncOptions
   inject?: any[];
 }
 
-export interface LockSettings extends RedlockSettings {
-
-}
+export interface LockSettings extends RedlockSettings {}
 
 export { Lock };

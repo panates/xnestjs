@@ -7,14 +7,14 @@ export class RedisessModule {
   static forRoot(options: RedisessModuleOptions): DynamicModule {
     return {
       module: RedisessModule,
-      imports: [RedisessCoreModule.forRoot(options)]
+      imports: [RedisessCoreModule.forRoot(options)],
     };
   }
 
   static forRootAsync(options: RedisesModuleAsyncOptions): DynamicModule {
     return {
       module: RedisessModule,
-      imports: [RedisessCoreModule.forRootAsync(options)]
+      imports: [RedisessCoreModule.forRootAsync(options)],
     };
   }
 }

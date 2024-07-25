@@ -1,19 +1,18 @@
-import { Cluster, Redis } from 'ioredis';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { Cluster, Redis } from 'ioredis';
 import { RedisClient, RedisModule } from '../src/index.js';
 
-describe('IORedisModule', function () {
-
+describe('IORedisModule', () => {
   let app: INestApplication;
 
-  it('forRoot - standalone', async function () {
+  it('forRoot - standalone', async () => {
     const module = await Test.createTestingModule({
       imports: [
         RedisModule.forRoot({
           host: 'localhost',
-          lazyConnect: true
-        })
+          lazyConnect: true,
+        }),
       ],
     }).compile();
     app = module.createNestApplication();
@@ -29,15 +28,15 @@ describe('IORedisModule', function () {
     await app.close();
   });
 
-  it('forRootAsync - standalone', async function () {
+  it('forRootAsync - standalone', async () => {
     const module = await Test.createTestingModule({
       imports: [
         RedisModule.forRootAsync({
           useFactory: () => ({
             host: 'localhost',
-            lazyConnect: true
-          })
-        })
+            lazyConnect: true,
+          }),
+        }),
       ],
     }).compile();
     app = module.createNestApplication();
@@ -53,13 +52,13 @@ describe('IORedisModule', function () {
     await app.close();
   });
 
-  it('forRoot - cluster', async function () {
+  it('forRoot - cluster', async () => {
     const module = await Test.createTestingModule({
       imports: [
         RedisModule.forRoot({
           nodes: ['localhost'],
-          lazyConnect: true
-        })
+          lazyConnect: true,
+        }),
       ],
     }).compile();
     app = module.createNestApplication();
@@ -68,22 +67,22 @@ describe('IORedisModule', function () {
     expect(redisClient).toBeDefined();
     expect(redisClient).toBeInstanceOf(RedisClient);
     expect(redisClient.isCluster).toStrictEqual(true);
-    expect(redisClient.cluster).toBeInstanceOf(Cluster)
+    expect(redisClient.cluster).toBeInstanceOf(Cluster);
     expect(redisClient.standalone).not.toBeDefined();
     expect(redisClient.redis).toBeInstanceOf(Cluster);
     expect(typeof redisClient.redis.bzpopmin).toStrictEqual('function');
     await app.close();
   });
 
-  it('forRootAsync - cluster', async function () {
+  it('forRootAsync - cluster', async () => {
     const module = await Test.createTestingModule({
       imports: [
         RedisModule.forRootAsync({
           useFactory: () => ({
             nodes: ['localhost'],
-            lazyConnect: true
-          })
-        })
+            lazyConnect: true,
+          }),
+        }),
       ],
     }).compile();
     app = module.createNestApplication();
@@ -92,26 +91,26 @@ describe('IORedisModule', function () {
     expect(redisClient).toBeDefined();
     expect(redisClient).toBeInstanceOf(RedisClient);
     expect(redisClient.isCluster).toStrictEqual(true);
-    expect(redisClient.cluster).toBeInstanceOf(Cluster)
+    expect(redisClient.cluster).toBeInstanceOf(Cluster);
     expect(redisClient.standalone).not.toBeDefined();
     expect(redisClient.redis).toBeInstanceOf(Cluster);
     expect(typeof redisClient.redis.bzpopmin).toStrictEqual('function');
     await app.close();
   });
 
-  it('forRoot - multiple clients', async function () {
+  it('forRoot - multiple clients', async () => {
     const module = await Test.createTestingModule({
       imports: [
         RedisModule.forRoot({
           token: 'client1',
           host: 'localhost',
-          lazyConnect: true
+          lazyConnect: true,
         }),
         RedisModule.forRoot({
           token: 'client2',
           nodes: ['localhost'],
-          lazyConnect: true
-        })
+          lazyConnect: true,
+        }),
       ],
     }).compile();
     app = module.createNestApplication();
@@ -128,23 +127,23 @@ describe('IORedisModule', function () {
     await app.close();
   });
 
-  it('forRootAsync - multiple clients', async function () {
+  it('forRootAsync - multiple clients', async () => {
     const module = await Test.createTestingModule({
       imports: [
         RedisModule.forRootAsync({
           token: 'client1',
           useFactory: () => ({
             host: 'localhost',
-            lazyConnect: true
-          })
+            lazyConnect: true,
+          }),
         }),
         RedisModule.forRootAsync({
           token: 'client2',
           useFactory: () => ({
             nodes: ['localhost'],
-            lazyConnect: true
-          })
-        })
+            lazyConnect: true,
+          }),
+        }),
       ],
     }).compile();
     app = module.createNestApplication();
@@ -161,13 +160,13 @@ describe('IORedisModule', function () {
     await app.close();
   });
 
-  it('registerClient - parse host url', async function () {
+  it('registerClient - parse host url', async () => {
     const module = await Test.createTestingModule({
       imports: [
         RedisModule.forRoot({
           host: 'rediss://127.0.0.1:1234/2',
-          lazyConnect: true
-        })
+          lazyConnect: true,
+        }),
       ],
     }).compile();
     app = module.createNestApplication();
@@ -181,5 +180,4 @@ describe('IORedisModule', function () {
     expect(redisClient.standalone?.options.tls).toStrictEqual(true);
     await app.close();
   });
-
 });

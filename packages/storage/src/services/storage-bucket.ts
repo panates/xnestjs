@@ -4,9 +4,10 @@ import type { GetObjectSignedUrlOptions, ObjectInfo, PutObjectOptions } from '..
 import type { StorageConnection } from './storage-connection';
 
 export class StorageBucket {
-
-  constructor(private _connection: StorageConnection, private _bucketName: string) {
-  }
+  constructor(
+    private _connection: StorageConnection,
+    private _bucketName: string,
+  ) {}
 
   putObject(objectName: string, buffer: Buffer | Readable | string, options?: PutObjectOptions): Promise<void> {
     return this._connection.putObject(this._bucketName, objectName, buffer, options);
@@ -31,5 +32,4 @@ export class StorageBucket {
   presignedGetObject(objectName: string, options?: GetObjectSignedUrlOptions): Promise<string> {
     return this._connection.presignedGetObject(this._bucketName, objectName, options);
   }
-
 }

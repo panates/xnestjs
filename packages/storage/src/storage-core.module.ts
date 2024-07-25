@@ -2,74 +2,69 @@ import { DynamicModule, Global, Module, Provider } from '@nestjs/common';
 import {
   StorageModuleAsyncOptions,
   StorageModuleOptions,
-  StorageModuleOptionsFactory
+  StorageModuleOptionsFactory,
 } from './interfaces/storage.interfaces.js';
 import { createConnection, getStorageConnectionToken } from './storage.utils.js';
 
 @Global()
 @Module({})
 export class StorageCoreModule {
-
   static register(options: StorageModuleOptions): DynamicModule {
-
     const connectionProvider: Provider = {
       provide: getStorageConnectionToken(options.name),
-      useValue: createConnection(options)
+      useValue: createConnection(options),
     };
 
     return {
       module: StorageCoreModule,
       providers: [connectionProvider],
-      exports: [connectionProvider]
+      exports: [connectionProvider],
     };
   }
 
   public static forRootAsync(asyncOptions: StorageModuleAsyncOptions): DynamicModule {
-
-    const providers = [
-      ...this.createAsyncProviders(asyncOptions),
-      ...(asyncOptions.extraProviders || [])
-    ];
+    const providers = [...this.createAsyncProviders(asyncOptions), ...(asyncOptions.extraProviders || [])];
 
     return {
       module: StorageCoreModule,
       imports: asyncOptions.imports || [],
       providers,
-      exports: providers
+      exports: providers,
     };
   }
 
   public static createAsyncProviders(asyncOptions: StorageModuleAsyncOptions): Provider[] {
-    if (asyncOptions.useFactory || asyncOptions.useExisting)
-      return [this.createAsyncOptionsProvider(asyncOptions)];
+    if (asyncOptions.useFactory || asyncOptions.useExisting) return [this.createAsyncOptionsProvider(asyncOptions)];
 
-    if (asyncOptions.useClass)
+    if (asyncOptions.useClass) {
       return [
         this.createAsyncOptionsProvider(asyncOptions),
-        {provide: asyncOptions.useClass, useClass: asyncOptions.useClass}
+        { provide: asyncOptions.useClass, useClass: asyncOptions.useClass },
       ];
+    }
 
     throw new Error('Invalid configuration. Must provide useFactory, useClass or useExisting');
   }
 
   public static createAsyncOptionsProvider(asyncOptions: StorageModuleAsyncOptions): Provider {
-
-    if (asyncOptions.useFactory)
+    if (asyncOptions.useFactory) {
       return {
         provide: getStorageConnectionToken(asyncOptions.name),
         useFactory: this.createFactoryWrapper(asyncOptions.useFactory),
-        inject: asyncOptions.inject || []
+        inject: asyncOptions.inject || [],
       };
+    }
 
     const useClass = asyncOptions.useClass || asyncOptions.useExisting;
-    if (useClass)
+    if (useClass) {
       return {
         provide: getStorageConnectionToken(asyncOptions.name),
-        useFactory: this.createFactoryWrapper(
-            (optionsFactory: StorageModuleOptionsFactory) => optionsFactory.getOptions()
+        useFactory: this.createFactoryWrapper((optionsFactory: StorageModuleOptionsFactory) =>
+          optionsFactory.getOptions(),
         ),
-        inject: [useClass]
+        inject: [useClass],
       };
+    }
 
     throw new Error('Invalid configuration. Must provide useFactory, useClass or useExisting');
   }
@@ -80,5 +75,4 @@ export class StorageCoreModule {
       return createConnection(clientOptions);
     };
   }
-
 }

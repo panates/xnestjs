@@ -1,19 +1,19 @@
-import * as minio from 'minio';
 import { Provider } from '@nestjs/common';
 import { ModuleMetadata, Type } from '@nestjs/common/interfaces';
+import * as minio from 'minio';
 
 export type S3StorageOptions = minio.ClientOptions & { rejectUnauthorized: boolean };
 
 export type AbstractType<T> = abstract new (...args: any[]) => T;
 
 export interface StorageOptions {
-  type: 's3' | 'gs',
+  type: 's3' | 'gs';
   config: S3StorageOptions;
 }
 
 export type StorageModuleOptions = StorageOptions & {
   name?: string;
-}
+};
 
 export interface StorageModuleOptionsFactory {
   getOptions(): Promise<StorageOptions> | StorageOptions;

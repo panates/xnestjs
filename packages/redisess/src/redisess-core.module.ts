@@ -1,18 +1,12 @@
+import { DynamicModule, Global, Inject, Module, OnApplicationShutdown, Provider } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import * as crypto from 'crypto';
 import { SessionManager } from 'redisess';
-import {
-  DynamicModule,
-  Global,
-  Inject,
-  Module,
-  OnApplicationShutdown, Provider
-} from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
 import { REDISESS_MODULE_OPTIONS, REDISESS_MODULE_TOKEN } from './redisess.constants.js';
 import {
   RedisesModuleAsyncOptions,
   RedisessModuleOptions,
-  RedisessModuleOptionsFactory
+  RedisessModuleOptionsFactory,
 } from './redisess.interface.js';
 import { getSessionManagerToken } from './redisess.utils.js';
 
@@ -20,26 +14,25 @@ import { getSessionManagerToken } from './redisess.utils.js';
 @Module({})
 export class RedisessCoreModule implements OnApplicationShutdown {
   constructor(
-      @Inject(REDISESS_MODULE_OPTIONS)
-      private readonly options: RedisessModuleOptions,
-      private readonly moduleRef: ModuleRef
-  ) {
-  }
+    @Inject(REDISESS_MODULE_OPTIONS)
+    private readonly options: RedisessModuleOptions,
+    private readonly moduleRef: ModuleRef,
+  ) {}
 
   static forRoot(options: RedisessModuleOptions): DynamicModule {
     const optionsProvider = {
       provide: REDISESS_MODULE_OPTIONS,
-      useValue: options
+      useValue: options,
     };
     const connectionProvider = {
       provide: getSessionManagerToken(options.name),
-      useFactory: () => this.createSessionManager(options)
+      useFactory: () => this.createSessionManager(options),
     };
 
     return {
       module: RedisessCoreModule,
       providers: [connectionProvider, optionsProvider],
-      exports: [connectionProvider]
+      exports: [connectionProvider],
     };
   }
 
@@ -51,9 +44,9 @@ export class RedisessCoreModule implements OnApplicationShutdown {
         const name = asyncOptions.name || oOptions.name;
         return this.createSessionManager({
           ...oOptions,
-          name
+          name,
         });
-      }
+      },
     };
 
     const asyncProviders = this.createAsyncProviders(asyncOptions);
@@ -65,31 +58,30 @@ export class RedisessCoreModule implements OnApplicationShutdown {
         connectionProvider,
         {
           provide: REDISESS_MODULE_TOKEN,
-          useValue: crypto.randomUUID()
-        }
+          useValue: crypto.randomUUID(),
+        },
       ],
-      exports: [connectionProvider]
+      exports: [connectionProvider],
     };
   }
 
   async onApplicationShutdown() {
     const sessionManager = this.moduleRef.get(getSessionManagerToken(this.options.name)) as SessionManager;
-    if (sessionManager)
-      sessionManager.quit();
+    if (sessionManager) sessionManager.quit();
   }
 
   private static createAsyncProviders(asyncOptions: RedisesModuleAsyncOptions): Provider[] {
-    if (asyncOptions.useExisting || asyncOptions.useFactory)
-      return [this.createAsyncOptionsProvider(asyncOptions)];
+    if (asyncOptions.useExisting || asyncOptions.useFactory) return [this.createAsyncOptionsProvider(asyncOptions)];
 
-    if (asyncOptions.useClass)
+    if (asyncOptions.useClass) {
       return [
         this.createAsyncOptionsProvider(asyncOptions),
         {
           provide: asyncOptions.useClass,
-          useClass: asyncOptions.useClass
-        }
+          useClass: asyncOptions.useClass,
+        },
       ];
+    }
 
     throw new Error('Invalid configuration. Must provide useFactory, useClass or useExisting');
   }
@@ -99,23 +91,22 @@ export class RedisessCoreModule implements OnApplicationShutdown {
       return {
         provide: REDISESS_MODULE_OPTIONS,
         useFactory: asyncOptions.useFactory,
-        inject: asyncOptions.inject || []
+        inject: asyncOptions.inject || [],
       };
     }
     const useClass = asyncOptions.useClass || asyncOptions.useExisting;
     if (useClass) {
       return {
         provide: REDISESS_MODULE_OPTIONS,
-        useFactory: (optionsFactory: RedisessModuleOptionsFactory) =>
-            optionsFactory.createOptions(asyncOptions.name),
-        inject: [useClass]
+        useFactory: (optionsFactory: RedisessModuleOptionsFactory) => optionsFactory.createOptions(asyncOptions.name),
+        inject: [useClass],
       };
     }
     throw new Error('Invalid configuration. Must provide useFactory, useClass or useExisting');
   }
 
   private static async createSessionManager(options: RedisessModuleOptions): Promise<SessionManager> {
-    const opts: any = {...options};
+    const opts: any = { ...options };
     delete opts.client;
     delete opts.name;
     return new SessionManager(options.client, opts);

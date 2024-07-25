@@ -23,5 +23,4 @@ export interface SignedUrlOptions {
   expires?: number;
 }
 
-export interface GetObjectSignedUrlOptions extends SignedUrlOptions {
-}
+export interface GetObjectSignedUrlOptions extends SignedUrlOptions {}
