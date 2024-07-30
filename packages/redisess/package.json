@@ -33,8 +33,8 @@
   "peerDependencies": {
     "@nestjs/common": "^10.3.10",
     "@xnestjs/ioredis": "^0.8.1",
-    "redisess": "^2.4.0",
-    "ioredis": "^5.4.1"
+    "ioredis": "^5.4.1",
+    "redisess": "^2.5.0"
   },
   "devDependencies": {
     "@nestjs/core": "^10.3.10"
