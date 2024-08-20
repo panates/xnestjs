@@ -2,7 +2,7 @@ import { DynamicModule, Global, Inject, Module, OnApplicationShutdown, Provider 
 import { ModuleRef } from '@nestjs/core';
 import * as crypto from 'crypto';
 import { SessionManager } from 'redisess';
-import { REDISESS_MODULE_OPTIONS, REDISESS_MODULE_TOKEN } from './constants';
+import { REDISESS_MODULE_OPTIONS, REDISESS_MODULE_TOKEN } from './constants.js';
 import {
   RedisessModuleAsyncOptions,
   RedisessModuleOptions,

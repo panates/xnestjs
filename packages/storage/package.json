@@ -4,21 +4,13 @@
   "description": "NestJS extension library for Storage solutions (S3,GS)",
   "author": "Panates",
   "license": "MIT",
-  "repository": {
-    "registry": "https://github.com/panates/xnestjs.git",
-    "directory": "packages/storage"
-  },
-  "type": "module",
-  "module": "./esm/index.js",
-  "main": "./cjs/index.js",
-  "types": "./types/index.d.ts",
   "scripts": {
     "compile": "tsc",
     "prebuild": "npm run check && npm run lint && npm run clean",
     "build": "npm run build:cjs && npm run build:esm",
-    "build:cjs": "tsc -b tsconfig-build-cjs.json",
-    "build:esm": "tsc -b tsconfig-build-esm.json",
-    "postbuild": "cp package.json README.md ../../LICENSE ../../build/storage && cp ../../package.cjs.json ../../build/storage/cjs/package.json",
+    "build:cjs": "tsc -b tsconfig-build-cjs.json && cp ../../support/package.cjs.json ../../build/storage/cjs/package.json",
+    "build:esm": "tsc -b tsconfig-build-esm.json && cp ../../support/package.esm.json ../../build/storage/esm/package.json",
+    "postbuild": "cp package.json README.md ../../LICENSE ../../build/storage && node ../../support/postbuild.cjs",
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --max-warnings=0 --fix",
     "format": "prettier . --write --log-level=warn",
@@ -31,10 +23,32 @@
     "clean:cover": "rimraf ../../coverage/storage"
   },
   "peerDependencies": {
-    "@nestjs/common": "^10.3.10"
+    "@nestjs/common": "^10.4.1"
   },
   "optionalDependencies": {
     "minio": "^8.0.1"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./types/index.d.ts",
+        "default": "./esm/index.js"
+      },
+      "require": {
+        "types": "./types/index.d.cts",
+        "default": "./cjs/index.js"
+      },
+      "default": "./esm/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./cjs/index.js",
+  "module": "./esm/index.js",
+  "types": "./types/index.d.ts",
+  "repository": {
+    "registry": "https://github.com/panates/xnestjs.git",
+    "directory": "packages/storage"
   },
   "engines": {
     "node": ">=16.0",
