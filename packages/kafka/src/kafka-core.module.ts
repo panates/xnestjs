@@ -112,18 +112,4 @@ export class KafkaCoreModule {
       logCreator: () => createLogCreator(logger),
     });
   }
-
-  //
-  // async onApplicationBootstrap() {
-  //   const producer = this.moduleRef.get<Producer>(this.options.provide || Kafka);
-  //   producer.on('producer.connect', () =>
-  //     this.logger.verbose(`[Kafka Producer] connected to: ${this.options.producer.topic} topic`),
-  //   );
-  //   await producer.connect();
-  // }
-  //
-  // async onApplicationShutdown() {
-  //   const producer = this.moduleRef.get<Producer>(this.options.provide || Kafka);
-  //   await producer.disconnect();
-  // }
 }
