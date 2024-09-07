@@ -1,0 +1,71 @@
+{
+  "name": "@xnestjs/kafka",
+  "version": "0.9.0",
+  "description": "NestJS extension library for Kafka",
+  "author": "Panates",
+  "license": "MIT",
+  "scripts": {
+    "compile": "tsc",
+    "prebuild": "npm run check && npm run lint && npm run clean",
+    "build": "npm run build:cjs && npm run build:esm",
+    "build:cjs": "tsc -b tsconfig-build-cjs.json && cp ../../support/package.cjs.json ../../build/kafka/cjs/package.json",
+    "build:esm": "tsc -b tsconfig-build-esm.json && cp ../../support/package.esm.json ../../build/kafka/esm/package.json",
+    "postbuild": "cp package.json README.md ../../LICENSE ../../build/kafka && node ../../support/postbuild.cjs",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --max-warnings=0 --fix",
+    "format": "prettier . --write --log-level=warn",
+    "check": "madge --circular src/**",
+    "test": "jest",
+    "cover": "jest --collect-coverage",
+    "clean": "npm run clean:src && npm run clean:dist && npm run clean:cover",
+    "clean:src": "ts-cleanup -s src --all && ts-cleanup -s test --all",
+    "clean:dist": "rimraf ../../build/kafka",
+    "clean:cover": "rimraf ../../coverage/kafka"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^10.4.1",
+    "@nestjs/core": "^10.4.1",
+    "kafkajs": "^2.2.4"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "^10.4.1",
+    "ts-gems": "^3.5.0"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./types/index.d.ts",
+        "default": "./esm/index.js"
+      },
+      "require": {
+        "types": "./types/index.d.cts",
+        "default": "./cjs/index.js"
+      },
+      "default": "./esm/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./cjs/index.js",
+  "module": "./esm/index.js",
+  "types": "./types/index.d.ts",
+  "repository": {
+    "registry": "https://github.com/panates/xnestjs.git",
+    "directory": "packages/kafka"
+  },
+  "engines": {
+    "node": ">=16.0",
+    "npm": ">=7.0.0"
+  },
+  "files": [
+    "cjs/",
+    "esm/",
+    "types/",
+    "LICENSE",
+    "README.md"
+  ],
+  "keywords": [
+    "nestjs",
+    "kafka"
+  ]
+}

@@ -1,0 +1,2 @@
+export const KAFKA_MODULE_OPTIONS = Symbol('KAFKA_MODULE_OPTIONS');
+export const KAFKA_MODULE_ID = Symbol('KAFKA_MODULE_ID');

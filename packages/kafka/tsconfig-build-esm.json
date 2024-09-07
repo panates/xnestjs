@@ -1,0 +1,8 @@
+{
+  "extends": ["./tsconfig.json", "../../tsconfig-build.json"],
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "../../build/kafka/esm",
+    "declarationDir": "../../build/kafka/types"
+  }
+}
