@@ -1,7 +1,7 @@
 import { DynamicModule, Global, Logger, Module, Provider } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { Kafka } from 'kafkajs';
-import { KAFKA_MODULE_OPTIONS, KAFKA_MODULE_ID } from './constants.js';
+import { KAFKA_MODULE_ID, KAFKA_MODULE_OPTIONS } from './constants.js';
 import {
   KafkaModuleAsyncOptions,
   KafkaModuleOptions,
