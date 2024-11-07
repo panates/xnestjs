@@ -7,8 +7,14 @@
       "conventionalCommits": true,
       "noGitTagVersion": true,
       "noPrivate": true,
-      "ignoreChanges": ["*.md", "*.json", "docs/**", "test/**"],
-      "message": "chore(release): publish %s"
+      "ignoreChanges": [
+        "*.md",
+        "*.json",
+        "docs/**",
+        "test/**",
+        "build/**"
+      ],
+      "message": "chore(release): publish"
     },
     "publish": {
       "contents": "build"
