@@ -1,6 +1,6 @@
 {
   "name": "@xnestjs/redisess",
-  "version": "0.10.3",
+  "version": "0.10.4",
   "description": "NestJS extension library for redisess",
   "author": "Panates",
   "license": "MIT",
