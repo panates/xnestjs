@@ -1,15 +1,10 @@
 {
-  "extends": "../../../tsconfig-base.json",
-  "include": ["**/*.ts"],
+  "extends": "../tsconfig.json",
+  "include": ["."],
   "compilerOptions": {
-    "types": ["node", "jest"],
-    "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "noEmit": true,
-    "sourceMap": true,
+    "verbatimModuleSyntax": false,
     "baseUrl": "./",
-    "paths": {
-      "@sqb/*": ["../../*/src"]
-    }
+    "paths": {}
   }
 }

@@ -1,0 +1,37 @@
+name: Test
+on:
+  workflow_dispatch:
+  push:
+    branches-ignore:
+      - main
+jobs:
+  test:
+    name: Node v${{ matrix.node }}
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [ '20', '21', '22' ]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run linter test
+        run: lerna run lint
+
+      - name: Run circular dependency test
+        run: lerna run check
+
+      - name: Run compile test
+        run: lerna run compile
+
+      - name: Run unit tests
+        run: npm run citest
+        env:
+          NODE_OPTIONS: "--max_old_space_size=4096"

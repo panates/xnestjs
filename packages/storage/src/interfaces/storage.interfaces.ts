@@ -1,29 +1,34 @@
-import { Provider } from '@nestjs/common';
-import { ModuleMetadata, Type } from '@nestjs/common/interfaces';
-import * as minio from 'minio';
+import type { InjectionToken } from '@nestjs/common';
+import type { ModuleMetadata, Type } from '@nestjs/common/interfaces';
+import type * as minio from 'minio';
 
-export type S3StorageOptions = minio.ClientOptions & { rejectUnauthorized: boolean };
+export type S3Config = minio.ClientOptions & { rejectUnauthorized?: boolean };
 
 export type AbstractType<T> = abstract new (...args: any[]) => T;
 
-export interface StorageOptions {
-  type: 's3' | 'gs';
-  config: S3StorageOptions;
+export interface S3StorageOptions {
+  type: 's3';
+  s3: S3Config;
 }
+
+export interface GSStorageOptions {
+  type: 'gs';
+  gs: {};
+}
+
+export type StorageOptions = S3StorageOptions | GSStorageOptions;
 
 export type StorageModuleOptions = StorageOptions & {
-  name?: string;
+  token?: InjectionToken;
+  global?: boolean;
 };
 
-export interface StorageModuleOptionsFactory {
-  getOptions(): Promise<StorageOptions> | StorageOptions;
-}
-
-export interface StorageModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
-  name?: string;
-  inject?: any[];
-  useClass?: Type<StorageModuleOptionsFactory>;
-  useExisting?: Type<StorageModuleOptionsFactory>;
-  useFactory?: (...args: any[]) => Promise<StorageModuleOptions> | StorageModuleOptions;
-  extraProviders?: Provider[];
+export interface StorageModuleAsyncOptions<I extends [any]>
+  extends Pick<ModuleMetadata, 'imports' | 'exports' | 'providers'> {
+  token?: InjectionToken;
+  inject?: I;
+  global?: boolean;
+  useClass?: Type<StorageOptions>;
+  useExisting?: InjectionToken;
+  useFactory?: (...args: I) => Promise<StorageOptions> | StorageOptions;
 }

@@ -5,7 +5,7 @@ import { SessionManager } from 'redisess';
 import { REDISESS_MODULE_OPTIONS, REDISESS_MODULE_TOKEN } from './constants.js';
 import {
   RedisessModuleAsyncOptions,
-  RedisessModuleOptions,
+  type RedisessModuleOptions,
   RedisessModuleOptionsFactory,
 } from './interfaces/module-options.interface.js';
 import { getSessionManagerToken } from './utils/get-session-manager-token.util.js';

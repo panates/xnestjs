@@ -6,5 +6,12 @@
   "extends": [
     "@panates/eslint-config/node",
     "@panates/eslint-config-ts"
+  ],
+  "ignorePatterns": [
+    "/dist",
+    "/coverage",
+    "/packages/*/dist",
+    "/packages/*/build",
+    "/packages/*/coverage"
   ]
 }

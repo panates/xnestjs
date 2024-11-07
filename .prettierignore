@@ -7,6 +7,9 @@
 /.DS_Store
 /.nyc_output
 /.github
+/packages/*/coverage
+/packages/*/dist
+/packages/*/build
 **/*.md
 
 # IDEs and editors

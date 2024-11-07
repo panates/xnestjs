@@ -1,10 +1,8 @@
 {
   "extends": "../../tsconfig-base.json",
   "include": ["src"],
+  "exclude": ["build"],
   "compilerOptions": {
-    "baseUrl": "./",
-    "paths": {
-      "@xnestjs/ioredis": ["../ioredis/src"]
-    }
+    "baseUrl": "./"
   }
 }

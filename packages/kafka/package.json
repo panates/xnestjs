@@ -5,31 +5,31 @@
   "author": "Panates",
   "license": "MIT",
   "scripts": {
-    "compile": "tsc",
-    "prebuild": "npm run check && npm run lint && npm run clean",
+    "compile": "tsc --noEmit",
+    "prebuild": "npm run lint && npm run clean",
     "build": "npm run build:cjs && npm run build:esm",
-    "build:cjs": "tsc -b tsconfig-build-cjs.json && cp ../../support/package.cjs.json ../../build/kafka/cjs/package.json",
-    "build:esm": "tsc -b tsconfig-build-esm.json && cp ../../support/package.esm.json ../../build/kafka/esm/package.json",
-    "postbuild": "cp package.json README.md ../../LICENSE ../../build/kafka && node ../../support/postbuild.cjs",
+    "build:cjs": "tsc -b tsconfig-build-cjs.json && cp ../../support/package.cjs.json ./build/cjs/package.json",
+    "build:esm": "tsc -b tsconfig-build-esm.json && cp ../../support/package.esm.json ./build/esm/package.json",
+    "postbuild": "cp README.md ../../LICENSE ./build && node ../../support/postbuild.cjs",
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --max-warnings=0 --fix",
     "format": "prettier . --write --log-level=warn",
     "check": "madge --circular src/**",
     "test": "jest",
     "cover": "jest --collect-coverage",
-    "clean": "npm run clean:src && npm run clean:dist && npm run clean:cover",
+    "clean": "npm run clean:src && npm run clean:build && npm run clean:cover",
     "clean:src": "ts-cleanup -s src --all && ts-cleanup -s test --all",
-    "clean:dist": "rimraf ../../build/kafka",
-    "clean:cover": "rimraf ../../coverage/kafka"
+    "clean:build": "rimraf build",
+    "clean:cover": "rimraf coverage"
   },
   "peerDependencies": {
-    "@nestjs/common": "^10.4.1",
-    "@nestjs/core": "^10.4.1",
+    "@nestjs/common": "^10.4.7",
+    "@nestjs/core": "^10.4.7",
     "kafkajs": "^2.2.4"
   },
   "devDependencies": {
-    "@nestjs/testing": "^10.4.1",
-    "ts-gems": "^3.5.0"
+    "@nestjs/testing": "^10.4.7",
+    "ts-gems": "^3.6.0"
   },
   "type": "module",
   "exports": {

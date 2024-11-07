@@ -1,17 +1,15 @@
 import { DynamicModule, Global, Module, Provider } from '@nestjs/common';
-import {
-  StorageModuleAsyncOptions,
-  StorageModuleOptions,
-  StorageModuleOptionsFactory,
-} from './interfaces/storage.interfaces.js';
-import { createConnection, getStorageConnectionToken } from './storage.utils.js';
+import { StorageModuleAsyncOptions, StorageModuleOptions, StorageOptions } from './interfaces/storage.interfaces.js';
+import { StorageConnection } from './services/storage-connection.js';
+import { STORAGE_OPTIONS } from './storage.constants.js';
+import { createConnection } from './storage.utils.js';
 
 @Global()
 @Module({})
 export class StorageCoreModule {
   static register(options: StorageModuleOptions): DynamicModule {
     const connectionProvider: Provider = {
-      provide: getStorageConnectionToken(options.name),
+      provide: options.token || StorageConnection,
       useValue: createConnection(options),
     };
 
@@ -19,60 +17,47 @@ export class StorageCoreModule {
       module: StorageCoreModule,
       providers: [connectionProvider],
       exports: [connectionProvider],
+      global: options.global,
     };
   }
 
-  public static forRootAsync(asyncOptions: StorageModuleAsyncOptions): DynamicModule {
-    const providers = [...this.createAsyncProviders(asyncOptions), ...(asyncOptions.extraProviders || [])];
+  public static registerAsync<I extends [any] = never>(asyncOptions: StorageModuleAsyncOptions<I>): DynamicModule {
+    let optionsProvider: Provider;
+    if (asyncOptions.useFactory) {
+      optionsProvider = {
+        provide: STORAGE_OPTIONS,
+        inject: asyncOptions.inject || [],
+        useFactory: asyncOptions.useFactory,
+      };
+    } else if (asyncOptions.useExisting) {
+      optionsProvider = {
+        provide: STORAGE_OPTIONS,
+        useExisting: asyncOptions.useExisting,
+      };
+    } else if (asyncOptions.useClass) {
+      optionsProvider = {
+        provide: STORAGE_OPTIONS,
+        useClass: asyncOptions.useClass,
+      };
+    } else {
+      throw new Error('Invalid configuration. Must provide useFactory, useClass or useExisting');
+    }
 
+    const providers: Provider[] = [
+      optionsProvider,
+      {
+        provide: asyncOptions.token || StorageConnection,
+        inject: [STORAGE_OPTIONS],
+        useFactory: (options: StorageOptions) => createConnection(options),
+      },
+    ];
+    if (asyncOptions.providers) providers.push(...asyncOptions.providers);
     return {
       module: StorageCoreModule,
       imports: asyncOptions.imports || [],
+      exports: asyncOptions.exports || [],
       providers,
-      exports: providers,
-    };
-  }
-
-  public static createAsyncProviders(asyncOptions: StorageModuleAsyncOptions): Provider[] {
-    if (asyncOptions.useFactory || asyncOptions.useExisting) return [this.createAsyncOptionsProvider(asyncOptions)];
-
-    if (asyncOptions.useClass) {
-      return [
-        this.createAsyncOptionsProvider(asyncOptions),
-        { provide: asyncOptions.useClass, useClass: asyncOptions.useClass },
-      ];
-    }
-
-    throw new Error('Invalid configuration. Must provide useFactory, useClass or useExisting');
-  }
-
-  public static createAsyncOptionsProvider(asyncOptions: StorageModuleAsyncOptions): Provider {
-    if (asyncOptions.useFactory) {
-      return {
-        provide: getStorageConnectionToken(asyncOptions.name),
-        useFactory: this.createFactoryWrapper(asyncOptions.useFactory),
-        inject: asyncOptions.inject || [],
-      };
-    }
-
-    const useClass = asyncOptions.useClass || asyncOptions.useExisting;
-    if (useClass) {
-      return {
-        provide: getStorageConnectionToken(asyncOptions.name),
-        useFactory: this.createFactoryWrapper((optionsFactory: StorageModuleOptionsFactory) =>
-          optionsFactory.getOptions(),
-        ),
-        inject: [useClass],
-      };
-    }
-
-    throw new Error('Invalid configuration. Must provide useFactory, useClass or useExisting');
-  }
-
-  private static createFactoryWrapper(useFactory: Required<StorageModuleAsyncOptions>['useFactory']) {
-    return async (...args: any[]) => {
-      const clientOptions = await useFactory(...args);
-      return createConnection(clientOptions);
+      global: asyncOptions.global,
     };
   }
 }

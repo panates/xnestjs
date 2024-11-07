@@ -1,8 +1,11 @@
 {
   "extends": ["./tsconfig.json", "../../tsconfig-build.json"],
   "compilerOptions": {
+    "module": "ES2020",
+    "moduleResolution": "Node",
     "rootDir": "src",
-    "outDir": "../../build/logger/esm",
-    "declarationDir": "../../build/logger/types"
+    "outDir": "./build/esm",
+    "declarationDir": "./build/types",
+    "baseUrl": "./"
   }
 }

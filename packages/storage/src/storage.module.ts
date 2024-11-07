@@ -8,13 +8,15 @@ export class StorageModule {
     return {
       module: StorageModule,
       imports: [StorageCoreModule.register(options)],
+      global: options.global,
     };
   }
 
-  static registerAsync(options: StorageModuleAsyncOptions): DynamicModule {
+  static registerAsync<I extends [any] = never>(options: StorageModuleAsyncOptions<I>): DynamicModule {
     return {
       module: StorageModule,
-      imports: [StorageCoreModule.forRootAsync(options)],
+      imports: [StorageCoreModule.registerAsync(options)],
+      global: options.global,
     };
   }
 }

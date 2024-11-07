@@ -1,1 +1,1 @@
-export const STORAGE_MODULE_TOKEN = Symbol('STORAGE_MODULE_ID');
+export const STORAGE_OPTIONS = Symbol('STORAGE_OPTIONS');

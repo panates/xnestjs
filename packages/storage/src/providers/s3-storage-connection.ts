@@ -2,17 +2,16 @@ import { Buffer } from 'buffer';
 import * as Minio from 'minio';
 import { Readable } from 'stream';
 import { GetObjectSignedUrlOptions, ObjectInfo, PutObjectOptions } from '../interfaces/connection.interfaces.js';
-import { S3StorageOptions } from '../interfaces/storage.interfaces.js';
+import { S3Config } from '../interfaces/storage.interfaces.js';
 import { StorageConnection } from '../services/storage-connection.js';
 
 export class S3StorageConnection extends StorageConnection {
   private _client: Minio.Client;
 
-  constructor(options: S3StorageOptions) {
+  constructor(options: S3Config) {
     super();
     this._client = new Minio.Client(options);
-    // todo: remove casting to any later. https://github.com/minio/minio-js/issues/1163
-    (this._client as any).setRequestOptions({ rejectUnauthorized: options.rejectUnauthorized });
+    this._client.setRequestOptions({ rejectUnauthorized: options.rejectUnauthorized });
   }
 
   async putObject(
