@@ -7,7 +7,7 @@ on:
       - master
 jobs:
   publish:
-    if: "!contains(github.event.head_commit.message, 'chore(release):')" # Exclude release bump commits
+    if: "!(contains(github.event.head_commit.message, 'chore(release):') || contains(github.event.head_commit.message, 'origin/master'))" # Exclude release bump commits
     runs-on: ubuntu-latest
     # Service containers to run with `container-job`
 
