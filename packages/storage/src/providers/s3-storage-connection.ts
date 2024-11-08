@@ -6,12 +6,15 @@ import { S3Config } from '../interfaces/storage.interfaces.js';
 import { StorageConnection } from '../services/storage-connection.js';
 
 export class S3StorageConnection extends StorageConnection {
+  readonly provider = 's3';
+  readonly config: S3Config;
   private _client: Minio.Client;
 
-  constructor(options: S3Config) {
+  constructor(config: S3Config) {
     super();
-    this._client = new Minio.Client(options);
-    this._client.setRequestOptions({ rejectUnauthorized: options.rejectUnauthorized });
+    this.config = config;
+    this._client = new Minio.Client(config);
+    this._client.setRequestOptions({ rejectUnauthorized: config.rejectUnauthorized });
   }
 
   async putObject(

@@ -4,15 +4,15 @@ import type * as minio from 'minio';
 
 export type S3Config = minio.ClientOptions & { rejectUnauthorized?: boolean };
 
-export type AbstractType<T> = abstract new (...args: any[]) => T;
+export type StorageProvider = 's3' | 'gs';
 
 export interface S3StorageOptions {
-  type: 's3';
+  provider: StorageProvider;
   s3: S3Config;
 }
 
 export interface GSStorageOptions {
-  type: 'gs';
+  provider: StorageProvider;
   gs: {};
 }
 
@@ -23,12 +23,11 @@ export type StorageModuleOptions = StorageOptions & {
   global?: boolean;
 };
 
-export interface StorageModuleAsyncOptions<I extends [any]>
-  extends Pick<ModuleMetadata, 'imports' | 'exports' | 'providers'> {
+export interface StorageModuleAsyncOptions extends Pick<ModuleMetadata, 'imports' | 'exports' | 'providers'> {
   token?: InjectionToken;
-  inject?: I;
+  inject?: any[];
   global?: boolean;
   useClass?: Type<StorageOptions>;
   useExisting?: InjectionToken;
-  useFactory?: (...args: I) => Promise<StorageOptions> | StorageOptions;
+  useFactory?: (...args: any[]) => Promise<StorageOptions> | StorageOptions;
 }

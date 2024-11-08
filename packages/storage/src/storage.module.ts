@@ -12,7 +12,7 @@ export class StorageModule {
     };
   }
 
-  static registerAsync<I extends [any] = never>(options: StorageModuleAsyncOptions<I>): DynamicModule {
+  static registerAsync(options: StorageModuleAsyncOptions): DynamicModule {
     return {
       module: StorageModule,
       imports: [StorageCoreModule.registerAsync(options)],

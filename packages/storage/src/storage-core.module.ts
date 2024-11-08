@@ -21,7 +21,7 @@ export class StorageCoreModule {
     };
   }
 
-  public static registerAsync<I extends [any] = never>(asyncOptions: StorageModuleAsyncOptions<I>): DynamicModule {
+  public static registerAsync(asyncOptions: StorageModuleAsyncOptions): DynamicModule {
     let optionsProvider: Provider;
     if (asyncOptions.useFactory) {
       optionsProvider = {
@@ -43,10 +43,11 @@ export class StorageCoreModule {
       throw new Error('Invalid configuration. Must provide useFactory, useClass or useExisting');
     }
 
+    const storageToken = asyncOptions.token || StorageConnection;
     const providers: Provider[] = [
       optionsProvider,
       {
-        provide: asyncOptions.token || StorageConnection,
+        provide: storageToken,
         inject: [STORAGE_OPTIONS],
         useFactory: (options: StorageOptions) => createConnection(options),
       },
@@ -55,7 +56,7 @@ export class StorageCoreModule {
     return {
       module: StorageCoreModule,
       imports: asyncOptions.imports || [],
-      exports: asyncOptions.exports || [],
+      exports: [storageToken, ...(asyncOptions.exports || [])],
       providers,
       global: asyncOptions.global,
     };
