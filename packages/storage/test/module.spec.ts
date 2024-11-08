@@ -9,7 +9,7 @@ describe('StorageModule', () => {
     const module = await Test.createTestingModule({
       imports: [
         StorageModule.register({
-          type: 's3',
+          provider: 's3',
           s3: {
             endPoint: 'play.min.io',
             port: 9000,
@@ -33,7 +33,7 @@ describe('StorageModule', () => {
       imports: [
         StorageModule.registerAsync({
           useFactory: () => ({
-            type: 's3',
+            provider: 's3',
             s3: {
               endPoint: 'play.min.io',
               port: 9000,
