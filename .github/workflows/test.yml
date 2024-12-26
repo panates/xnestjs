@@ -2,8 +2,7 @@ name: Test
 on:
   workflow_dispatch:
   push:
-    branches-ignore:
-      - master
+
 jobs:
   test:
     name: Node v${{ matrix.node }}
