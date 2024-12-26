@@ -1,6 +1,6 @@
 {
   "name": "@xnestjs/kafka",
-  "version": "0.10.4",
+  "version": "1.0.1",
   "description": "NestJS extension library for Kafka",
   "author": "Panates",
   "license": "MIT",

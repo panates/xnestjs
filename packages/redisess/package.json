@@ -1,6 +1,6 @@
 {
   "name": "@xnestjs/redisess",
-  "version": "0.10.4",
+  "version": "1.0.1",
   "description": "NestJS extension library for redisess",
   "author": "Panates",
   "license": "MIT",
@@ -24,7 +24,7 @@
   },
   "peerDependencies": {
     "@nestjs/common": "^10.4.15",
-    "@xnestjs/ioredis": "^0.10.4",
+    "@xnestjs/ioredis": "^1.0.0",
     "ioredis": "^5.4.2",
     "redisess": "^2.6.0"
   },
