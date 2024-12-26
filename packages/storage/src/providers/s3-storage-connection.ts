@@ -25,7 +25,6 @@ export class S3StorageConnection extends StorageConnection {
   ): Promise<void> {
     const meta = options ? updateMetadata(options?.metadata, options) : {};
     if (typeof source === 'string') await this._client.fPutObject(bucketName, objectName, source, meta);
-    // eslint-disable-next-line @typescript-eslint/await-thenable
     else await this._client.putObject(bucketName, objectName, source, undefined, meta);
   }
 

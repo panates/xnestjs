@@ -1,17 +1,17 @@
-import { Cluster as IORedisCluster, Redis as IORedisClient } from 'ioredis';
-import Redlock from 'redlock';
-import type { LockSettings } from './redis.interface.js';
+import type { Cluster as IORedisCluster, Redis as IORedisClient } from 'ioredis';
+import { type LockOptions, Mutex, Semaphore } from 'redis-semaphore';
+import { sharedLock } from './shared-lock.js';
+import type { SharedLock } from './types.js';
 
 export namespace RedisClient {
   export interface Options {
     cluster?: IORedisCluster;
     standalone?: IORedisClient;
-    lock?: LockSettings;
   }
 }
 
 export class RedisClient {
-  readonly _redlock: Redlock;
+  private locks = new Map<string, SharedLock>();
   cluster?: IORedisCluster;
   standalone?: IORedisClient;
 
@@ -19,7 +19,6 @@ export class RedisClient {
     this.cluster = options.cluster;
     this.standalone = options.standalone;
     if (!(this.cluster || this.standalone)) throw new TypeError('One of "cluster" or "standalone" must be set');
-    this._redlock = new Redlock([this.redis], options.lock);
   }
 
   get isCluster(): boolean {
@@ -30,7 +29,43 @@ export class RedisClient {
     return (this.cluster || this.standalone) as IORedisClient | IORedisCluster;
   }
 
-  get lock(): Redlock {
-    return this._redlock;
+  quit() {
+    return this.redis.quit();
+  }
+
+  protected _getLock(kind: string, key: string): SharedLock | undefined {
+    const lock = this.locks.get(key);
+    if (lock) {
+      if (lock.refCount > 0) {
+        if ((lock as any)._kind !== kind)
+          throw new Error(`Lock "${key}" is already in use by a different kind of lock (${(lock as any)._kind})`);
+        return lock;
+      }
+      this.locks.delete(key);
+    }
+  }
+
+  obtainMutex(key: string, options?: LockOptions): SharedLock {
+    let lock = this._getLock('mutex', key);
+    if (lock) return lock;
+    lock = sharedLock(new Mutex(this.redis, key, options));
+    this.locks.set(key, lock);
+    return lock;
+  }
+
+  obtainSemaphore(key: string, limit: number, options?: LockOptions): SharedLock {
+    let lock = this._getLock('semaphore', key);
+    if (lock) return lock;
+    lock = sharedLock(new Semaphore(this.redis, key, limit, options));
+    this.locks.set(key, lock);
+    return lock;
+  }
+
+  obtainMultiSemaphore(key: string, limit: number, options?: LockOptions): SharedLock {
+    let lock = this._getLock('multi-semaphore', key);
+    if (lock) return lock;
+    lock = sharedLock(new Semaphore(this.redis, key, limit, options));
+    this.locks.set(key, lock);
+    return lock;
   }
 }

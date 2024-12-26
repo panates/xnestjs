@@ -2,15 +2,12 @@ import type { ModuleMetadata } from '@nestjs/common/interfaces';
 import type { RedisOptions } from 'ioredis';
 import type { ClusterOptions } from 'ioredis/built/cluster/ClusterOptions';
 import type { ClusterNode } from 'ioredis/built/cluster/index.js';
-import type { Lock, Settings as RedlockSettings } from 'redlock';
 
 export interface RedisClientOptions extends RedisOptions {
   /**
    * Injection token
    */
   token?: any;
-
-  lock?: LockSettings;
 }
 
 export interface RedisClusterOptions extends ClusterOptions {
@@ -39,6 +36,17 @@ export interface RedisClusterAsyncOptions extends Pick<ModuleMetadata, 'imports'
   inject?: any[];
 }
 
-export interface LockSettings extends RedlockSettings {}
-
-export { Lock };
+export interface LockSettings {
+  /**
+   * This parameter is only used if lock has been acquired without leaseTimeout parameter definition.
+   * Lock expires after `lockWatchdogTimeout` if watchdog
+   * didn't extend it to next `lockWatchdogTimeout` time interval.
+   *
+   * This prevents against infinity locked locks due to Redisson client crush or
+   * any other reason when lock can't be released in proper way.
+   *
+   * - Unit: milliseconds
+   * - Default: 30000 milliseconds
+   */
+  lockWatchdogTimeout?: bigint;
+}

@@ -80,7 +80,7 @@ export class RedisCoreModule implements OnApplicationShutdown {
       delete (opts as any).name;
       delete (opts as any).nodes;
       const cluster = new Cluster(opts.nodes, opts);
-      client = new RedisClient({ cluster, lock: options.lock });
+      client = new RedisClient({ cluster });
     } else {
       if (options.host && options.host.includes('://')) {
         const url = new URL(options.host);
@@ -96,7 +96,7 @@ export class RedisCoreModule implements OnApplicationShutdown {
         if (db > 0) options.db = db;
       }
       const standalone = new Redis(options) as any;
-      client = new RedisClient({ standalone, lock: options.lock });
+      client = new RedisClient({ standalone });
     }
 
     if (!options.lazyConnect) {
@@ -117,7 +117,7 @@ export class RedisCoreModule implements OnApplicationShutdown {
   async onApplicationShutdown() {
     try {
       const client: RedisClient = this.moduleRef.get(this.options.token || RedisClient);
-      await client.redis.quit();
+      await client.quit();
     } catch {
       //
     }
