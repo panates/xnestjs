@@ -24,7 +24,7 @@
   },
   "peerDependencies": {
     "@nestjs/common": "^10.4.15",
-    "@xnestjs/ioredis": "^1.0.0",
+    "@xnestjs/ioredis": "^1.0.1",
     "ioredis": "^5.4.2",
     "redisess": "^2.6.0"
   },
