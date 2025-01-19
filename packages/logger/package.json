@@ -23,7 +23,7 @@
     "clean:cover": "rimraf coverage"
   },
   "peerDependencies": {
-    "@nestjs/common": "^10.4.15"
+    "@nestjs/common": "^11.0.1"
   },
   "optionalDependencies": {
     "minio": "^8.0.3"
