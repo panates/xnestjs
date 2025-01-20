@@ -28,9 +28,6 @@
   "optionalDependencies": {
     "minio": "^8.0.0"
   },
-  "devDependencies": {
-    "minio": "^8.0.3"
-  },
   "type": "module",
   "exports": {
     ".": {

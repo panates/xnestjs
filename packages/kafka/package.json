@@ -28,7 +28,6 @@
     "kafkajs": "^2.0.0"
   },
   "devDependencies": {
-    "kafkajs": "^2.2.4",
     "ts-gems": "^3.11.3"
   },
   "type": "module",
