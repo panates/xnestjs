@@ -23,13 +23,14 @@
     "clean:cover": "rimraf coverage"
   },
   "peerDependencies": {
-    "@nestjs/common": "^11.0.1",
-    "@xnestjs/ioredis": "^1.1.0",
-    "ioredis": "^5.4.2",
-    "redisess": "^2.6.0"
+    "@nestjs/common": "^10.0.0 || ^11.0.0",
+    "@xnestjs/ioredis": "^10.0.0 || ^11.0.0",
+    "ioredis": "^5.0.0",
+    "redisess": "^2.0.0"
   },
   "devDependencies": {
-    "@nestjs/core": "^11.0.1"
+    "ioredis": "^5.4.2",
+    "redisess": "^2.6.0"
   },
   "type": "module",
   "exports": {
