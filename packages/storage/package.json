@@ -23,13 +23,14 @@
     "clean:cover": "rimraf coverage"
   },
   "peerDependencies": {
-    "@nestjs/common": "^10.0.0 || ^11.0.0"
+    "@nestjs/common": "^10.0.0 || ^11.0.0",
+    "tslib": "*"
   },
   "optionalDependencies": {
     "minio": "^8.0.0"
   },
   "devDependencies": {
-    "@nestjs/testing": "^11.0.2"
+    "@nestjs/testing": "*"
   },
   "type": "module",
   "exports": {

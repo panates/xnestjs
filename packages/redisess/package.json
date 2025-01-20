@@ -27,10 +27,11 @@
     "@nestjs/core": "^10.0.0 || ^11.0.0",
     "@xnestjs/ioredis": "^1.2.0",
     "ioredis": "^5.0.0",
-    "redisess": "^2.0.0"
+    "redisess": "^2.0.0",
+    "tslib": "*"
   },
   "devDependencies": {
-    "@nestjs/testing": "^11.0.2"
+    "@nestjs/testing": "*"
   },
   "type": "module",
   "exports": {
