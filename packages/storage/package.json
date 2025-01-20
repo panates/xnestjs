@@ -28,6 +28,9 @@
   "optionalDependencies": {
     "minio": "^8.0.0"
   },
+  "devDependencies": {
+    "@nestjs/testing": "^11.0.2"
+  },
   "type": "module",
   "exports": {
     ".": {

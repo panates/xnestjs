@@ -28,6 +28,7 @@
     "kafkajs": "^2.0.0"
   },
   "devDependencies": {
+    "@nestjs/testing": "^11.0.2",
     "ts-gems": "^3.11.3"
   },
   "type": "module",
