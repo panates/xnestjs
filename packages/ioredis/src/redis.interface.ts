@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import type { ModuleMetadata } from '@nestjs/common/interfaces';
 import type { RedisOptions } from 'ioredis';
 import type { ClusterOptions } from 'ioredis/built/cluster/ClusterOptions';
@@ -8,6 +9,7 @@ export interface RedisClientOptions extends RedisOptions {
    * Injection token
    */
   token?: any;
+  logger?: Logger;
 }
 
 export interface RedisClusterOptions extends ClusterOptions {
@@ -15,6 +17,7 @@ export interface RedisClusterOptions extends ClusterOptions {
    * Injection token
    */
   token?: any;
+  logger?: Logger;
   nodes: ClusterNode[];
 }
 

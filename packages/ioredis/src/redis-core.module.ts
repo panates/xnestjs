@@ -1,5 +1,15 @@
-import { DynamicModule, Global, Inject, Module, OnApplicationShutdown } from '@nestjs/common';
+import process from 'node:process';
+import {
+  DynamicModule,
+  Global,
+  Inject,
+  Logger,
+  Module,
+  OnApplicationBootstrap,
+  OnApplicationShutdown,
+} from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
+import colors from 'ansi-colors';
 import * as crypto from 'crypto';
 import Redis, { Cluster } from 'ioredis';
 import { IOREDIS_MODULE_OPTIONS, IOREDIS_MODULE_TOKEN } from './redis.constants.js';
@@ -14,7 +24,7 @@ import { isClusterOptions } from './utils.js';
 
 @Global()
 @Module({})
-export class RedisCoreModule implements OnApplicationShutdown {
+export class RedisCoreModule implements OnApplicationBootstrap, OnApplicationShutdown {
   constructor(
     @Inject(IOREDIS_MODULE_OPTIONS)
     private readonly options: RedisClientOptions | RedisClusterOptions,
@@ -95,23 +105,39 @@ export class RedisCoreModule implements OnApplicationShutdown {
         const db = parseInt(url.pathname.substring(1), 10);
         if (db > 0) options.db = db;
       }
-      const standalone = new Redis(options) as any;
+      const standalone = new Redis({
+        ...options,
+        lazyConnect: true,
+      }) as any;
       client = new RedisClient({ standalone });
     }
 
-    if (!options.lazyConnect) {
-      await new Promise<void>((resolve, reject) => {
-        client.redis.once('ready', () => {
-          client.redis.removeListener('error', reject);
-          resolve();
-        });
-        client.redis.once('error', e => {
-          client.redis.removeListener('ready', resolve);
-          reject(e);
-        });
-      });
-    }
     return client;
+  }
+
+  async onApplicationBootstrap() {
+    const opts = this.options;
+    const logger = process.env.NODE_ENV === 'test' ? undefined : opts.logger;
+    if (!opts.lazyConnect) {
+      const isCluster = isClusterOptions(opts);
+      const hosts = isCluster
+        ? opts.nodes
+            .map(x => (typeof x === 'object' ? x.host + ':' + x.port : typeof x === 'number' ? 'localhost:' + x : x))
+            .join(', ')
+        : opts.host;
+      if (hosts) {
+        logger?.log('Connecting to redis at ' + colors.blue(hosts));
+        Logger.flush();
+        const client: RedisClient = this.moduleRef.get(this.options.token || RedisClient);
+        try {
+          await client.redis.connect();
+          await client.redis.ping();
+        } catch (e: any) {
+          logger?.error('Redis connection failed: ' + e.message);
+          throw e;
+        }
+      }
+    }
   }
 
   async onApplicationShutdown() {
