@@ -1,6 +1,6 @@
 {
   "name": "@xnestjs/ioredis",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "NestJS extension library for ioredis",
   "author": "Panates",
   "license": "MIT",
@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@nestjs/testing": "*",
-    "ts-gems" : "^3.11.3"
+    "ts-gems": "^3.11.3"
   },
   "type": "module",
   "exports": {

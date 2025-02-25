@@ -1,6 +1,6 @@
 {
   "name": "@xnestjs/logger",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "NestJS extension library for better logging solution",
   "author": "Panates",
   "license": "MIT",
