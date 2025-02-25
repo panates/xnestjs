@@ -29,7 +29,7 @@
     "@nestjs/common": "^10.0.0 || ^11.0.0"
   },
   "optionalDependencies": {
-    "minio": "^8.0.0"
+    "minio": "^8.0.4"
   },
   "devDependencies": {
     "@nestjs/testing": "*"
