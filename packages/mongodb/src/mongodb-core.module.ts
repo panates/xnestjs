@@ -1,9 +1,8 @@
 import * as assert from 'node:assert';
 import * as crypto from 'node:crypto';
 import * as process from 'node:process';
-import { clone, omit } from '@jsopen/objects';
+import { omit } from '@jsopen/objects';
 import { DynamicModule, Inject, Logger, OnApplicationBootstrap, OnApplicationShutdown, Provider } from '@nestjs/common';
-import type { ValueProvider } from '@nestjs/common/interfaces/modules/provider.interface';
 import * as colors from 'ansi-colors';
 import { Db, MongoClient, MongoClientOptions } from 'mongodb';
 import { toBoolean, toInt } from 'putil-varhelpers';
@@ -14,19 +13,23 @@ import type {
   MongodbModuleOptions,
 } from './module-options.interface.js';
 
+const CLIENT_TOKEN = Symbol('CLIENT_TOKEN');
+
 export class MongodbCoreModule implements OnApplicationShutdown, OnApplicationBootstrap {
   /**
    * Configures and returns a dynamic module for MongoDB integration.
    */
   static forRoot(moduleOptions: MongodbModuleOptions): DynamicModule {
-    const out = this._createDynamicModule(moduleOptions);
     const connectionOptions = this._readConnectionOptions(moduleOptions, moduleOptions.envPrefix ?? 'MONGODB_');
-    const optionsProvider: ValueProvider = {
-      provide: MONGODB_CONNECTION_OPTIONS,
-      useValue: connectionOptions,
-    };
-    out.providers!.unshift(optionsProvider);
-    return out;
+    return this._createDynamicModule(moduleOptions, {
+      global: moduleOptions.global,
+      providers: [
+        {
+          provide: MONGODB_CONNECTION_OPTIONS,
+          useValue: connectionOptions,
+        },
+      ],
+    });
   }
 
   /**
@@ -34,25 +37,30 @@ export class MongodbCoreModule implements OnApplicationShutdown, OnApplicationBo
    */
   static forRootAsync(asyncOptions: MongodbModuleAsyncOptions): DynamicModule {
     assert.ok(asyncOptions.useFactory, 'useFactory is required');
-    const out = this._createDynamicModule(asyncOptions);
-    const optionsProvider: Provider = {
-      provide: MONGODB_CONNECTION_OPTIONS,
-      inject: asyncOptions.inject,
-      useFactory: async (...args) => {
-        const opts = await asyncOptions.useFactory!(...args);
-        return this._readConnectionOptions(opts, asyncOptions.envPrefix ?? 'MONGODB_');
-      },
-    };
-    out.providers!.unshift(optionsProvider);
-    return out;
+    return this._createDynamicModule(asyncOptions, {
+      global: asyncOptions.global,
+      providers: [
+        {
+          provide: MONGODB_CONNECTION_OPTIONS,
+          inject: asyncOptions.inject,
+          useFactory: async (...args) => {
+            const opts = await asyncOptions.useFactory!(...args);
+            return this._readConnectionOptions(opts, asyncOptions.envPrefix ?? 'MONGODB_');
+          },
+        },
+      ],
+    });
   }
 
-  private static _createDynamicModule(opts: MongodbModuleOptions | MongodbModuleAsyncOptions) {
-    const clientToken = opts.clientToken ?? MongoClient;
+  private static _createDynamicModule(
+    opts: MongodbModuleOptions | MongodbModuleAsyncOptions,
+    metadata: Partial<DynamicModule>,
+  ) {
+    const token = opts.token ?? MongoClient;
     const dbToken = opts.dbToken ?? Db;
     const providers: Provider[] = [
       {
-        provide: clientToken,
+        provide: token,
         inject: [MONGODB_CONNECTION_OPTIONS],
         useFactory: async (connectionOptions: MongodbConnectionOptions): Promise<MongoClient> => {
           const mongoOptions = omit(connectionOptions, ['url', 'database']) as MongoClientOptions;
@@ -61,10 +69,14 @@ export class MongodbCoreModule implements OnApplicationShutdown, OnApplicationBo
       },
       {
         provide: dbToken,
-        inject: [clientToken, MONGODB_CONNECTION_OPTIONS],
+        inject: [token, MONGODB_CONNECTION_OPTIONS],
         useFactory: async (client: MongoClient, connectionOptions: MongodbConnectionOptions) => {
           return connectionOptions.database ? client.db(connectionOptions.database) : undefined;
         },
+      },
+      {
+        provide: CLIENT_TOKEN,
+        useExisting: token,
       },
       {
         provide: Logger,
@@ -72,24 +84,31 @@ export class MongodbCoreModule implements OnApplicationShutdown, OnApplicationBo
       },
     ];
     return {
-      global: true,
       module: MongodbCoreModule,
+      ...metadata,
       providers: [
+        ...(metadata.providers ?? []),
         ...providers,
         {
           provide: MONGODB_MODULE_ID,
           useValue: crypto.randomUUID(),
         },
       ],
-      exports: [MONGODB_CONNECTION_OPTIONS, clientToken, dbToken],
+      exports: [MONGODB_CONNECTION_OPTIONS, token, dbToken, ...(metadata.exports ?? [])],
     } as DynamicModule;
   }
 
   private static _readConnectionOptions(
-    moduleOptions: MongodbConnectionOptions,
+    moduleOptions: MongodbConnectionOptions | MongodbModuleOptions,
     prefix: string,
   ): MongodbConnectionOptions {
-    const options = clone(moduleOptions);
+    const options = omit(moduleOptions as MongodbModuleOptions, [
+      'token',
+      'dbToken',
+      'envPrefix',
+      'logger',
+      'global',
+    ]) as MongodbConnectionOptions;
     const env = process.env;
     options.url = options.url || (env[prefix + 'URL'] ?? 'mongodb://localhost:27017');
     options.replicaSet = options.replicaSet ?? env[prefix + 'REPLICA_SET'];
@@ -147,7 +166,8 @@ export class MongodbCoreModule implements OnApplicationShutdown, OnApplicationBo
    * @constructor
    */
   constructor(
-    protected dbClient: MongoClient,
+    @Inject(CLIENT_TOKEN)
+    protected client: MongoClient,
     private logger: Logger,
     @Inject(MONGODB_CONNECTION_OPTIONS)
     private connectionOptions: MongodbConnectionOptions,
@@ -158,7 +178,7 @@ export class MongodbCoreModule implements OnApplicationShutdown, OnApplicationBo
       const options = this.connectionOptions;
       this.logger.log(`Connecting to MongoDB [${options.database}] at ${colors.blue(options.url!)}`);
       Logger.flush();
-      return this.dbClient.connect().catch(e => {
+      return this.client.connect().catch(e => {
         this.logger.error('MongoDB connection failed: ' + e.message);
         throw e;
       });
@@ -166,6 +186,6 @@ export class MongodbCoreModule implements OnApplicationShutdown, OnApplicationBo
   }
 
   onApplicationShutdown() {
-    return this.dbClient.close(true);
+    return this.client.close(true);
   }
 }

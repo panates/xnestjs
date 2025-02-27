@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Kafka, KafkaModule } from '../src/index.js';
+import { ClientKafka, KafkaModule } from '../src/index.js';
 
 describe('KafkaModule', () => {
   let app: INestApplication;
@@ -15,9 +15,9 @@ describe('KafkaModule', () => {
     }).compile();
     app = module.createNestApplication();
     await app.init();
-    const kafka = await app.resolve(Kafka);
+    const kafka = await app.resolve(ClientKafka);
     expect(kafka).toBeDefined();
-    expect(kafka).toBeInstanceOf(Kafka);
+    expect(kafka).toBeInstanceOf(ClientKafka);
     await app.close();
   });
 
@@ -33,9 +33,9 @@ describe('KafkaModule', () => {
     }).compile();
     app = module.createNestApplication();
     await app.init();
-    const kafka = await app.resolve(Kafka);
+    const kafka = await app.resolve(ClientKafka);
     expect(kafka).toBeDefined();
-    expect(kafka).toBeInstanceOf(Kafka);
+    expect(kafka).toBeInstanceOf(ClientKafka);
     await app.close();
   });
 
@@ -43,11 +43,11 @@ describe('KafkaModule', () => {
     const module = await Test.createTestingModule({
       imports: [
         KafkaModule.forRoot({
-          id: 'kafka1',
+          token: 'kafka1',
           brokers: ['localhost'],
         }),
         KafkaModule.forRoot({
-          id: 'kafka2',
+          token: 'kafka2',
           brokers: ['localhost'],
         }),
       ],
@@ -56,10 +56,10 @@ describe('KafkaModule', () => {
     await app.init();
     const kafka1 = await app.resolve('kafka1');
     expect(kafka1).toBeDefined();
-    expect(kafka1).toBeInstanceOf(Kafka);
+    expect(kafka1).toBeInstanceOf(ClientKafka);
     const kafka2 = await app.resolve('kafka2');
     expect(kafka2).toBeDefined();
-    expect(kafka2).toBeInstanceOf(Kafka);
+    expect(kafka2).toBeInstanceOf(ClientKafka);
     expect(kafka1).not.toBe(kafka2);
     await app.close();
   });
@@ -68,13 +68,13 @@ describe('KafkaModule', () => {
     const module = await Test.createTestingModule({
       imports: [
         KafkaModule.forRootAsync({
-          id: 'kafka1',
+          token: 'kafka1',
           useFactory: () => ({
             brokers: ['localhost'],
           }),
         }),
         KafkaModule.forRootAsync({
-          id: 'kafka2',
+          token: 'kafka2',
           useFactory: () => ({
             brokers: ['localhost'],
           }),
@@ -85,10 +85,10 @@ describe('KafkaModule', () => {
     await app.init();
     const kafka1 = await app.resolve('kafka1');
     expect(kafka1).toBeDefined();
-    expect(kafka1).toBeInstanceOf(Kafka);
+    expect(kafka1).toBeInstanceOf(ClientKafka);
     const kafka2 = await app.resolve('kafka2');
     expect(kafka2).toBeDefined();
-    expect(kafka2).toBeInstanceOf(Kafka);
+    expect(kafka2).toBeInstanceOf(ClientKafka);
     expect(kafka1).not.toBe(kafka2);
     await app.close();
   });

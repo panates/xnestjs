@@ -9,17 +9,19 @@ export interface MongodbConnectionOptions extends MongoClientOptions {
 }
 
 export interface MongodbModuleOptions extends MongodbConnectionOptions {
-  clientToken?: InjectionToken;
+  token?: InjectionToken;
   dbToken?: InjectionToken;
   envPrefix?: string;
   logger?: Logger | string;
+  global?: boolean;
 }
 
 export interface MongodbModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
-  clientToken?: InjectionToken;
+  token?: InjectionToken;
   dbToken?: InjectionToken;
   envPrefix?: string;
   logger?: Logger | string;
+  global?: boolean;
   inject?: InjectionToken[];
   useFactory?: (...args: any[]) => Promise<MongodbConnectionOptions> | MongodbConnectionOptions;
 }

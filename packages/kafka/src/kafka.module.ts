@@ -1,5 +1,5 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import type { KafkaModuleAsyncOptions, KafkaModuleOptions } from './interfaces/module-options.interface.js';
+import type { KafkaModuleAsyncOptions, KafkaModuleOptions } from './module-options.interface';
 import { KafkaCoreModule } from './kafka-core.module.js';
 
 @Module({})

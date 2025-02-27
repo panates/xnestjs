@@ -51,4 +51,66 @@ describe('MongodbModule', () => {
     expect(db.databaseName).toEqual('test');
     await app.close();
   });
+
+  it('forRoot - multiple instances', async () => {
+    const module = await Test.createTestingModule({
+      imports: [
+        MongodbModule.forRoot({
+          token: 'mongo1',
+          dbToken: 'db1',
+          database: 'test1',
+        }),
+        MongodbModule.forRoot({
+          token: 'mongo2',
+          dbToken: 'db2',
+          database: 'test2',
+        }),
+      ],
+    }).compile();
+    app = module.createNestApplication();
+    await app.init();
+    const mongo1 = await app.resolve('mongo1');
+    expect(mongo1).toBeDefined();
+    expect(mongo1).toBeInstanceOf(MongoClient);
+    const db1: Db = await app.resolve('db1');
+    expect(db1).toBeDefined();
+    expect(db1.databaseName).toEqual('test1');
+    const db2: Db = await app.resolve('db2');
+    expect(db2).toBeDefined();
+    expect(db2.databaseName).toEqual('test2');
+    await app.close();
+  });
+
+  it('forRootAsync - multiple instances', async () => {
+    const module = await Test.createTestingModule({
+      imports: [
+        MongodbModule.forRootAsync({
+          token: 'mongo1',
+          dbToken: 'db1',
+          useFactory: () => ({
+            database: 'test1',
+          }),
+        }),
+        MongodbModule.forRootAsync({
+          token: 'mongo2',
+          dbToken: 'db2',
+          useFactory: () => ({
+            database: 'test2',
+          }),
+        }),
+      ],
+    }).compile();
+    app = module.createNestApplication();
+    await app.init();
+    const mongo1 = await app.resolve('mongo1');
+    expect(mongo1).toBeDefined();
+    expect(mongo1).toBeInstanceOf(MongoClient);
+    const db1: Db = await app.resolve('db1');
+    expect(db1).toBeDefined();
+    expect(db1.databaseName).toEqual('test1');
+    const db2: Db = await app.resolve('db2');
+    expect(db2).toBeDefined();
+    expect(db2.databaseName).toEqual('test2');
+    await app.close();
+  });
 });
