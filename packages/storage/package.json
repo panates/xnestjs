@@ -1,6 +1,6 @@
 {
   "name": "@xnestjs/storage",
-  "version": "1.2.6",
+  "version": "1.3.0",
   "description": "NestJS extension library for Storage solutions (S3,GS)",
   "author": "Panates",
   "license": "MIT",
