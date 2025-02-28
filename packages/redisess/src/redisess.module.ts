@@ -1,6 +1,6 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import type { RedisessModuleAsyncOptions, RedisessModuleOptions } from './interfaces/module-options.interface.js';
 import { RedisessCoreModule } from './redisess-core.module.js';
+import type { RedisessModuleAsyncOptions, RedisessModuleOptions } from './types';
 
 @Module({})
 export class RedisessModule {

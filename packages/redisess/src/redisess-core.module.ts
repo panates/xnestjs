@@ -1,114 +1,94 @@
-import { DynamicModule, Global, Inject, Module, OnApplicationShutdown, Provider } from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
+import * as assert from 'node:assert';
+import { omit } from '@jsopen/objects';
+import { DynamicModule, Inject, Logger, OnApplicationShutdown, Provider } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { SessionManager } from 'redisess';
-import { REDISESS_MODULE_OPTIONS, REDISESS_MODULE_TOKEN } from './constants.js';
-import {
-  RedisessModuleAsyncOptions,
-  type RedisessModuleOptions,
-  RedisessModuleOptionsFactory,
-} from './interfaces/module-options.interface.js';
-import { getSessionManagerToken } from './utils/get-session-manager-token.util.js';
+import { REDISESS_MODULE_ID, REDISESS_SESSION_OPTIONS } from './constants.js';
+import type { RedisessModuleAsyncOptions, RedisessModuleOptions, RedisessSessionOptions } from './types.js';
 
-@Global()
-@Module({})
+const CLIENT_TOKEN = Symbol('CLIENT_TOKEN');
+
 export class RedisessCoreModule implements OnApplicationShutdown {
-  constructor(
-    @Inject(REDISESS_MODULE_OPTIONS)
-    private readonly options: RedisessModuleOptions,
-    private readonly moduleRef: ModuleRef,
-  ) {}
-
-  static forRoot(options: RedisessModuleOptions): DynamicModule {
-    const optionsProvider = {
-      provide: REDISESS_MODULE_OPTIONS,
-      useValue: options,
-    };
-    const connectionProvider = {
-      provide: getSessionManagerToken(options.name),
-      useFactory: () => this.createSessionManager(options),
-    };
-
-    return {
-      module: RedisessCoreModule,
-      providers: [connectionProvider, optionsProvider],
-      exports: [connectionProvider],
-    };
+  /**
+   * Configures and returns a dynamic module
+   */
+  static forRoot(moduleOptions: RedisessModuleOptions): DynamicModule {
+    return this._createDynamicModule(moduleOptions, {
+      global: moduleOptions.global,
+      providers: [
+        {
+          provide: REDISESS_SESSION_OPTIONS,
+          useValue: moduleOptions.useValue,
+        },
+      ],
+    });
   }
 
+  /**
+   * Configures and returns an async dynamic module
+   */
   static forRootAsync(asyncOptions: RedisessModuleAsyncOptions): DynamicModule {
-    const connectionProvider = {
-      provide: getSessionManagerToken(asyncOptions.name),
-      inject: [REDISESS_MODULE_OPTIONS],
-      useFactory: async (oOptions: RedisessModuleOptions) => {
-        const name = asyncOptions.name || oOptions.name;
-        return this.createSessionManager({
-          ...oOptions,
-          name,
-        });
-      },
-    };
+    assert.ok(asyncOptions.useFactory, 'useFactory is required');
+    return this._createDynamicModule(asyncOptions, {
+      global: asyncOptions.global,
+      providers: [
+        {
+          provide: REDISESS_SESSION_OPTIONS,
+          inject: asyncOptions.inject,
+          useFactory: asyncOptions.useFactory,
+        },
+      ],
+    });
+  }
 
-    const asyncProviders = this.createAsyncProviders(asyncOptions);
+  private static _createDynamicModule(
+    opts: RedisessModuleOptions | RedisessModuleAsyncOptions,
+    metadata: Partial<DynamicModule>,
+  ) {
+    const token = opts.token ?? SessionManager;
+    const providers: Provider[] = [
+      {
+        provide: token,
+        inject: [REDISESS_SESSION_OPTIONS],
+        useFactory: async (sessionOptions: RedisessSessionOptions): Promise<SessionManager> => {
+          const redisessOptions = omit(sessionOptions, ['client']) as SessionManager.Options;
+          return new SessionManager(sessionOptions.client, redisessOptions);
+        },
+      },
+      {
+        provide: CLIENT_TOKEN,
+        useExisting: token,
+      },
+      {
+        provide: Logger,
+        useValue: typeof opts.logger === 'string' ? new Logger(opts.logger) : opts.logger,
+      },
+    ];
     return {
       module: RedisessCoreModule,
-      imports: asyncOptions.imports,
+      ...metadata,
       providers: [
-        ...asyncProviders,
-        connectionProvider,
+        ...(metadata.providers ?? []),
+        ...providers,
         {
-          provide: REDISESS_MODULE_TOKEN,
+          provide: REDISESS_MODULE_ID,
           useValue: crypto.randomUUID(),
         },
       ],
-      exports: [connectionProvider],
-    };
+      exports: [REDISESS_SESSION_OPTIONS, token, ...(metadata.exports ?? [])],
+    } as DynamicModule;
   }
+
+  /**
+   *
+   * @constructor
+   */
+  constructor(
+    @Inject(CLIENT_TOKEN)
+    private readonly sessionManager: SessionManager,
+  ) {}
 
   async onApplicationShutdown() {
-    const sessionManager = this.moduleRef.get(getSessionManagerToken(this.options.name)) as SessionManager;
-    if (sessionManager) sessionManager.quit();
-  }
-
-  private static createAsyncProviders(asyncOptions: RedisessModuleAsyncOptions): Provider[] {
-    if (asyncOptions.useExisting || asyncOptions.useFactory) return [this.createAsyncOptionsProvider(asyncOptions)];
-
-    if (asyncOptions.useClass) {
-      return [
-        this.createAsyncOptionsProvider(asyncOptions),
-        {
-          provide: asyncOptions.useClass,
-          useClass: asyncOptions.useClass,
-        },
-      ];
-    }
-
-    throw new Error('Invalid configuration. Must provide useFactory, useClass or useExisting');
-  }
-
-  private static createAsyncOptionsProvider(asyncOptions: RedisessModuleAsyncOptions): Provider {
-    if (asyncOptions.useFactory) {
-      return {
-        provide: REDISESS_MODULE_OPTIONS,
-        useFactory: asyncOptions.useFactory,
-        inject: asyncOptions.inject || [],
-      };
-    }
-    const useClass = asyncOptions.useClass || asyncOptions.useExisting;
-    if (useClass) {
-      return {
-        provide: REDISESS_MODULE_OPTIONS,
-        useFactory: (optionsFactory: RedisessModuleOptionsFactory) => optionsFactory.createOptions(asyncOptions.name),
-        inject: [useClass],
-      };
-    }
-    throw new Error('Invalid configuration. Must provide useFactory, useClass or useExisting');
-  }
-
-  private static async createSessionManager(options: RedisessModuleOptions): Promise<SessionManager> {
-    const opts: any = { ...options };
-    delete opts.client;
-    delete opts.name;
-    return new SessionManager(options.client, opts);
+    this.sessionManager.quit();
   }
 }

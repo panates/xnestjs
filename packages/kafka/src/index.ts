@@ -1,4 +1,4 @@
 export * from './constants.js';
-export * from './interfaces/module-options.interface.js';
 export * from './kafka.module.js';
-export * from 'kafkajs';
+export * from './types.js';
+export { ClientKafka } from '@nestjs/microservices';

@@ -5,17 +5,19 @@ import { StorageConnection, StorageModule } from '../src/index.js';
 describe('StorageModule', () => {
   let app: INestApplication;
 
-  it('register (s3)', async () => {
+  it('forRoot (s3)', async () => {
     const module = await Test.createTestingModule({
       imports: [
-        StorageModule.register({
-          provider: 's3',
-          s3: {
-            endPoint: 'play.min.io',
-            port: 9000,
-            useSSL: true,
-            accessKey: 'accessKey',
-            secretKey: 'secretKey',
+        StorageModule.forRoot({
+          useValue: {
+            provider: 's3',
+            s3: {
+              endPoint: 'play.min.io',
+              port: 9000,
+              useSSL: true,
+              accessKey: 'accessKey',
+              secretKey: 'secretKey',
+            },
           },
         }),
       ],
@@ -28,10 +30,10 @@ describe('StorageModule', () => {
     await app.close();
   });
 
-  it('registerAsync - useFactory (s3)', async () => {
+  it('forRootAsync (s3)', async () => {
     const module = await Test.createTestingModule({
       imports: [
-        StorageModule.registerAsync({
+        StorageModule.forRootAsync({
           useFactory: () => ({
             provider: 's3',
             s3: {

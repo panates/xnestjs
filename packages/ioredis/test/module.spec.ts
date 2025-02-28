@@ -3,15 +3,17 @@ import { Test } from '@nestjs/testing';
 import { Cluster, Redis } from 'ioredis';
 import { RedisClient, RedisModule } from '../src/index.js';
 
-describe('IORedisModule', () => {
+describe('RedisModule', () => {
   let app: INestApplication;
 
   it('forRoot - standalone', async () => {
     const module = await Test.createTestingModule({
       imports: [
         RedisModule.forRoot({
-          host: 'localhost',
-          lazyConnect: true,
+          useValue: {
+            host: 'localhost',
+            lazyConnect: true,
+          },
         }),
       ],
     }).compile();
@@ -56,8 +58,10 @@ describe('IORedisModule', () => {
     const module = await Test.createTestingModule({
       imports: [
         RedisModule.forRoot({
-          nodes: ['localhost'],
-          lazyConnect: true,
+          useValue: {
+            nodes: ['localhost'],
+            lazyConnect: true,
+          },
         }),
       ],
     }).compile();
@@ -103,13 +107,17 @@ describe('IORedisModule', () => {
       imports: [
         RedisModule.forRoot({
           token: 'client1',
-          host: 'localhost',
-          lazyConnect: true,
+          useValue: {
+            host: 'localhost',
+            lazyConnect: true,
+          },
         }),
         RedisModule.forRoot({
           token: 'client2',
-          nodes: ['localhost'],
-          lazyConnect: true,
+          useValue: {
+            nodes: ['localhost'],
+            lazyConnect: true,
+          },
         }),
       ],
     }).compile();
@@ -164,8 +172,10 @@ describe('IORedisModule', () => {
     const module = await Test.createTestingModule({
       imports: [
         RedisModule.forRoot({
-          host: 'rediss://127.0.0.1:1234/2',
-          lazyConnect: true,
+          useValue: {
+            host: 'rediss://127.0.0.1:1234/2',
+            lazyConnect: true,
+          },
         }),
       ],
     }).compile();

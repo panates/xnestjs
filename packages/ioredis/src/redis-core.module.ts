@@ -1,123 +1,172 @@
+import assert from 'node:assert';
 import process from 'node:process';
-import {
-  DynamicModule,
-  Global,
-  Inject,
-  Logger,
-  Module,
-  OnApplicationBootstrap,
-  OnApplicationShutdown,
-} from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
+import { clone } from '@jsopen/objects';
+import { DynamicModule, Inject, Logger, OnApplicationBootstrap, OnApplicationShutdown, Provider } from '@nestjs/common';
 import colors from 'ansi-colors';
 import * as crypto from 'crypto';
 import Redis, { Cluster } from 'ioredis';
-import { IOREDIS_MODULE_OPTIONS, IOREDIS_MODULE_TOKEN } from './redis.constants.js';
-import {
-  RedisClientAsyncOptions,
-  RedisClientOptions,
-  RedisClusterAsyncOptions,
-  RedisClusterOptions,
-} from './redis.interface.js';
+import { RedisOptions } from 'ioredis/built/redis/RedisOptions';
+import { toBoolean, toInt, toIntDef } from 'putil-varhelpers';
+import { IOREDIS_CONNECTION_OPTIONS, IOREDIS_MODULE_TOKEN } from './constants.js';
 import { RedisClient } from './redis-client.js';
-import { isClusterOptions } from './utils.js';
+import type {
+  RedisAsyncModuleOptions,
+  RedisClusterConnectionOptions,
+  RedisConnectionOptions,
+  RedisModuleOptions,
+  RedisStandaloneConnectionOptions,
+} from './types.js';
+import { isClusterOptions, isStandaloneOptions } from './utils.js';
 
-@Global()
-@Module({})
+const CLIENT_TOKEN = Symbol('CLIENT_TOKEN');
+
 export class RedisCoreModule implements OnApplicationBootstrap, OnApplicationShutdown {
-  constructor(
-    @Inject(IOREDIS_MODULE_OPTIONS)
-    private readonly options: RedisClientOptions | RedisClusterOptions,
-    private readonly moduleRef: ModuleRef,
-  ) {}
-
-  static forRoot(options: RedisClientOptions | RedisClusterOptions): DynamicModule {
-    const optionsProvider = {
-      provide: IOREDIS_MODULE_OPTIONS,
-      useValue: options,
-    };
-    const token = options.token || RedisClient;
-    const connectionProvider = {
-      provide: token,
-      useFactory: () => this._createClient(options),
-    };
-
-    return {
-      module: RedisCoreModule,
-      providers: [connectionProvider, optionsProvider],
-      exports: [connectionProvider],
-    };
-  }
-
-  static forRootAsync(asyncOptions: RedisClientAsyncOptions | RedisClusterAsyncOptions): DynamicModule {
-    if (!asyncOptions.useFactory) throw new Error('Invalid configuration. Must provide "useFactory"');
-
-    const token = asyncOptions.token || RedisClient;
-
-    const connectionProvider = {
-      provide: token,
-      inject: [IOREDIS_MODULE_OPTIONS],
-      useFactory: async (moduleOptions: RedisClientOptions) => this._createClient(moduleOptions),
-    };
-
-    return {
-      module: RedisCoreModule,
-      imports: asyncOptions.imports,
+  static forRoot(moduleOptions: RedisModuleOptions): DynamicModule {
+    const connectionOptions = this._readConnectionOptions(moduleOptions.useValue, moduleOptions.envPrefix);
+    return this._createDynamicModule(moduleOptions, {
+      global: moduleOptions.global,
       providers: [
         {
-          provide: IOREDIS_MODULE_OPTIONS,
-          useFactory: asyncOptions.useFactory,
-          inject: asyncOptions.inject || [],
+          provide: IOREDIS_CONNECTION_OPTIONS,
+          useValue: connectionOptions,
         },
+      ],
+    });
+  }
+
+  static forRootAsync(asyncOptions: RedisAsyncModuleOptions): DynamicModule {
+    assert.ok(asyncOptions.useFactory, 'useFactory is required');
+    return this._createDynamicModule(asyncOptions, {
+      global: asyncOptions.global,
+      providers: [
+        {
+          provide: IOREDIS_CONNECTION_OPTIONS,
+          inject: asyncOptions.inject,
+          useFactory: async (...args) => {
+            const opts = await asyncOptions.useFactory!(...args);
+            return this._readConnectionOptions(opts, asyncOptions.envPrefix);
+          },
+        },
+      ],
+    });
+  }
+
+  private static _createDynamicModule(opts: RedisModuleOptions, metadata: Partial<DynamicModule>) {
+    const token = opts.token ?? RedisClient;
+    const providers: Provider[] = [
+      {
+        provide: token,
+        inject: [IOREDIS_CONNECTION_OPTIONS],
+        useFactory: async (connectionOptions: RedisStandaloneConnectionOptions): Promise<RedisClient> => {
+          return this._createClient(connectionOptions);
+        },
+      },
+      {
+        provide: CLIENT_TOKEN,
+        useExisting: token,
+      },
+      {
+        provide: Logger,
+        useValue: typeof opts.logger === 'string' ? new Logger(opts.logger) : opts.logger,
+      },
+    ];
+    return {
+      module: RedisCoreModule,
+      ...metadata,
+      providers: [
+        ...(metadata.providers ?? []),
+        ...providers,
         {
           provide: IOREDIS_MODULE_TOKEN,
           useValue: crypto.randomUUID(),
         },
-        connectionProvider,
       ],
-      exports: [connectionProvider],
-    };
+      exports: [IOREDIS_CONNECTION_OPTIONS, token, ...(metadata.exports ?? [])],
+    } as DynamicModule;
   }
 
-  private static async _createClient(options: RedisClientOptions): Promise<RedisClient> {
-    if (options.host && (options as any).nodes) {
-      throw new TypeError(`You should set either "host" or "nodes", not both`);
+  private static _readConnectionOptions(
+    options?: RedisStandaloneConnectionOptions | RedisClusterConnectionOptions,
+    prefix: string = 'REDIS_',
+  ): RedisStandaloneConnectionOptions | RedisClusterConnectionOptions {
+    const env = process.env;
+    const out = clone(options || {});
+    let redisOptions: RedisOptions;
+
+    if (isClusterOptions(out)) {
+      redisOptions = out.redisOptions = out.redisOptions || {};
+      out.nodes = out.nodes ?? (env[prefix + 'NODES'] || 'localhost:6379').split(/\s*,\s*/);
+    } else {
+      redisOptions = out;
+      out.host = out.host ?? env[prefix + 'HOST'] ?? 'localhost';
+      out.port = out.port ?? toIntDef(env[prefix + 'PORT'], 6379);
     }
+    redisOptions.db = redisOptions.db ?? toIntDef(env[prefix + 'DB'], 0);
+    redisOptions.username = redisOptions.username ?? env[prefix + 'USERNAME'];
+    redisOptions.password = redisOptions.password ?? env[prefix + 'PASSWORD'];
+    redisOptions.autoResubscribe = redisOptions.autoResubscribe ?? toBoolean(env[prefix + 'AUTO_RESUBSCRIBE']);
+    if (!redisOptions.reconnectOnError) {
+      let n: any = env[prefix + 'RECONNECT_ON_ERROR'];
+      if (n === 'true' || n === 'false') {
+        n = toBoolean(n);
+      } else n = toInt(n);
+      redisOptions.reconnectOnError = () => n;
+    }
+    redisOptions.connectTimeout = redisOptions.connectTimeout ?? toInt(env[prefix + 'CONNECT_TIMEOUT']);
+    redisOptions.socketTimeout = redisOptions.socketTimeout ?? toInt(env[prefix + 'SOCKET_TIMEOUT']);
+    redisOptions.keepAlive = redisOptions.keepAlive ?? toInt(env[prefix + 'KEEP_ALIVE']);
+    redisOptions.noDelay = redisOptions.noDelay ?? toBoolean(env[prefix + 'NO_DELAY']);
+    redisOptions.connectionName = redisOptions.connectionName ?? env[prefix + 'CONNECTION_NAME'];
+    redisOptions.maxRetriesPerRequest =
+      redisOptions.maxRetriesPerRequest ?? toInt(env[prefix + 'MAX_RETRIES_PER_REQUEST']);
+    return out;
+  }
+
+  private static _createClient(options: RedisConnectionOptions): RedisClient {
     const opts = { ...options };
-    const isCluster = isClusterOptions(opts);
     let client: RedisClient;
-    if (isCluster) {
+    if (isClusterOptions(opts)) {
       delete (opts as any).name;
       delete (opts as any).nodes;
+      opts.lazyConnect = true;
       const cluster = new Cluster(opts.nodes, opts);
       client = new RedisClient({ cluster });
-    } else {
-      if (options.host && options.host.includes('://')) {
-        const url = new URL(options.host);
-        options.host = url.hostname;
-        if (url.port) options.port = parseInt(url.port, 10);
-        if (url.username) options.username = url.username;
-        if (url.password) options.password = url.password;
+    } else if (isStandaloneOptions(opts)) {
+      if (opts.host && opts.host.includes('://')) {
+        const url = new URL(opts.host);
+        opts.host = url.hostname;
+        if (url.port) opts.port = parseInt(url.port, 10);
+        if (url.username) opts.username = url.username;
+        if (url.password) opts.password = url.password;
         if (url.protocol === 'rediss:') {
           // @ts-ignore
-          options.tls = true;
+          opts.tls = true;
         }
         const db = parseInt(url.pathname.substring(1), 10);
-        if (db > 0) options.db = db;
+        if (db > 0) opts.db = db;
       }
       const standalone = new Redis({
-        ...options,
+        ...opts,
         lazyConnect: true,
       }) as any;
       client = new RedisClient({ standalone });
-    }
-
+    } else throw new TypeError(`Invalid connection options`);
     return client;
   }
 
+  /**
+   *
+   * @constructor
+   */
+  constructor(
+    @Inject(CLIENT_TOKEN) protected client: RedisClient,
+    @Inject(IOREDIS_CONNECTION_OPTIONS)
+    private readonly connectionOptions: RedisConnectionOptions,
+    private logger?: Logger,
+  ) {}
+
   async onApplicationBootstrap() {
-    const opts = this.options;
-    const logger = process.env.NODE_ENV === 'test' ? undefined : opts.logger;
+    const opts = this.connectionOptions;
     if (!opts.lazyConnect) {
       const isCluster = isClusterOptions(opts);
       const hosts = isCluster
@@ -126,14 +175,13 @@ export class RedisCoreModule implements OnApplicationBootstrap, OnApplicationShu
             .join(', ')
         : opts.host;
       if (hosts) {
-        logger?.log('Connecting to redis at ' + colors.blue(hosts));
+        this.logger?.log('Connecting to redis at ' + colors.blue(hosts));
         Logger.flush();
-        const client: RedisClient = this.moduleRef.get(this.options.token || RedisClient);
         try {
-          await client.redis.connect();
-          await client.redis.ping();
+          await this.client.redis.connect();
+          await this.client.redis.ping();
         } catch (e: any) {
-          logger?.error('Redis connection failed: ' + e.message);
+          this.logger?.error('Redis connection failed: ' + e.message);
           throw e;
         }
       }
@@ -142,8 +190,7 @@ export class RedisCoreModule implements OnApplicationBootstrap, OnApplicationShu
 
   async onApplicationShutdown() {
     try {
-      const client: RedisClient = this.moduleRef.get(this.options.token || RedisClient);
-      await client.quit();
+      await this.client.quit();
     } catch {
       //
     }

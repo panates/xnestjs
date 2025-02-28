@@ -1,7 +1,7 @@
 import type { Buffer } from 'buffer';
 import type { Readable } from 'stream';
-import type { GetObjectSignedUrlOptions, ObjectInfo, PutObjectOptions } from '../interfaces/connection.interfaces.js';
-import type { StorageProvider } from '../interfaces/storage.interfaces.js';
+import type { StorageProvider } from '../types';
+import type { GetObjectSignedUrlOptions, ObjectInfo, PutObjectOptions } from '../types.js';
 import { StorageBucket } from './storage-bucket.js';
 
 export abstract class StorageConnection {
