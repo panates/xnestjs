@@ -111,6 +111,7 @@ export class MongodbCoreModule implements OnApplicationShutdown, OnApplicationBo
     ]) as MongodbConnectionOptions;
     const env = process.env;
     options.url = options.url || (env[prefix + 'URL'] ?? 'mongodb://localhost:27017');
+    options.timeoutMS = options.timeoutMS ?? toInt(env[prefix + 'TIMEOUT']);
     options.replicaSet = options.replicaSet ?? env[prefix + 'REPLICA_SET'];
     options.tls = options.tls ?? toBoolean(env[prefix + 'TLS']);
     options.tlsCertificateKeyFile = options.tlsCertificateKeyFile ?? env[prefix + 'TLS_CERT_FILE'];
@@ -125,15 +126,12 @@ export class MongodbCoreModule implements OnApplicationShutdown, OnApplicationBo
     options.connectTimeoutMS = options.connectTimeoutMS ?? toInt(env[prefix + 'CONNECT_TIMEOUT']);
     options.socketTimeoutMS = options.socketTimeoutMS ?? toInt(env[prefix + 'SOCKET_TIMEOUT']);
     options.database = options.database ?? env[prefix + 'DATABASE'];
-    options.srvMaxHosts = options.srvMaxHosts ?? toInt(env[prefix + 'SRV_HOSTS']);
+    options.srvMaxHosts = options.srvMaxHosts ?? toInt(env[prefix + 'SRV_MAX_HOSTS']);
     options.maxPoolSize = options.minPoolSize ?? toInt(env[prefix + 'MAX_POOL_SIZE']);
     options.minPoolSize = options.maxPoolSize ?? toInt(env[prefix + 'MIN_POOL_SIZE']);
     options.maxConnecting = options.maxConnecting ?? toInt(env[prefix + 'MAX_CONNECTING']);
     options.maxIdleTimeMS = options.maxIdleTimeMS ?? toInt(env[prefix + 'MAX_IDLE_TIME']);
     options.waitQueueTimeoutMS = options.waitQueueTimeoutMS ?? toInt(env[prefix + 'MAX_WAIT_QUEUE_TIMEOUT']);
-    options.readConcern = options.readConcern ?? (env[prefix + 'READ_CONCERN'] as any);
-    options.readConcernLevel = options.readConcernLevel ?? (env[prefix + 'READ_CONCERN_LEVEL'] as any);
-    options.readPreference = options.readPreference ?? (env[prefix + 'READ_PREFERENCE'] as any);
     options.maxStalenessSeconds = options.maxStalenessSeconds ?? toInt(env[prefix + 'MAX_STALENESS_SECONDS']);
     if (!options.auth?.username) {
       options.auth = options.auth || {};
@@ -141,7 +139,6 @@ export class MongodbCoreModule implements OnApplicationShutdown, OnApplicationBo
       options.auth.password = options.auth.password ?? env[prefix + 'PASSWORD'];
     }
     options.authSource = options.authSource ?? env[prefix + 'AUTH_SOURCE'];
-    options.authMechanism = options.authMechanism ?? (env[prefix + 'AUTH_MECHANISM'] as any);
     options.localThresholdMS = options.localThresholdMS ?? toInt(env[prefix + 'LOCAL_THRESHOLD']);
     options.serverSelectionTimeoutMS =
       options.serverSelectionTimeoutMS ?? toInt(env[prefix + 'SERVER_SELECTION_TIMEOUT']);
@@ -151,7 +148,6 @@ export class MongodbCoreModule implements OnApplicationShutdown, OnApplicationBo
     options.retryWrites = options.retryWrites ?? toBoolean(env[prefix + 'RETRY_WRITES']);
     options.directConnection = options.directConnection ?? toBoolean(env[prefix + 'DIRECT_CONNECTION']);
     options.loadBalanced = options.loadBalanced ?? toBoolean(env[prefix + 'LOAD_BALANCED']);
-    options.writeConcern = options.writeConcern ?? (env[prefix + 'WRITE_CONCERN'] as any);
     options.noDelay = options.noDelay ?? toBoolean(env[prefix + 'NO_DELAY']);
     options.monitorCommands = options.monitorCommands ?? toBoolean(env[prefix + 'MONITOR_COMMANDS']);
     options.proxyHost = options.proxyHost ?? env[prefix + 'PROXY_HOST'];
