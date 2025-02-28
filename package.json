@@ -25,10 +25,10 @@
     "citest": "jest --passWithNoTests --detectOpenHandles --coverage --coverageReporters=lcov"
   },
   "devDependencies": {
-    "@nestjs/common": "^11.0.10",
-    "@nestjs/core": "^11.0.10",
-    "@nestjs/platform-express": "^11.0.10",
-    "@nestjs/testing": "^11.0.10",
+    "@nestjs/common": "^11.0.11",
+    "@nestjs/core": "^11.0.11",
+    "@nestjs/platform-express": "^11.0.11",
+    "@nestjs/testing": "^11.0.11",
     "@panates/eslint-config": "^2.0.4",
     "@panates/eslint-config-ts": "^2.0.4",
     "@panates/tsconfig": "^2.0.4",

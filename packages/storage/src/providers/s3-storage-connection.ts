@@ -1,9 +1,8 @@
 import { Buffer } from 'buffer';
 import * as Minio from 'minio';
 import { Readable } from 'stream';
-import { GetObjectSignedUrlOptions, ObjectInfo, PutObjectOptions } from '../interfaces/connection.interfaces.js';
-import { S3Config } from '../interfaces/storage.interfaces.js';
 import { StorageConnection } from '../services/storage-connection.js';
+import type { GetObjectSignedUrlOptions, ObjectInfo, PutObjectOptions, S3Config } from '../types.js';
 
 export class S3StorageConnection extends StorageConnection {
   readonly provider = 's3';

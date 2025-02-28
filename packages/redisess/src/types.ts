@@ -8,13 +8,6 @@ export interface RedisessSessionOptions extends SessionManager.Options {
   client: Redis | Cluster;
 }
 
-interface BaseModuleOptions {
-  token?: InjectionToken;
-  envPrefix?: string;
-  logger?: Logger | string;
-  global?: boolean;
-}
-
 export interface RedisessModuleOptions extends BaseModuleOptions {
   useValue: RedisessSessionOptions;
 }
@@ -22,4 +15,10 @@ export interface RedisessModuleOptions extends BaseModuleOptions {
 export interface RedisessModuleAsyncOptions extends BaseModuleOptions, Pick<ModuleMetadata, 'imports'> {
   useFactory?: (...args: any[]) => Promise<RedisessSessionOptions> | RedisessSessionOptions;
   inject?: any[];
+}
+
+interface BaseModuleOptions {
+  token?: InjectionToken;
+  logger?: Logger | string;
+  global?: boolean;
 }
