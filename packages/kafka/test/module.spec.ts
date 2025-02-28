@@ -9,7 +9,7 @@ describe('KafkaModule', () => {
     const module = await Test.createTestingModule({
       imports: [
         KafkaModule.forRoot({
-          brokers: ['localhost'],
+          useValue: { lazyConnect: true },
         }),
       ],
     }).compile();
@@ -27,6 +27,7 @@ describe('KafkaModule', () => {
         KafkaModule.forRootAsync({
           useFactory: () => ({
             brokers: ['localhost'],
+            lazyConnect: true,
           }),
         }),
       ],
@@ -44,11 +45,17 @@ describe('KafkaModule', () => {
       imports: [
         KafkaModule.forRoot({
           token: 'kafka1',
-          brokers: ['localhost'],
+          useValue: {
+            brokers: ['localhost'],
+            lazyConnect: true,
+          },
         }),
         KafkaModule.forRoot({
           token: 'kafka2',
-          brokers: ['localhost'],
+          useValue: {
+            brokers: ['localhost'],
+            lazyConnect: true,
+          },
         }),
       ],
     }).compile();
@@ -71,12 +78,14 @@ describe('KafkaModule', () => {
           token: 'kafka1',
           useFactory: () => ({
             brokers: ['localhost'],
+            lazyConnect: true,
           }),
         }),
         KafkaModule.forRootAsync({
           token: 'kafka2',
           useFactory: () => ({
             brokers: ['localhost'],
+            lazyConnect: true,
           }),
         }),
       ],

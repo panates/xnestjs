@@ -24,9 +24,11 @@ import { KafkaModule } from '@xnestjs/kafka';
 @Module({
     imports: [
         KafkaModule.forRoot({
-            brokers: ['localhost'],
+            useValue: {
+                brokers: ['localhost'],
+            },
         }),
-    ]
+    ],
 })
 export class MyModule {
 }

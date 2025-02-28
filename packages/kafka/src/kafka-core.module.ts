@@ -1,19 +1,15 @@
 import assert from 'node:assert';
 import * as crypto from 'node:crypto';
 import process from 'node:process';
-import { omit } from '@jsopen/objects';
+import { clone } from '@jsopen/objects';
 import { DynamicModule, Inject, Logger, OnApplicationBootstrap, OnApplicationShutdown, Provider } from '@nestjs/common';
 import { ClientKafka, ClientProvider, ClientsModule, Transport } from '@nestjs/microservices';
 import * as colors from 'ansi-colors';
+import { SASLMechanism } from 'kafkajs';
 import { toBoolean, toInt } from 'putil-varhelpers';
 import { KAFKA_CONNECTION_OPTIONS, KAFKA_MODULE_ID } from './constants.js';
 import { createLogCreator } from './create-log-creator.js';
-import type {
-  KafkaConnectionOptions,
-  KafkaModuleAsyncOptions,
-  KafkaModuleOptions,
-} from './module-options.interface.js';
-import { SASLMechanism } from 'kafkajs';
+import type { KafkaConnectionOptions, KafkaModuleAsyncOptions, KafkaModuleOptions } from './types';
 
 const CLIENT_TOKEN = Symbol('CLIENT_TOKEN');
 
@@ -22,7 +18,10 @@ export class KafkaCoreModule implements OnApplicationShutdown, OnApplicationBoot
    *
    */
   static forRoot(moduleOptions: KafkaModuleOptions): DynamicModule {
-    const connectionOptions = this._readConnectionOptions(moduleOptions, moduleOptions.envPrefix ?? 'KAFKA_');
+    const connectionOptions = this._readConnectionOptions(
+      moduleOptions.useValue || {},
+      moduleOptions.envPrefix ?? 'KAFKA_',
+    );
     return this._createDynamicModule(moduleOptions, {
       global: moduleOptions.global,
       providers: [
@@ -116,15 +115,10 @@ export class KafkaCoreModule implements OnApplicationShutdown, OnApplicationBoot
   }
 
   private static _readConnectionOptions(
-    moduleOptions: KafkaConnectionOptions | KafkaModuleOptions,
+    moduleOptions: Partial<KafkaConnectionOptions>,
     prefix: string,
   ): KafkaConnectionOptions {
-    const options = omit(moduleOptions as KafkaModuleOptions, [
-      'token',
-      'envPrefix',
-      'logger',
-      'global',
-    ]) as KafkaConnectionOptions;
+    const options = clone(moduleOptions) as KafkaConnectionOptions;
     const env = process.env;
     options.brokers = options.brokers || (env[prefix + 'URL'] ?? 'localhost').split(/\s*,\s*/);
     if (options.ssl == null && toBoolean(env[prefix + 'SSL'])) {
@@ -186,20 +180,20 @@ export class KafkaCoreModule implements OnApplicationShutdown, OnApplicationBoot
   constructor(
     @Inject(CLIENT_TOKEN)
     protected client: ClientKafka,
-    private logger: Logger,
     @Inject(KAFKA_CONNECTION_OPTIONS)
     private connectionOptions: KafkaConnectionOptions,
+    private logger?: Logger,
   ) {}
 
   async onApplicationBootstrap() {
-    if (this.logger) {
-      const options = this.connectionOptions;
-      this.logger.log(
+    const options = this.connectionOptions;
+    if (!options.lazyConnect) {
+      this.logger?.log(
         'Connecting to Kafka brokers' + (Array.isArray(options.brokers) ? colors.blue(options.brokers.join(',')) : ''),
       );
       Logger.flush();
       await this.client.connect().catch(e => {
-        this.logger.error('Kafka connection failed: ' + e.message);
+        this.logger?.error('Kafka connection failed: ' + e.message);
         throw e;
       });
     }

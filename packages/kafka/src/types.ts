@@ -7,20 +7,21 @@ import type { StrictOmit } from 'ts-gems';
 
 export interface KafkaConnectionOptions extends StrictOmit<KafkaConfig, 'logLevel' | 'logCreator'> {
   consumer?: ConsumerConfig;
+  lazyConnect?: boolean;
 }
 
-export interface KafkaModuleOptions extends KafkaConnectionOptions {
+interface BaseModuleOptions {
   token?: InjectionToken;
   envPrefix?: string;
   logger?: Logger | string;
   global?: boolean;
 }
 
-export interface KafkaModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
-  token?: InjectionToken;
-  envPrefix?: string;
-  logger?: Logger | string;
-  global?: boolean;
+export interface KafkaModuleOptions extends BaseModuleOptions {
+  useValue?: Partial<KafkaConnectionOptions>;
+}
+
+export interface KafkaModuleAsyncOptions extends BaseModuleOptions, Pick<ModuleMetadata, 'imports'> {
   inject?: any[];
-  useFactory?: (...args: any[]) => Promise<KafkaConnectionOptions> | KafkaConnectionOptions;
+  useFactory: (...args: any[]) => Promise<Partial<KafkaConnectionOptions>> | Partial<KafkaConnectionOptions>;
 }
