@@ -13,6 +13,7 @@ import type {
   KafkaModuleAsyncOptions,
   KafkaModuleOptions,
 } from './module-options.interface.js';
+import { SASLMechanism } from 'kafkajs';
 
 const CLIENT_TOKEN = Symbol('CLIENT_TOKEN');
 
@@ -128,17 +129,35 @@ export class KafkaCoreModule implements OnApplicationShutdown, OnApplicationBoot
     options.brokers = options.brokers || (env[prefix + 'URL'] ?? 'localhost').split(/\s*,\s*/);
     if (options.ssl == null && toBoolean(env[prefix + 'SSL'])) {
       options.ssl = {
-        ca: [env[prefix + 'CA_CERT'] || ''],
-        cert: env[prefix + 'CERT_FILE'],
-        key: env[prefix + 'KEY_FILE'],
-        passphrase: env[prefix + 'KEY_PASSPHRASE'],
-        rejectUnauthorized: toBoolean(env[prefix + 'REJECT_UNAUTHORIZED']),
+        ca: [env[prefix + 'SSL_CA_CERT'] || ''],
+        cert: env[prefix + 'SSL_CERT_FILE'],
+        key: env[prefix + 'SSL_KEY_FILE'],
+        passphrase: env[prefix + 'SSL_KEY_PASSPHRASE'],
+        rejectUnauthorized: toBoolean(env[prefix + 'SSL_REJECT_UNAUTHORIZED']),
         checkServerIdentity: (host, cert) => {
           if (cert.subject.CN !== host) {
             return new Error(`Certificate CN (${cert.subject.CN}) does not match host (${host})`);
           }
         },
       };
+    }
+    const sasl = env[prefix + 'SASL'] as SASLMechanism;
+    if (options.sasl == null && sasl) {
+      if (sasl === 'plain' || sasl === 'scram-sha-256' || sasl === 'scram-sha-512') {
+        options.sasl = {
+          mechanism: sasl,
+          username: env[prefix + 'SASL_USERNAME'] || '',
+          password: env[prefix + 'SASL_PASSWORD'] || '',
+        } as any;
+      } else if (sasl === 'aws') {
+        options.sasl = {
+          mechanism: sasl,
+          authorizationIdentity: env[prefix + 'AWS_AUTH_IDENTITY'] || '',
+          accessKeyId: env[prefix + 'AWS_ACCESS_KEY_ID'] || '',
+          secretAccessKey: env[prefix + 'AWS_SECRET_ACCESS_KEY'] || '',
+          sessionToken: env[prefix + 'AWS_SESSION_TOKEN'],
+        };
+      }
     }
     options.clientId = options.clientId ?? env[prefix + 'CLIENT_ID'];
     options.connectionTimeout = options.connectionTimeout ?? toInt(env[prefix + 'CONNECT_TIMEOUT']);
