@@ -20,7 +20,7 @@ export class MongodbCoreModule implements OnApplicationShutdown, OnApplicationBo
    * Configures and returns a dynamic module for MongoDB integration.
    */
   static forRoot(moduleOptions: MongodbModuleOptions): DynamicModule {
-    const connectionOptions = this._readConnectionOptions(moduleOptions, moduleOptions.envPrefix ?? 'MONGODB_');
+    const connectionOptions = this._readConnectionOptions(moduleOptions, moduleOptions.envPrefix);
     return this._createDynamicModule(moduleOptions, {
       global: moduleOptions.global,
       providers: [
@@ -45,7 +45,7 @@ export class MongodbCoreModule implements OnApplicationShutdown, OnApplicationBo
           inject: asyncOptions.inject,
           useFactory: async (...args) => {
             const opts = await asyncOptions.useFactory!(...args);
-            return this._readConnectionOptions(opts, asyncOptions.envPrefix ?? 'MONGODB_');
+            return this._readConnectionOptions(opts, asyncOptions.envPrefix);
           },
         },
       ],
@@ -100,7 +100,7 @@ export class MongodbCoreModule implements OnApplicationShutdown, OnApplicationBo
 
   private static _readConnectionOptions(
     moduleOptions: MongodbConnectionOptions | MongodbModuleOptions,
-    prefix: string,
+    prefix: string = 'MONGODB_',
   ): MongodbConnectionOptions {
     const options = omit(moduleOptions as MongodbModuleOptions, [
       'token',
