@@ -6,9 +6,10 @@ import type { MongoClientOptions } from 'mongodb';
 export interface MongodbConnectionOptions extends MongoClientOptions {
   url?: string;
   database?: string;
+  lazyConnect?: boolean;
 }
 
-export interface MongodbModuleOptions extends MongodbConnectionOptions {
+interface BaseModuleOptions {
   token?: InjectionToken;
   dbToken?: InjectionToken;
   envPrefix?: string;
@@ -16,12 +17,11 @@ export interface MongodbModuleOptions extends MongodbConnectionOptions {
   global?: boolean;
 }
 
-export interface MongodbModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
-  token?: InjectionToken;
-  dbToken?: InjectionToken;
-  envPrefix?: string;
-  logger?: Logger | string;
-  global?: boolean;
+export interface MongodbModuleOptions extends BaseModuleOptions {
+  useValue?: MongodbConnectionOptions;
+}
+
+export interface MongodbModuleAsyncOptions extends BaseModuleOptions, Pick<ModuleMetadata, 'imports'> {
   inject?: InjectionToken[];
-  useFactory?: (...args: any[]) => Promise<MongodbConnectionOptions> | MongodbConnectionOptions;
+  useFactory: (...args: any[]) => Promise<MongodbConnectionOptions> | MongodbConnectionOptions;
 }

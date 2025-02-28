@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import * as crypto from 'node:crypto';
 import process from 'node:process';
-import { omit } from '@jsopen/objects';
+import { clone } from '@jsopen/objects';
 import { DynamicModule, Inject, Logger, OnApplicationBootstrap, OnApplicationShutdown, Provider } from '@nestjs/common';
 import { ElasticsearchModule, ElasticsearchService } from '@nestjs/elasticsearch';
 import * as colors from 'ansi-colors';
@@ -11,7 +11,7 @@ import type {
   ElasticsearchConnectionOptions,
   ElasticsearchModuleAsyncOptions,
   ElasticsearchModuleOptions,
-} from './module-options.interface.js';
+} from './types.js';
 
 const CLIENT_TOKEN = Symbol('CLIENT_TOKEN');
 
@@ -20,7 +20,7 @@ export class ElasticsearchCoreModule implements OnApplicationShutdown, OnApplica
    *
    */
   static forRoot(moduleOptions: ElasticsearchModuleOptions): DynamicModule {
-    const connectionOptions = this._readConnectionOptions(moduleOptions, moduleOptions.envPrefix);
+    const connectionOptions = this._readConnectionOptions(moduleOptions.useValue || {}, moduleOptions.envPrefix);
     return this._createDynamicModule(moduleOptions, {
       global: moduleOptions.global,
       providers: [
@@ -108,15 +108,10 @@ export class ElasticsearchCoreModule implements OnApplicationShutdown, OnApplica
   }
 
   private static _readConnectionOptions(
-    moduleOptions: ElasticsearchConnectionOptions | ElasticsearchModuleOptions,
+    moduleOptions: ElasticsearchConnectionOptions,
     prefix: string = 'ELASTIC_',
   ): ElasticsearchConnectionOptions {
-    const options = omit(moduleOptions as ElasticsearchModuleOptions, [
-      'token',
-      'envPrefix',
-      'logger',
-      'global',
-    ]) as ElasticsearchConnectionOptions;
+    const options = clone(moduleOptions);
     const env = process.env;
     options.node = options.node || env[prefix + 'NODE'];
     if (options.node) {

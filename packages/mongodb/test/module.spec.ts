@@ -10,7 +10,10 @@ describe('MongodbModule', () => {
     const module = await Test.createTestingModule({
       imports: [
         MongodbModule.forRoot({
-          database: 'test',
+          useValue: {
+            database: 'test',
+            lazyConnect: true,
+          },
         }),
       ],
     }).compile();
@@ -34,6 +37,7 @@ describe('MongodbModule', () => {
         MongodbModule.forRootAsync({
           useFactory: () => ({
             database: 'test',
+            lazyConnect: true,
           }),
         }),
       ],
@@ -58,12 +62,18 @@ describe('MongodbModule', () => {
         MongodbModule.forRoot({
           token: 'mongo1',
           dbToken: 'db1',
-          database: 'test1',
+          useValue: {
+            database: 'test1',
+            lazyConnect: true,
+          },
         }),
         MongodbModule.forRoot({
           token: 'mongo2',
           dbToken: 'db2',
-          database: 'test2',
+          useValue: {
+            database: 'test2',
+            lazyConnect: true,
+          },
         }),
       ],
     }).compile();
@@ -89,6 +99,7 @@ describe('MongodbModule', () => {
           dbToken: 'db1',
           useFactory: () => ({
             database: 'test1',
+            lazyConnect: true,
           }),
         }),
         MongodbModule.forRootAsync({
@@ -96,6 +107,7 @@ describe('MongodbModule', () => {
           dbToken: 'db2',
           useFactory: () => ({
             database: 'test2',
+            lazyConnect: true,
           }),
         }),
       ],

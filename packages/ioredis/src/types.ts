@@ -1,4 +1,5 @@
 import type { Logger } from '@nestjs/common';
+import type { ModuleMetadata } from '@nestjs/common/interfaces';
 import type { InjectionToken } from '@nestjs/common/interfaces/modules/injection-token.interface';
 import type { RedisOptions } from 'ioredis';
 import type { ClusterOptions } from 'ioredis/built/cluster/ClusterOptions';
@@ -17,18 +18,18 @@ export interface RedisStandaloneModuleOptions extends BaseRedisModuleOptions {
   useValue?: RedisStandaloneConnectionOptions;
 }
 
-export interface RedisStandaloneAsyncModuleOptions extends BaseRedisModuleOptions {
+export interface RedisStandaloneAsyncModuleOptions extends BaseRedisModuleOptions, Pick<ModuleMetadata, 'imports'> {
   inject?: InjectionToken[];
-  useFactory?: (...args: any[]) => Promise<RedisStandaloneConnectionOptions> | RedisStandaloneConnectionOptions;
+  useFactory: (...args: any[]) => Promise<RedisStandaloneConnectionOptions> | RedisStandaloneConnectionOptions;
 }
 
 export interface RedisClusterModuleOptions extends BaseRedisModuleOptions {
   useValue?: RedisClusterConnectionOptions;
 }
 
-export interface RedisClusterAsyncModuleOptions extends BaseRedisModuleOptions {
+export interface RedisClusterAsyncModuleOptions extends BaseRedisModuleOptions, Pick<ModuleMetadata, 'imports'> {
   inject?: InjectionToken[];
-  useFactory?: (...args: any[]) => Promise<RedisClusterConnectionOptions> | RedisClusterConnectionOptions;
+  useFactory: (...args: any[]) => Promise<RedisClusterConnectionOptions> | RedisClusterConnectionOptions;
 }
 
 export type RedisModuleOptions = RedisStandaloneModuleOptions | RedisClusterModuleOptions;
@@ -41,42 +42,6 @@ export interface BaseRedisModuleOptions {
   global?: boolean;
 }
 
-//
-// export interface RedisClientOptions extends RedisOptions {
-//   /**
-//    * Injection token
-//    */
-//   token?: any;
-//   logger?: Logger;
-// }
-//
-// export interface RedisClusterOptions extends ClusterOptions {
-//   /**
-//    * Injection token
-//    */
-//   token?: any;
-//   logger?: Logger;
-//   nodes: ClusterNode[];
-// }
-//
-// export interface RedisClientAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
-//   /**
-//    * Injection token
-//    */
-//   token?: any;
-//   useFactory?: (...args: any[]) => Promise<RedisClientOptions> | RedisClientOptions;
-//   inject?: any[];
-// }
-//
-// export interface RedisClusterAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
-//   /**
-//    * Injection token
-//    */
-//   token?: any;
-//   useFactory?: (...args: any[]) => Promise<RedisClusterOptions> | RedisClusterOptions;
-//   inject?: any[];
-// }
-//
 // export interface LockSettings {
 //   /**
 //    * This parameter is only used if lock has been acquired without leaseTimeout parameter definition.

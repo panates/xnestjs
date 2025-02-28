@@ -1,6 +1,6 @@
 import type { DynamicModule } from '@nestjs/common';
 import { ElasticsearchCoreModule } from './elasticsearch-core.module.js';
-import type { ElasticsearchModuleAsyncOptions, ElasticsearchModuleOptions } from './module-options.interface.js';
+import type { ElasticsearchModuleAsyncOptions, ElasticsearchModuleOptions } from './types';
 
 /**
  * The ElasticsearchModule class is responsible for providing integration with Elasticsearch

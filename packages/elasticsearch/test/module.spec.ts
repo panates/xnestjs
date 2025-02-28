@@ -46,11 +46,15 @@ describe('ElasticsearchModule', () => {
       imports: [
         ElasticsearchModule.forRoot({
           token: 'elastic1',
-          node: 'http://localhost:9201',
+          useValue: {
+            node: 'http://localhost:9201',
+          },
         }),
         ElasticsearchModule.forRoot({
           token: 'elastic2',
-          nodes: 'http://localhost:9202',
+          useValue: {
+            nodes: 'http://localhost:9202',
+          },
         }),
       ],
     }).compile();

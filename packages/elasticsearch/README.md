@@ -24,9 +24,11 @@ import { ElasticsearchModule } from '@xnestjs/elasticsearch';
 @Module({
     imports: [
         ElasticsearchModule.forRoot({
-            node: 'http://localhost:9201'
+            useValue: {
+                node: 'http://localhost:9201',
+            },
         }),
-    ]
+    ],
 })
 export class MyModule {
 }

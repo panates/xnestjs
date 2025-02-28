@@ -1,4 +1,3 @@
 export * from './constants.js';
-export * from './module-options.interface';
-export * from './mongodb.module';
-export * from 'kafkajs';
+export * from './mongodb.module.js';
+export * from './types.js';

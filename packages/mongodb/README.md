@@ -24,10 +24,12 @@ import { MongoModule } from '@xnestjs/mongodb';
 @Module({
     imports: [
         MongodbModule.forRoot({
-            url: 'https://mydbserver:27017',
-            database: 'test',
+            useValue: {
+                url: 'https://mydbserver:27017',
+                database: 'test',
+            },
         }),
-    ]
+    ],
 })
 export class MyModule {
 }
