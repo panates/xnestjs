@@ -1,30 +1,30 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { ClientKafka, KafkaModule } from '../src/index.js';
+import { ClientRMQ, RabbitmqModule } from '../src/index.js';
 
-describe('KafkaModule', () => {
+describe('RabbitmqModule', () => {
   let app: INestApplication;
 
   it('forRoot', async () => {
     const module = await Test.createTestingModule({
       imports: [
-        KafkaModule.forRoot({
+        RabbitmqModule.forRoot({
           useValue: { lazyConnect: true },
         }),
       ],
     }).compile();
     app = module.createNestApplication();
     await app.init();
-    const client = await app.resolve(ClientKafka);
+    const client = await app.resolve(ClientRMQ);
     expect(client).toBeDefined();
-    expect(client).toBeInstanceOf(ClientKafka);
+    expect(client).toBeInstanceOf(ClientRMQ);
     await app.close();
   });
 
   it('forRootAsync', async () => {
     const module = await Test.createTestingModule({
       imports: [
-        KafkaModule.forRootAsync({
+        RabbitmqModule.forRootAsync({
           useFactory: () => ({
             brokers: ['localhost'],
             lazyConnect: true,
@@ -34,26 +34,26 @@ describe('KafkaModule', () => {
     }).compile();
     app = module.createNestApplication();
     await app.init();
-    const client = await app.resolve(ClientKafka);
+    const client = await app.resolve(ClientRMQ);
     expect(client).toBeDefined();
-    expect(client).toBeInstanceOf(ClientKafka);
+    expect(client).toBeInstanceOf(ClientRMQ);
     await app.close();
   });
 
   it('forRoot - multiple instances', async () => {
     const module = await Test.createTestingModule({
       imports: [
-        KafkaModule.forRoot({
+        RabbitmqModule.forRoot({
           token: 'client1',
           useValue: {
-            brokers: ['localhost'],
+            urls: ['amqp://localhost:5672'],
             lazyConnect: true,
           },
         }),
-        KafkaModule.forRoot({
+        RabbitmqModule.forRoot({
           token: 'client2',
           useValue: {
-            brokers: ['localhost'],
+            urls: ['amqp://localhost:5673'],
             lazyConnect: true,
           },
         }),
@@ -63,10 +63,10 @@ describe('KafkaModule', () => {
     await app.init();
     const client1 = await app.resolve('client1');
     expect(client1).toBeDefined();
-    expect(client1).toBeInstanceOf(ClientKafka);
+    expect(client1).toBeInstanceOf(ClientRMQ);
     const client2 = await app.resolve('client2');
     expect(client2).toBeDefined();
-    expect(client2).toBeInstanceOf(ClientKafka);
+    expect(client2).toBeInstanceOf(ClientRMQ);
     expect(client2).not.toBe(client1);
     await app.close();
   });
@@ -74,17 +74,17 @@ describe('KafkaModule', () => {
   it('forRootAsync - multiple instances', async () => {
     const module = await Test.createTestingModule({
       imports: [
-        KafkaModule.forRootAsync({
-          token: 'kafka1',
+        RabbitmqModule.forRootAsync({
+          token: 'client1',
           useFactory: () => ({
-            brokers: ['localhost'],
+            urls: ['amqp://localhost:5672'],
             lazyConnect: true,
           }),
         }),
-        KafkaModule.forRootAsync({
-          token: 'kafka2',
+        RabbitmqModule.forRootAsync({
+          token: 'client2',
           useFactory: () => ({
-            brokers: ['localhost'],
+            urls: ['amqp://localhost:5673'],
             lazyConnect: true,
           }),
         }),
@@ -92,12 +92,12 @@ describe('KafkaModule', () => {
     }).compile();
     app = module.createNestApplication();
     await app.init();
-    const client1 = await app.resolve('kafka1');
+    const client1 = await app.resolve('client1');
     expect(client1).toBeDefined();
-    expect(client1).toBeInstanceOf(ClientKafka);
-    const client2 = await app.resolve('kafka2');
+    expect(client1).toBeInstanceOf(ClientRMQ);
+    const client2 = await app.resolve('client2');
     expect(client2).toBeDefined();
-    expect(client2).toBeInstanceOf(ClientKafka);
+    expect(client2).toBeInstanceOf(ClientRMQ);
     expect(client2).not.toBe(client1);
     await app.close();
   });

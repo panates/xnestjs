@@ -18,10 +18,7 @@ export class KafkaCoreModule implements OnApplicationShutdown, OnApplicationBoot
    *
    */
   static forRoot(moduleOptions: KafkaModuleOptions): DynamicModule {
-    const connectionOptions = this._readConnectionOptions(
-      moduleOptions.useValue || {},
-      moduleOptions.envPrefix ?? 'KAFKA_',
-    );
+    const connectionOptions = this._readConnectionOptions(moduleOptions.useValue || {}, moduleOptions.envPrefix);
     return this._createDynamicModule(moduleOptions, {
       global: moduleOptions.global,
       providers: [
@@ -46,7 +43,7 @@ export class KafkaCoreModule implements OnApplicationShutdown, OnApplicationBoot
           inject: asyncOptions.inject,
           useFactory: async (...args) => {
             const opts = await asyncOptions.useFactory!(...args);
-            return this._readConnectionOptions(opts, asyncOptions.envPrefix ?? 'KAFKA_');
+            return this._readConnectionOptions(opts, asyncOptions.envPrefix);
           },
         },
       ],
@@ -116,7 +113,7 @@ export class KafkaCoreModule implements OnApplicationShutdown, OnApplicationBoot
 
   private static _readConnectionOptions(
     moduleOptions: Partial<KafkaConnectionOptions>,
-    prefix: string,
+    prefix: string = 'KAFKA_',
   ): KafkaConnectionOptions {
     const options = clone(moduleOptions) as KafkaConnectionOptions;
     const env = process.env;
