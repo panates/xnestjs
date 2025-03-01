@@ -1,6 +1,6 @@
 command:
   publish:
-    contents: build
+    contents: ./build
   version:
     unified: true
   run:

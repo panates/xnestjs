@@ -2,8 +2,6 @@ name: Test
 on:
   workflow_dispatch:
   push:
-    branches-ignore:
-      - master
 jobs:
   test:
     name: Node v${{ matrix.node }}
@@ -20,16 +18,18 @@ jobs:
           node-version: ${{ matrix.node }}
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm install --no-save
+          npm install rman -g
 
       - name: Run linter test
-        run: lerna run lint
+        run: rman run lint
 
       - name: Run circular dependency test
-        run: lerna run check
+        run: rman run check
 
       - name: Run compile test
-        run: lerna run compile
+        run: rman run compile
 
       - name: Run unit tests
         run: npm run citest

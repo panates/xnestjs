@@ -1,7 +1,7 @@
 {
-  "name": "@xnestjs/kafka",
+  "name": "@xnestjs/rabitmq",
   "version": "1.5.0",
-  "description": "NestJS extension library for Kafka",
+  "description": "NestJS extension library for RabbitMQ",
   "author": "Panates",
   "license": "MIT",
   "scripts": {
@@ -32,7 +32,8 @@
     "@nestjs/common": "^10.0.0 || ^11.0.0",
     "@nestjs/core": "^10.0.0 || ^11.0.0",
     "@nestjs/microservices": "^10.0.0 || ^11.0.0",
-    "kafkajs": "^2.0.0"
+    "amqp-connection-manager": "*",
+    "amqplib": "*"
   },
   "devDependencies": {
     "@nestjs/testing": "^11.0.11",
@@ -58,7 +59,7 @@
   "types": "./types/index.d.ts",
   "repository": {
     "registry": "https://github.com/panates/xnestjs.git",
-    "directory": "packages/kafka"
+    "directory": "packages/rabitmq"
   },
   "engines": {
     "node": ">=16.0",
@@ -73,6 +74,6 @@
   ],
   "keywords": [
     "nestjs",
-    "kafka"
+    "rabitmq"
   ]
 }
