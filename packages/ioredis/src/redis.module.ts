@@ -4,10 +4,10 @@ import type { RedisAsyncModuleOptions, RedisModuleOptions } from './types.js';
 
 @Module({})
 export class RedisModule {
-  static forRoot(options: RedisModuleOptions): DynamicModule {
+  static forRoot(options?: RedisModuleOptions): DynamicModule {
     return {
       module: RedisModule,
-      imports: [RedisCoreModule.forRoot(options)],
+      imports: [RedisCoreModule.forRoot(options || {})],
     };
   }
 
