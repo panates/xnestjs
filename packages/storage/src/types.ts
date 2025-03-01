@@ -25,7 +25,7 @@ export interface S3StorageOptions {
 export type StorageOptions = S3StorageOptions; // | GSStorageOptions;
 
 export interface StorageModuleOptions extends BaseModuleOptions {
-  useValue: StorageOptions;
+  useValue?: StorageOptions;
 }
 
 export interface StorageModuleAsyncOptions extends BaseModuleOptions, Pick<ModuleMetadata, 'imports'> {

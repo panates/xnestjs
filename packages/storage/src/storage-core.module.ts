@@ -48,10 +48,15 @@ export class StorageCoreModule {
     });
   }
 
-  private static _readConnectionOptions(moduleOptions: StorageOptions, prefix: string = 'STORAGE_'): StorageOptions {
-    const options = clone(moduleOptions);
+  private static _readConnectionOptions(
+    moduleOptions: Partial<StorageOptions>,
+    prefix: string = 'STORAGE_',
+  ): StorageOptions {
+    const options = clone(moduleOptions) as StorageOptions;
     const env = process.env;
     options.provider = options.provider || env[prefix + 'PROVIDER'];
+    if (!options.provider)
+      throw new Error(`You must provide a Storage provider or "${prefix + 'PROVIDER'}" env variable`);
     if (options.provider === 's3') {
       options.s3 = options.s3 || {};
       options.s3.endPoint = options.s3.endPoint ?? env[prefix + 'S3_ENDPOINT'];
@@ -63,7 +68,7 @@ export class StorageCoreModule {
       options.s3.pathStyle = options.s3.pathStyle ?? toBoolean(env[prefix + 'S3_PATH_STYLE']);
       options.s3.secretKey = options.s3.secretKey ?? env[prefix + 'S3_SECRET_KEY'];
       options.s3.s3AccelerateEndpoint = options.s3.s3AccelerateEndpoint ?? env[prefix + 'S3_ACC_ENDPOINT'];
-    }
+    } else throw new Error(`Unknown Storage provider (${options.provider})`);
     return options;
   }
 
@@ -78,9 +83,9 @@ export class StorageCoreModule {
         inject: [STORAGE_OPTIONS],
         useFactory: async (storageOptions: StorageOptions): Promise<S3StorageConnection> => {
           if (storageOptions.provider === 's3') {
-            if (!(storageOptions as S3StorageOptions).s3) throw new Error('You must provide S3 config');
             return new S3StorageConnection((storageOptions as S3StorageOptions).s3);
           }
+          /** istanbul ignore next */
           throw new Error(`Unknown Storage provider (${storageOptions.provider})`);
         },
       },
