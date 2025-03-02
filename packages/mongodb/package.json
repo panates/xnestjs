@@ -1,6 +1,6 @@
 {
   "name": "@xnestjs/mongodb",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "NestJS extension library for MongoDb",
   "author": "Panates",
   "license": "MIT",
