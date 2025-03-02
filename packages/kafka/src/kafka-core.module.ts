@@ -1,14 +1,11 @@
 import assert from 'node:assert';
 import * as crypto from 'node:crypto';
-import process from 'node:process';
-import { clone } from '@jsopen/objects';
 import { DynamicModule, Inject, Logger, OnApplicationBootstrap, OnApplicationShutdown, Provider } from '@nestjs/common';
 import { ClientKafka, ClientProvider, ClientsModule, Transport } from '@nestjs/microservices';
 import * as colors from 'ansi-colors';
-import { SASLMechanism } from 'kafkajs';
-import { toBoolean, toInt } from 'putil-varhelpers';
 import { KAFKA_CONNECTION_OPTIONS, KAFKA_MODULE_ID } from './constants.js';
 import { createLogCreator } from './create-log-creator.js';
+import { getConnectionOptions } from './get-connection-options.js';
 import type { KafkaConnectionOptions, KafkaModuleAsyncOptions, KafkaModuleOptions } from './types';
 
 const CLIENT_TOKEN = Symbol('CLIENT_TOKEN');
@@ -18,7 +15,7 @@ export class KafkaCoreModule implements OnApplicationShutdown, OnApplicationBoot
    *
    */
   static forRoot(moduleOptions: KafkaModuleOptions): DynamicModule {
-    const connectionOptions = this._readConnectionOptions(moduleOptions.useValue || {}, moduleOptions.envPrefix);
+    const connectionOptions = getConnectionOptions(moduleOptions.useValue || {}, moduleOptions.envPrefix);
     return this._createDynamicModule(moduleOptions, {
       global: moduleOptions.global,
       providers: [
@@ -43,7 +40,7 @@ export class KafkaCoreModule implements OnApplicationShutdown, OnApplicationBoot
           inject: asyncOptions.inject,
           useFactory: async (...args) => {
             const opts = await asyncOptions.useFactory!(...args);
-            return this._readConnectionOptions(opts, asyncOptions.envPrefix);
+            return getConnectionOptions(opts, asyncOptions.envPrefix);
           },
         },
       ],
@@ -109,65 +106,6 @@ export class KafkaCoreModule implements OnApplicationShutdown, OnApplicationBoot
       ],
       exports,
     } as DynamicModule;
-  }
-
-  private static _readConnectionOptions(
-    moduleOptions: Partial<KafkaConnectionOptions>,
-    prefix: string = 'KAFKA_',
-  ): KafkaConnectionOptions {
-    const options = clone(moduleOptions) as KafkaConnectionOptions;
-    const env = process.env;
-    options.brokers = options.brokers || (env[prefix + 'URL'] ?? 'localhost').split(/\s*,\s*/);
-    if (options.ssl == null && toBoolean(env[prefix + 'SSL'])) {
-      options.ssl = {
-        ca: [env[prefix + 'SSL_CA_CERT'] || ''],
-        cert: env[prefix + 'SSL_CERT_FILE'],
-        key: env[prefix + 'SSL_KEY_FILE'],
-        passphrase: env[prefix + 'SSL_KEY_PASSPHRASE'],
-        rejectUnauthorized: toBoolean(env[prefix + 'SSL_REJECT_UNAUTHORIZED']),
-        checkServerIdentity: (host, cert) => {
-          if (cert.subject.CN !== host) {
-            return new Error(`Certificate CN (${cert.subject.CN}) does not match host (${host})`);
-          }
-        },
-      };
-    }
-    const sasl = env[prefix + 'SASL'] as SASLMechanism;
-    if (options.sasl == null && sasl) {
-      if (sasl === 'plain' || sasl === 'scram-sha-256' || sasl === 'scram-sha-512') {
-        options.sasl = {
-          mechanism: sasl,
-          username: env[prefix + 'SASL_USERNAME'] || '',
-          password: env[prefix + 'SASL_PASSWORD'] || '',
-        } as any;
-      } else if (sasl === 'aws') {
-        options.sasl = {
-          mechanism: sasl,
-          authorizationIdentity: env[prefix + 'AWS_AUTH_IDENTITY'] || '',
-          accessKeyId: env[prefix + 'AWS_ACCESS_KEY_ID'] || '',
-          secretAccessKey: env[prefix + 'AWS_SECRET_ACCESS_KEY'] || '',
-          sessionToken: env[prefix + 'AWS_SESSION_TOKEN'],
-        };
-      }
-    }
-    options.clientId = options.clientId ?? env[prefix + 'CLIENT_ID'];
-    options.connectionTimeout = options.connectionTimeout ?? toInt(env[prefix + 'CONNECT_TIMEOUT']);
-    options.authenticationTimeout = options.authenticationTimeout ?? toInt(env[prefix + 'AUTH_TIMEOUT']);
-    options.reauthenticationThreshold = options.reauthenticationThreshold ?? toInt(env[prefix + 'REAUTH_THRESHOLD']);
-    options.requestTimeout = options.requestTimeout ?? toInt(env[prefix + 'REQUEST_TIMEOUT']);
-    options.enforceRequestTimeout = options.enforceRequestTimeout ?? toBoolean(env[prefix + 'ENFORCE_REQUEST_TIMEOUT']);
-    const retries = toInt(env[prefix + 'RETRIES']);
-    if (options.retry == null && retries) {
-      options.retry = {
-        maxRetryTime: toInt(env[prefix + 'RETRY_MAX_TIME']),
-        initialRetryTime: toInt(env[prefix + 'RETRY_INITIAL_TIME']),
-        retries,
-      };
-    }
-    options.consumer = options.consumer || ({} as any);
-    options.consumer!.groupId =
-      options.consumer!.groupId ?? (env[prefix + 'CONSUMER_GROUP_ID'] || 'kafka_default_group');
-    return options;
   }
 
   /**

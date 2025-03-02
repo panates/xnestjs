@@ -1,12 +1,10 @@
 import assert from 'node:assert';
 import * as crypto from 'node:crypto';
-import process from 'node:process';
-import { clone } from '@jsopen/objects';
 import { DynamicModule, Inject, Logger, OnApplicationBootstrap, OnApplicationShutdown, Provider } from '@nestjs/common';
 import { ClientProvider, ClientRMQ, ClientsModule, Transport } from '@nestjs/microservices';
 import * as colors from 'ansi-colors';
-import { toInt } from 'putil-varhelpers';
 import { RMQ_CONNECTION_OPTIONS, RMQ_MODULE_ID } from './constants.js';
+import { getConnectionOptions } from './get-connection-options.js';
 import type { RabbitmqConnectionOptions, RabbitmqModuleAsyncOptions, RabbitmqModuleOptions } from './types.js';
 
 const CLIENT_TOKEN = Symbol('CLIENT_TOKEN');
@@ -16,7 +14,7 @@ export class RabbitmqCoreModule implements OnApplicationShutdown, OnApplicationB
    *
    */
   static forRoot(moduleOptions: RabbitmqModuleOptions): DynamicModule {
-    const connectionOptions = this._readConnectionOptions(moduleOptions.useValue || {}, moduleOptions.envPrefix);
+    const connectionOptions = getConnectionOptions(moduleOptions.useValue || {}, moduleOptions.envPrefix);
     return this._createDynamicModule(moduleOptions, {
       global: moduleOptions.global,
       providers: [
@@ -41,7 +39,7 @@ export class RabbitmqCoreModule implements OnApplicationShutdown, OnApplicationB
           inject: asyncOptions.inject,
           useFactory: async (...args) => {
             const opts = await asyncOptions.useFactory!(...args);
-            return this._readConnectionOptions(opts, asyncOptions.envPrefix);
+            return getConnectionOptions(opts, asyncOptions.envPrefix);
           },
         },
       ],
@@ -101,23 +99,6 @@ export class RabbitmqCoreModule implements OnApplicationShutdown, OnApplicationB
       ],
       exports,
     } as DynamicModule;
-  }
-
-  private static _readConnectionOptions(
-    moduleOptions: Partial<RabbitmqConnectionOptions>,
-    prefix: string = 'RMQ_',
-  ): RabbitmqConnectionOptions {
-    const options = clone(moduleOptions) as RabbitmqConnectionOptions;
-    const env = process.env;
-    options.urls = options.urls || (env[prefix + 'URLS'] ?? 'amqp://localhost:5672').split(/\s*,\s*/);
-    options.prefetchCount = options.prefetchCount ?? toInt(env[prefix + 'PREFETCH_COUNT']);
-    options.maxConnectionAttempts = options.maxConnectionAttempts ?? toInt(env[prefix + 'MAX_CONNECTION_ATTEMPTS']);
-    options.socketOptions = options.socketOptions ?? {};
-    options.socketOptions.reconnectTimeInSeconds =
-      options.socketOptions.reconnectTimeInSeconds ?? toInt(env[prefix + 'RECONNECT_TIME']);
-    options.socketOptions.heartbeatIntervalInSeconds =
-      options.socketOptions.heartbeatIntervalInSeconds ?? toInt(env[prefix + 'HEARTBEAT_INTERVAL']);
-    return options;
   }
 
   /**
