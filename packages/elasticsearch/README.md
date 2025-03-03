@@ -62,6 +62,8 @@ export class MyModule {
 The library supports configuration through environment variables. Environment variables below is accepted.
 All environment variables starts with prefix (MONGODB_). This can be configured while registering the module.
 
+<--- BEGIN env --->
+
 | Environment Variable                 | Type    | Default               | Description                                                                                                                                                                                            |
 |--------------------------------------|---------|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | ELASTIC_NODE                         | String  | http://localhost:9200 | Elasticsearch node settings, if there is only one node. Required if `NODES` or `CLOUD_ID` is not set.                                                                                                  |
@@ -84,3 +86,5 @@ All environment variables starts with prefix (MONGODB_). This can be configured 
 | ELASTIC_TLS_KEY_PASSPHRASE           | String  |                       | PFX or PKCS12 encoded private key and certificate chain.                                                                                                                                               |
 | ELASTIC_TLS_REJECT_UNAUTHORIZED      | Boolean | False                 | If true the server will reject any connection which is notauthorized with the list of supplied CAs. This option only has an effect if requestCert is true.                                             |
 | ELASTIC_CA_FINGERPRINT               | String  |                       | If configured, verifies that the fingerprint of the CA certificate that has signed the certificate of the server matches the supplied fingerprint; only accepts SHA256 digest fingerprints             |
+
+<--- END env --->

@@ -4,6 +4,7 @@ import { DynamicModule, Inject, Logger, OnApplicationShutdown, Provider } from '
 import * as crypto from 'crypto';
 import { SessionManager } from 'redisess';
 import { REDISESS_MODULE_ID, REDISESS_SESSION_OPTIONS } from './constants.js';
+import { getRedisessConfig } from './get-redisess-config.js';
 import type { RedisessModuleAsyncOptions, RedisessModuleOptions, RedisessSessionOptions } from './types.js';
 
 const CLIENT_TOKEN = Symbol('CLIENT_TOKEN');
@@ -13,12 +14,13 @@ export class RedisessCoreModule implements OnApplicationShutdown {
    * Configures and returns a dynamic module
    */
   static forRoot(moduleOptions: RedisessModuleOptions): DynamicModule {
+    const redisessOptions = getRedisessConfig(moduleOptions.useValue || {}, moduleOptions.envPrefix);
     return this._createDynamicModule(moduleOptions, {
       global: moduleOptions.global,
       providers: [
         {
           provide: REDISESS_SESSION_OPTIONS,
-          useValue: moduleOptions.useValue,
+          useValue: redisessOptions,
         },
       ],
     });
@@ -35,7 +37,10 @@ export class RedisessCoreModule implements OnApplicationShutdown {
         {
           provide: REDISESS_SESSION_OPTIONS,
           inject: asyncOptions.inject,
-          useFactory: asyncOptions.useFactory,
+          useFactory: async (...args) => {
+            const opts = await asyncOptions.useFactory!(...args);
+            return getRedisessConfig(opts, asyncOptions.envPrefix);
+          },
         },
       ],
     });

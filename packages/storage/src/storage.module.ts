@@ -4,11 +4,10 @@ import type { StorageModuleAsyncOptions, StorageModuleOptions } from './types.js
 
 @Module({})
 export class StorageModule {
-  static forRoot(options: StorageModuleOptions): DynamicModule {
+  static forRoot(options?: StorageModuleOptions): DynamicModule {
     return {
       module: StorageModule,
-      imports: [StorageCoreModule.forRoot(options)],
-      global: options.global,
+      imports: [StorageCoreModule.forRoot(options || {})],
     };
   }
 
@@ -16,7 +15,6 @@ export class StorageModule {
     return {
       module: StorageModule,
       imports: [StorageCoreModule.forRootAsync(options)],
-      global: options.global,
     };
   }
 }

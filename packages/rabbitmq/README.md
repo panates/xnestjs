@@ -62,6 +62,8 @@ export class MyModule {
 The library supports configuration through environment variables. Environment variables below is accepted.
 All environment variables starts with prefix (RMQ_). This can be configured while registering the module.
 
+<--- BEGIN env --->
+
 | Environment Variable        | Type      | Default | Description |
 |-----------------------------|-----------|---------|-------------|
 | RMQ_URLS                    | String[]! |         |             |
@@ -69,3 +71,5 @@ All environment variables starts with prefix (RMQ_). This can be configured whil
 | RMQ_MAX_CONNECTION_ATTEMPTS | Number    |         |             |
 | RMQ_RECONNECT_TIME          | Number    |         |             |
 | RMQ_HEARTBEAT_INTERVAL      | Number    |         |             |
+
+<--- END env --->
