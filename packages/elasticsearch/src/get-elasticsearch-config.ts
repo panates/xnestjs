@@ -3,7 +3,7 @@ import { clone } from '@jsopen/objects';
 import { toBoolean, toInt } from 'putil-varhelpers';
 import type { ElasticsearchConnectionOptions } from './types.js';
 
-export function getConnectionOptions(
+export function getElasticsearchConfig(
   moduleOptions: ElasticsearchConnectionOptions,
   prefix: string = 'ELASTIC_',
 ): ElasticsearchConnectionOptions {

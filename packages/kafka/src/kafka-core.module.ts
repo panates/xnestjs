@@ -5,7 +5,7 @@ import { ClientKafka, ClientProvider, ClientsModule, Transport } from '@nestjs/m
 import * as colors from 'ansi-colors';
 import { KAFKA_CONNECTION_OPTIONS, KAFKA_MODULE_ID } from './constants.js';
 import { createLogCreator } from './create-log-creator.js';
-import { getConnectionOptions } from './get-connection-options.js';
+import { getKafkaConfig } from './get-kafka-config.js';
 import type { KafkaConnectionOptions, KafkaModuleAsyncOptions, KafkaModuleOptions } from './types';
 
 const CLIENT_TOKEN = Symbol('CLIENT_TOKEN');
@@ -15,7 +15,7 @@ export class KafkaCoreModule implements OnApplicationShutdown, OnApplicationBoot
    *
    */
   static forRoot(moduleOptions: KafkaModuleOptions): DynamicModule {
-    const connectionOptions = getConnectionOptions(moduleOptions.useValue || {}, moduleOptions.envPrefix);
+    const connectionOptions = getKafkaConfig(moduleOptions.useValue || {}, moduleOptions.envPrefix);
     return this._createDynamicModule(moduleOptions, {
       global: moduleOptions.global,
       providers: [
@@ -40,7 +40,7 @@ export class KafkaCoreModule implements OnApplicationShutdown, OnApplicationBoot
           inject: asyncOptions.inject,
           useFactory: async (...args) => {
             const opts = await asyncOptions.useFactory!(...args);
-            return getConnectionOptions(opts, asyncOptions.envPrefix);
+            return getKafkaConfig(opts, asyncOptions.envPrefix);
           },
         },
       ],

@@ -108,6 +108,8 @@ export class MyModule {
 The library supports configuration through environment variables. Environment variables below is accepted.
 All environment variables starts with prefix (REDIS_). This can be configured while registering the module.
 
+<--- BEGIN env --->
+
 ### Standalone Connection Variables
 
 The following environment variables apply to the standalone connection.
@@ -140,3 +142,5 @@ The following environment variables apply to the standalone connection.
 | REDIS_KEEP_ALIVE              | Boolean |         | Enable/disable keep-alive functionality.                                                                                          |
 | REDIS_NO_DELAY                | Boolean |         | Enable/disable the use of Nagle's algorithm.                                                                                      |
 | REDIS_MAX_RETRIES_PER_REQUEST | Number  |         | Defines max retries per request value                                                                                             |
+
+<--- END env --->

@@ -4,7 +4,7 @@ import { DynamicModule, Inject, Logger, OnApplicationBootstrap, OnApplicationShu
 import { ClientProvider, ClientRMQ, ClientsModule, Transport } from '@nestjs/microservices';
 import * as colors from 'ansi-colors';
 import { RMQ_CONNECTION_OPTIONS, RMQ_MODULE_ID } from './constants.js';
-import { getConnectionOptions } from './get-connection-options.js';
+import { getRabbitmqConfig } from './get-rabbitmq-config.js';
 import type { RabbitmqConnectionOptions, RabbitmqModuleAsyncOptions, RabbitmqModuleOptions } from './types.js';
 
 const CLIENT_TOKEN = Symbol('CLIENT_TOKEN');
@@ -14,7 +14,7 @@ export class RabbitmqCoreModule implements OnApplicationShutdown, OnApplicationB
    *
    */
   static forRoot(moduleOptions: RabbitmqModuleOptions): DynamicModule {
-    const connectionOptions = getConnectionOptions(moduleOptions.useValue || {}, moduleOptions.envPrefix);
+    const connectionOptions = getRabbitmqConfig(moduleOptions.useValue || {}, moduleOptions.envPrefix);
     return this._createDynamicModule(moduleOptions, {
       global: moduleOptions.global,
       providers: [
@@ -39,7 +39,7 @@ export class RabbitmqCoreModule implements OnApplicationShutdown, OnApplicationB
           inject: asyncOptions.inject,
           useFactory: async (...args) => {
             const opts = await asyncOptions.useFactory!(...args);
-            return getConnectionOptions(opts, asyncOptions.envPrefix);
+            return getRabbitmqConfig(opts, asyncOptions.envPrefix);
           },
         },
       ],

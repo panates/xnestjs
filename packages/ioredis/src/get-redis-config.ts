@@ -5,7 +5,7 @@ import { toBoolean, toInt, toIntDef } from 'putil-varhelpers';
 import type { RedisClusterConnectionOptions, RedisStandaloneConnectionOptions } from './types';
 import { isClusterOptions } from './utils.js';
 
-export function getConnectionOptions(
+export function getRedisConfig(
   options?: RedisStandaloneConnectionOptions | RedisClusterConnectionOptions,
   prefix: string = 'REDIS_',
 ): RedisStandaloneConnectionOptions | RedisClusterConnectionOptions {

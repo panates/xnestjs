@@ -19,6 +19,7 @@ export interface RedisessModuleAsyncOptions extends BaseModuleOptions, Pick<Modu
 
 interface BaseModuleOptions {
   token?: InjectionToken;
+  envPrefix?: string;
   logger?: Logger | string;
   global?: boolean;
 }

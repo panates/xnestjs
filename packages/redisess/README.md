@@ -2,7 +2,6 @@
 
 NestJS extension library for Redisess
 
-
 ## Install
 
 ```sh
@@ -63,3 +62,18 @@ const client = new Redis();
 export class MyModule {
 }
 ```
+
+## Environment Variables
+
+The library supports configuration through environment variables. Environment variables below is accepted.
+All environment variables starts with prefix (RMQ_). This can be configured while registering the module.
+
+<--- BEGIN env --->
+
+| Environment Variable  | Type   | Default | Description                        |
+|-----------------------|--------|---------|------------------------------------|
+| SESSION_NAMESPACE     | String |         |                                    |
+| SESSION_TTL           | Number | 1800    | Time-To-Live value in seconds      |
+| SESSION_WIPE_INTERVAL | Number | 5000    | Interval in ms to run wipe process |
+
+<--- END env --->

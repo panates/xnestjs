@@ -3,7 +3,7 @@ import { clone } from '@jsopen/objects';
 import { toBoolean, toInt } from 'putil-varhelpers';
 import type { StorageOptions } from './types.js';
 
-export function getConnectionOptions(
+export function getStorageConfig(
   moduleOptions: Partial<StorageOptions>,
   prefix: string = 'STORAGE_',
 ): StorageOptions {

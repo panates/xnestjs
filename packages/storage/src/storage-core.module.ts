@@ -2,7 +2,7 @@ import assert from 'node:assert';
 import { DynamicModule, Logger, Provider } from '@nestjs/common';
 import crypto from 'crypto';
 import { STORAGE_MODULE_ID, STORAGE_OPTIONS } from './constants.js';
-import { getConnectionOptions } from './get-connection-options.js';
+import { getStorageConfig } from './get-storage-config.js';
 import { S3StorageConnection } from './providers/s3-storage-connection.js';
 import { StorageConnection } from './services/storage-connection.js';
 import type { S3StorageOptions, StorageModuleAsyncOptions, StorageModuleOptions, StorageOptions } from './types.js';
@@ -14,7 +14,7 @@ export class StorageCoreModule {
    * Configures and returns a dynamic module
    */
   static forRoot(moduleOptions: StorageModuleOptions): DynamicModule {
-    const connectionOptions = getConnectionOptions(moduleOptions.useValue || {}, moduleOptions.envPrefix);
+    const connectionOptions = getStorageConfig(moduleOptions.useValue || {}, moduleOptions.envPrefix);
     return this._createDynamicModule(moduleOptions, {
       global: moduleOptions.global,
       providers: [
@@ -39,7 +39,7 @@ export class StorageCoreModule {
           inject: asyncOptions.inject,
           useFactory: async (...args) => {
             const opts = await asyncOptions.useFactory!(...args);
-            return getConnectionOptions(opts, asyncOptions.envPrefix);
+            return getStorageConfig(opts, asyncOptions.envPrefix);
           },
         },
       ],

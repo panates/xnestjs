@@ -62,6 +62,8 @@ export class MyModule {
 The library supports configuration through environment variables. Environment variables below is accepted.
 All environment variables starts with prefix (KAFKA_). This can be configured while registering the module.
 
+<--- BEGIN env --->
+
 | Environment Variable          | Type      | Default             | Description                                                                                                                                                                                            |
 |-------------------------------|-----------|---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | KAFKA_BROKERS                 | String[]! | localhost           | Host names of Kafka brokers                                                                                                                                                                            |
@@ -100,3 +102,5 @@ The environment variables are available when KAFKA_SASL is `aws`
 | AWS_ACCESS_KEY_ID     | String! |         |             |
 | AWS_SECRET_ACCESS_KEY | String! |         |             |
 | AWS_SESSION_TOKEN     | String  |         |             |
+
+<--- END env --->

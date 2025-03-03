@@ -3,7 +3,7 @@ import { clone } from '@jsopen/objects';
 import { toInt } from 'putil-varhelpers';
 import type { RabbitmqConnectionOptions } from './types';
 
-export function getConnectionOptions(
+export function getRabbitmqConfig(
   moduleOptions: Partial<RabbitmqConnectionOptions>,
   prefix: string = 'RMQ_',
 ): RabbitmqConnectionOptions {

@@ -4,7 +4,7 @@ import { SASLMechanism } from 'kafkajs';
 import { toBoolean, toInt } from 'putil-varhelpers';
 import type { KafkaConnectionOptions } from './types';
 
-export function getConnectionOptions(
+export function getKafkaConfig(
   moduleOptions: Partial<KafkaConnectionOptions>,
   envPrefix: string = 'KAFKA_',
 ): KafkaConnectionOptions {

@@ -4,7 +4,7 @@ import { DynamicModule, Inject, Logger, OnApplicationBootstrap, OnApplicationShu
 import { ElasticsearchModule, ElasticsearchService } from '@nestjs/elasticsearch';
 import * as colors from 'ansi-colors';
 import { ELASTICSEARCH_CONNECTION_OPTIONS, ELASTICSEARCH_MODULE_ID } from './constants.js';
-import { getConnectionOptions } from './get-connection-options.js';
+import { getElasticsearchConfig } from './get-elasticsearch-config.js';
 import type {
   ElasticsearchConnectionOptions,
   ElasticsearchModuleAsyncOptions,
@@ -18,7 +18,7 @@ export class ElasticsearchCoreModule implements OnApplicationShutdown, OnApplica
    *
    */
   static forRoot(moduleOptions: ElasticsearchModuleOptions): DynamicModule {
-    const connectionOptions = getConnectionOptions(moduleOptions.useValue || {}, moduleOptions.envPrefix);
+    const connectionOptions = getElasticsearchConfig(moduleOptions.useValue || {}, moduleOptions.envPrefix);
     return this._createDynamicModule(moduleOptions, {
       global: moduleOptions.global,
       providers: [
@@ -43,7 +43,7 @@ export class ElasticsearchCoreModule implements OnApplicationShutdown, OnApplica
           inject: asyncOptions.inject,
           useFactory: async (...args) => {
             const opts = await asyncOptions.useFactory!(...args);
-            return getConnectionOptions(opts, asyncOptions.envPrefix);
+            return getElasticsearchConfig(opts, asyncOptions.envPrefix);
           },
         },
       ],

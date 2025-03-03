@@ -4,7 +4,7 @@ import colors from 'ansi-colors';
 import * as crypto from 'crypto';
 import Redis, { Cluster } from 'ioredis';
 import { IOREDIS_CONNECTION_OPTIONS, IOREDIS_MODULE_TOKEN } from './constants.js';
-import { getConnectionOptions } from './get-connection-options.js';
+import { getRedisConfig } from './get-redis-config.js';
 import { RedisClient } from './redis-client.js';
 import type {
   RedisAsyncModuleOptions,
@@ -18,7 +18,7 @@ const CLIENT_TOKEN = Symbol('CLIENT_TOKEN');
 
 export class RedisCoreModule implements OnApplicationBootstrap, OnApplicationShutdown {
   static forRoot(moduleOptions: RedisModuleOptions): DynamicModule {
-    const connectionOptions = getConnectionOptions(moduleOptions.useValue, moduleOptions.envPrefix);
+    const connectionOptions = getRedisConfig(moduleOptions.useValue, moduleOptions.envPrefix);
     return this._createDynamicModule(moduleOptions, {
       global: moduleOptions.global,
       providers: [
@@ -40,7 +40,7 @@ export class RedisCoreModule implements OnApplicationBootstrap, OnApplicationShu
           inject: asyncOptions.inject,
           useFactory: async (...args) => {
             const opts = await asyncOptions.useFactory!(...args);
-            return getConnectionOptions(opts, asyncOptions.envPrefix);
+            return getRedisConfig(opts, asyncOptions.envPrefix);
           },
         },
       ],
