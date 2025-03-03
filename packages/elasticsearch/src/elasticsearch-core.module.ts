@@ -85,7 +85,7 @@ export class ElasticsearchCoreModule implements OnApplicationShutdown, OnApplica
     return {
       module: ElasticsearchCoreModule,
       providers,
-      // global: true,
+      global: opts.global,
       imports: [
         ElasticsearchModule.registerAsync({
           imports: [
