@@ -3,10 +3,7 @@ import { clone } from '@jsopen/objects';
 import { toBoolean, toInt } from 'putil-varhelpers';
 import type { StorageOptions } from './types.js';
 
-export function getStorageConfig(
-  moduleOptions: Partial<StorageOptions>,
-  prefix: string = 'STORAGE_',
-): StorageOptions {
+export function getStorageConfig(moduleOptions: Partial<StorageOptions>, prefix: string = 'STORAGE_'): StorageOptions {
   const options = clone(moduleOptions) as StorageOptions;
   const env = process.env;
   options.provider = options.provider || env[prefix + 'PROVIDER'];
