@@ -78,7 +78,7 @@ export class ElasticsearchCoreModule implements OnApplicationShutdown, OnApplica
         provide: token,
         useExisting: ElasticsearchService,
       });
-    }
+    } else exports.push(ElasticsearchModule);
 
     class InnerProvidersModule {}
 
