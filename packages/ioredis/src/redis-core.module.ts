@@ -137,7 +137,7 @@ export class RedisCoreModule implements OnApplicationBootstrap, OnApplicationShu
         this.logger?.log('Connecting to redis at ' + colors.blue(hosts));
         Logger.flush();
         try {
-          await this.client.redis.connect();
+          if (this.client.redis.status === 'wait') await this.client.redis.connect();
           await this.client.redis.ping();
         } catch (e: any) {
           this.logger?.error('Redis connection failed: ' + e.message);
