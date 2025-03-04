@@ -126,23 +126,22 @@ export class RedisCoreModule implements OnApplicationBootstrap, OnApplicationShu
 
   async onApplicationBootstrap() {
     const opts = this.connectionOptions;
-    if (!opts.lazyConnect) {
-      const isCluster = isClusterOptions(opts);
-      const hosts = isCluster
-        ? opts.nodes
-            .map(x => (typeof x === 'object' ? x.host + ':' + x.port : typeof x === 'number' ? 'localhost:' + x : x))
-            .join(', ')
-        : opts.host;
-      if (hosts) {
-        this.logger?.log('Connecting to redis at ' + colors.blue(hosts));
-        Logger.flush();
-        try {
-          if (this.client.redis.status === 'wait') await this.client.redis.connect();
-          await this.client.redis.ping();
-        } catch (e: any) {
-          this.logger?.error('Redis connection failed: ' + e.message);
-          throw e;
-        }
+    if (opts.lazyConnect) return;
+    const isCluster = isClusterOptions(opts);
+    const hosts = isCluster
+      ? opts.nodes
+          .map(x => (typeof x === 'object' ? x.host + ':' + x.port : typeof x === 'number' ? 'localhost:' + x : x))
+          .join(', ')
+      : opts.host;
+    if (hosts) {
+      this.logger?.log('Connecting to redis at ' + colors.blue(hosts));
+      Logger.flush();
+      try {
+        if (this.client.redis.status === 'wait') await this.client.redis.connect();
+        await this.client.redis.ping();
+      } catch (e: any) {
+        this.logger?.error('Redis connection failed: ' + e.message);
+        throw e;
       }
     }
   }

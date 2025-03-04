@@ -3,7 +3,9 @@ import type { Logger } from '@nestjs/common';
 import type { ModuleMetadata } from '@nestjs/common/interfaces';
 import type { InjectionToken } from '@nestjs/common/interfaces/modules/injection-token.interface';
 
-export interface ElasticsearchConnectionOptions extends ClientOptions {}
+export interface ElasticsearchConnectionOptions extends ClientOptions {
+  lazyConnect?: boolean;
+}
 
 interface BaseModuleOptions {
   token?: InjectionToken;

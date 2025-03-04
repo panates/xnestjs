@@ -108,14 +108,13 @@ export class MongodbCoreModule implements OnApplicationShutdown, OnApplicationBo
 
   onApplicationBootstrap() {
     const options = this.connectionOptions;
-    if (!options.lazyConnect) {
-      this.logger?.log(`Connecting to MongoDB [${options.database}] at ${colors.blue(options.url!)}`);
-      Logger.flush();
-      return this.client.connect().catch(e => {
-        this.logger?.error('MongoDB connection failed: ' + e.message);
-        throw e;
-      });
-    }
+    if (options.lazyConnect) return;
+    this.logger?.log(`Connecting to MongoDB [${options.database}] at ${colors.blue(options.url!)}`);
+    Logger.flush();
+    return this.client.connect().catch(e => {
+      this.logger?.error('MongoDB connection failed: ' + e.message);
+      throw e;
+    });
   }
 
   onApplicationShutdown() {

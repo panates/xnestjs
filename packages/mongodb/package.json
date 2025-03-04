@@ -31,7 +31,7 @@
   "peerDependencies": {
     "@nestjs/common": "^10.0.0 || ^11.0.0",
     "@nestjs/core": "^10.0.0 || ^11.0.0",
-    "mongodb": "^6.14.0"
+    "mongodb": "^6.14.2"
   },
   "devDependencies": {
     "@nestjs/testing": "^11.0.11",

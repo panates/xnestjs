@@ -116,16 +116,15 @@ export class ElasticsearchCoreModule implements OnApplicationShutdown, OnApplica
   ) {}
 
   async onApplicationBootstrap() {
-    if (this.logger) {
-      const options = this.connectionOptions;
-      const nodes = options.node || options.nodes;
-      this.logger.log(`Connecting to ElasticSearch at ${colors.blue(String(nodes))}`);
-      Logger.flush();
-      await this.client.ping({}).catch(e => {
-        this.logger.error('ElasticSearch connection failed: ' + e.message);
-        throw e;
-      });
-    }
+    const options = this.connectionOptions;
+    if (options.lazyConnect) return;
+    const nodes = options.node || options.nodes;
+    this.logger?.log(`Connecting to ElasticSearch at ${colors.blue(String(nodes))}`);
+    Logger.flush();
+    await this.client.ping({}).catch(e => {
+      this.logger.error('ElasticSearch connection failed: ' + e.message);
+      throw e;
+    });
   }
 
   onApplicationShutdown() {
