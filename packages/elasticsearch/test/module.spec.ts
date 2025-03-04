@@ -26,6 +26,7 @@ describe('ElasticsearchModule', () => {
         ElasticsearchModule.forRootAsync({
           useFactory: () => ({
             node: 'http://localhost:9201',
+            lazyConnect: true,
           }),
         }),
       ],
@@ -48,12 +49,14 @@ describe('ElasticsearchModule', () => {
           token: 'elastic1',
           useValue: {
             node: 'http://localhost:9201',
+            lazyConnect: true,
           },
         }),
         ElasticsearchModule.forRoot({
           token: 'elastic2',
           useValue: {
             nodes: 'http://localhost:9202',
+            lazyConnect: true,
           },
         }),
       ],
@@ -76,12 +79,14 @@ describe('ElasticsearchModule', () => {
           token: 'elastic1',
           useFactory: () => ({
             node: 'http://localhost:9201',
+            lazyConnect: true,
           }),
         }),
         ElasticsearchModule.forRootAsync({
           token: 'elastic2',
           useFactory: () => ({
             node: 'http://localhost:9202',
+            lazyConnect: true,
           }),
         }),
       ],
