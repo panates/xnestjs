@@ -20,7 +20,6 @@ export class ElasticsearchCoreModule implements OnApplicationShutdown, OnApplica
   static forRoot(moduleOptions: ElasticsearchModuleOptions): DynamicModule {
     const connectionOptions = getElasticsearchConfig(moduleOptions.useValue || {}, moduleOptions.envPrefix);
     return this._createDynamicModule(moduleOptions, {
-      global: moduleOptions.global,
       providers: [
         {
           provide: ELASTICSEARCH_CONNECTION_OPTIONS,
@@ -36,7 +35,6 @@ export class ElasticsearchCoreModule implements OnApplicationShutdown, OnApplica
   static forRootAsync(asyncOptions: ElasticsearchModuleAsyncOptions): DynamicModule {
     assert.ok(asyncOptions.useFactory, 'useFactory is required');
     return this._createDynamicModule(asyncOptions, {
-      global: asyncOptions.global,
       providers: [
         {
           provide: ELASTICSEARCH_CONNECTION_OPTIONS,
@@ -51,11 +49,11 @@ export class ElasticsearchCoreModule implements OnApplicationShutdown, OnApplica
   }
 
   private static _createDynamicModule(
-    opts: ElasticsearchModuleOptions | ElasticsearchModuleAsyncOptions,
+    moduleOptions: ElasticsearchModuleOptions | ElasticsearchModuleAsyncOptions,
     metadata: Partial<DynamicModule>,
   ) {
-    const token = opts.token ?? ElasticsearchService;
-    const logger = typeof opts.logger === 'string' ? new Logger(opts.logger) : opts.logger;
+    const token = moduleOptions.token ?? ElasticsearchService;
+    const logger = typeof moduleOptions.logger === 'string' ? new Logger(moduleOptions.logger) : moduleOptions.logger;
     const exports = [ELASTICSEARCH_CONNECTION_OPTIONS, ...(metadata.exports ?? [])];
     const providers: Provider[] = [
       ...(metadata.providers ?? []),
@@ -85,7 +83,7 @@ export class ElasticsearchCoreModule implements OnApplicationShutdown, OnApplica
     return {
       module: ElasticsearchCoreModule,
       providers,
-      global: opts.global,
+      global: moduleOptions.global,
       imports: [
         ElasticsearchModule.registerAsync({
           imports: [
