@@ -2,7 +2,7 @@ import assert from 'node:assert';
 import * as crypto from 'node:crypto';
 import { DynamicModule, Inject, Logger, OnApplicationBootstrap, OnApplicationShutdown, Provider } from '@nestjs/common';
 import { ElasticsearchModule, ElasticsearchService } from '@nestjs/elasticsearch';
-import * as colors from 'ansi-colors';
+import colors from 'ansi-colors';
 import { ELASTICSEARCH_CONNECTION_OPTIONS, ELASTICSEARCH_MODULE_ID } from './constants.js';
 import { getElasticsearchConfig } from './get-elasticsearch-config.js';
 import type {

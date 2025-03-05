@@ -2,7 +2,7 @@ import * as assert from 'node:assert';
 import * as crypto from 'node:crypto';
 import { omit } from '@jsopen/objects';
 import { DynamicModule, Inject, Logger, OnApplicationBootstrap, OnApplicationShutdown, Provider } from '@nestjs/common';
-import * as colors from 'ansi-colors';
+import colors from 'ansi-colors';
 import { Db, MongoClient, MongoClientOptions } from 'mongodb';
 import { MONGODB_CONNECTION_OPTIONS, MONGODB_MODULE_ID } from './constants.js';
 import { getMongodbConfig } from './get-mongodb-config.js';

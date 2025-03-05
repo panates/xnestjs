@@ -2,7 +2,7 @@ import assert from 'node:assert';
 import * as crypto from 'node:crypto';
 import { DynamicModule, Inject, Logger, OnApplicationBootstrap, OnApplicationShutdown, Provider } from '@nestjs/common';
 import { ClientProvider, ClientRMQ, ClientsModule, Transport } from '@nestjs/microservices';
-import * as colors from 'ansi-colors';
+import colors from 'ansi-colors';
 import { RMQ_CONNECTION_OPTIONS, RMQ_MODULE_ID } from './constants.js';
 import { getRabbitmqConfig } from './get-rabbitmq-config.js';
 import type { RabbitmqConnectionOptions, RabbitmqModuleAsyncOptions, RabbitmqModuleOptions } from './types.js';

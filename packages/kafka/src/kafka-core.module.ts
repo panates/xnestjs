@@ -2,7 +2,7 @@ import assert from 'node:assert';
 import * as crypto from 'node:crypto';
 import { DynamicModule, Inject, Logger, OnApplicationBootstrap, OnApplicationShutdown, Provider } from '@nestjs/common';
 import { ClientKafka, ClientProvider, ClientsModule, Transport } from '@nestjs/microservices';
-import * as colors from 'ansi-colors';
+import colors from 'ansi-colors';
 import { KAFKA_CONNECTION_OPTIONS, KAFKA_MODULE_ID } from './constants.js';
 import { createLogCreator } from './create-log-creator.js';
 import { getKafkaConfig } from './get-kafka-config.js';
