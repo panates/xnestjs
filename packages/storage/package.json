@@ -1,6 +1,6 @@
 {
   "name": "@xnestjs/storage",
-  "version": "1.6.0",
+  "version": "1.6.3",
   "description": "NestJS extension library for Storage solutions (S3,GS)",
   "author": "Panates",
   "license": "MIT",
@@ -32,7 +32,7 @@
     "@nestjs/common": "^10.0.0 || ^11.0.0"
   },
   "optionalDependencies": {
-    "minio": "^8.0.4"
+    "minio": "^8.0.0"
   },
   "devDependencies": {
     "@nestjs/testing": "*"

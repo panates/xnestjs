@@ -122,16 +122,15 @@ export class KafkaCoreModule implements OnApplicationShutdown, OnApplicationBoot
 
   async onApplicationBootstrap() {
     const options = this.connectionOptions;
-    if (!options.lazyConnect) {
-      this.logger?.log(
-        'Connecting to Kafka brokers' + (Array.isArray(options.brokers) ? colors.blue(options.brokers.join(',')) : ''),
-      );
-      Logger.flush();
-      await this.client.connect().catch(e => {
-        this.logger?.error('Kafka connection failed: ' + e.message);
-        throw e;
-      });
-    }
+    if (options.lazyConnect) return;
+    this.logger?.log(
+      'Connecting to Kafka brokers' + (Array.isArray(options.brokers) ? colors.blue(options.brokers.join(',')) : ''),
+    );
+    Logger.flush();
+    await this.client.connect().catch(e => {
+      this.logger?.error('Kafka connection failed: ' + e.message);
+      throw e;
+    });
   }
 
   onApplicationShutdown() {

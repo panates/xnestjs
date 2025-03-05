@@ -38,6 +38,8 @@ export function getRedisConfig(
   redisOptions.noDelay = redisOptions.noDelay ?? toBoolean(env[prefix + 'NO_DELAY']);
   redisOptions.connectionName = redisOptions.connectionName ?? env[prefix + 'CONNECTION_NAME'];
   redisOptions.maxRetriesPerRequest =
-    redisOptions.maxRetriesPerRequest ?? toInt(env[prefix + 'MAX_RETRIES_PER_REQUEST']);
+    redisOptions.maxRetriesPerRequest === null
+      ? null
+      : (redisOptions.maxRetriesPerRequest ?? toInt(env[prefix + 'MAX_RETRIES_PER_REQUEST']));
   return out;
 }

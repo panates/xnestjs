@@ -20,7 +20,6 @@ export class ElasticsearchCoreModule implements OnApplicationShutdown, OnApplica
   static forRoot(moduleOptions: ElasticsearchModuleOptions): DynamicModule {
     const connectionOptions = getElasticsearchConfig(moduleOptions.useValue || {}, moduleOptions.envPrefix);
     return this._createDynamicModule(moduleOptions, {
-      global: moduleOptions.global,
       providers: [
         {
           provide: ELASTICSEARCH_CONNECTION_OPTIONS,
@@ -36,7 +35,6 @@ export class ElasticsearchCoreModule implements OnApplicationShutdown, OnApplica
   static forRootAsync(asyncOptions: ElasticsearchModuleAsyncOptions): DynamicModule {
     assert.ok(asyncOptions.useFactory, 'useFactory is required');
     return this._createDynamicModule(asyncOptions, {
-      global: asyncOptions.global,
       providers: [
         {
           provide: ELASTICSEARCH_CONNECTION_OPTIONS,
@@ -51,11 +49,11 @@ export class ElasticsearchCoreModule implements OnApplicationShutdown, OnApplica
   }
 
   private static _createDynamicModule(
-    opts: ElasticsearchModuleOptions | ElasticsearchModuleAsyncOptions,
+    moduleOptions: ElasticsearchModuleOptions | ElasticsearchModuleAsyncOptions,
     metadata: Partial<DynamicModule>,
   ) {
-    const token = opts.token ?? ElasticsearchService;
-    const logger = typeof opts.logger === 'string' ? new Logger(opts.logger) : opts.logger;
+    const token = moduleOptions.token ?? ElasticsearchService;
+    const logger = typeof moduleOptions.logger === 'string' ? new Logger(moduleOptions.logger) : moduleOptions.logger;
     const exports = [ELASTICSEARCH_CONNECTION_OPTIONS, ...(metadata.exports ?? [])];
     const providers: Provider[] = [
       ...(metadata.providers ?? []),
@@ -78,14 +76,14 @@ export class ElasticsearchCoreModule implements OnApplicationShutdown, OnApplica
         provide: token,
         useExisting: ElasticsearchService,
       });
-    }
+    } else exports.push(ElasticsearchModule);
 
     class InnerProvidersModule {}
 
     return {
       module: ElasticsearchCoreModule,
       providers,
-      global: opts.global,
+      global: moduleOptions.global,
       imports: [
         ElasticsearchModule.registerAsync({
           imports: [
@@ -118,16 +116,15 @@ export class ElasticsearchCoreModule implements OnApplicationShutdown, OnApplica
   ) {}
 
   async onApplicationBootstrap() {
-    if (this.logger) {
-      const options = this.connectionOptions;
-      const nodes = options.node || options.nodes;
-      this.logger.log(`Connecting to ElasticSearch at ${colors.blue(String(nodes))}`);
-      Logger.flush();
-      await this.client.ping({}).catch(e => {
-        this.logger.error('ElasticSearch connection failed: ' + e.message);
-        throw e;
-      });
-    }
+    const options = this.connectionOptions;
+    if (options.lazyConnect) return;
+    const nodes = options.node || options.nodes;
+    this.logger?.log(`Connecting to ElasticSearch at ${colors.blue(String(nodes))}`);
+    Logger.flush();
+    await this.client.ping({}).catch(e => {
+      this.logger.error('ElasticSearch connection failed: ' + e.message);
+      throw e;
+    });
   }
 
   onApplicationShutdown() {

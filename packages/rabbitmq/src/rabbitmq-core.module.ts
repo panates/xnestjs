@@ -115,14 +115,13 @@ export class RabbitmqCoreModule implements OnApplicationShutdown, OnApplicationB
 
   async onApplicationBootstrap() {
     const options = this.connectionOptions;
-    if (!options.lazyConnect && options.urls?.length) {
-      this.logger?.log('Connecting to RabbitMQ at ' + colors.blue(options.urls.join(',')));
-      Logger.flush();
-      await this.client.connect().catch(e => {
-        this.logger?.error('RabbitMQ connection failed: ' + e.message);
-        throw e;
-      });
-    }
+    if (options.lazyConnect || !options.urls?.length) return;
+    this.logger?.log('Connecting to RabbitMQ at ' + colors.blue(options.urls.join(',')));
+    Logger.flush();
+    await this.client.connect().catch(e => {
+      this.logger?.error('RabbitMQ connection failed: ' + e.message);
+      throw e;
+    });
   }
 
   onApplicationShutdown() {
