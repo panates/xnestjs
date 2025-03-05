@@ -7,7 +7,11 @@ describe('ElasticsearchModule', () => {
 
   it('forRoot', async () => {
     const module = await Test.createTestingModule({
-      imports: [ElasticsearchModule.forRoot()],
+      imports: [
+        ElasticsearchModule.forRoot({
+          useValue: { lazyConnect: true },
+        }),
+      ],
     }).compile();
     app = module.createNestApplication();
     await app.init();
