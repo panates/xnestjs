@@ -35,6 +35,7 @@
   },
   "devDependencies": {
     "@nestjs/testing": "^11.0.11",
+    "@nestjs/terminus": "^10.0.0 || ^11.0.0",
     "ts-gems": "^3.11.3"
   },
   "type": "module",
