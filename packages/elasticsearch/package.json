@@ -1,6 +1,6 @@
 {
   "name": "@xnestjs/elasticsearch",
-  "version": "1.6.4",
+  "version": "1.7.0",
   "description": "NestJS extension library for ElasticSearch",
   "author": "Panates",
   "license": "MIT",
