@@ -35,7 +35,7 @@
     "@nestjs/elasticsearch": "^10.0.0 || ^11.0.0"
   },
   "devDependencies": {
-    "@nestjs/testing": "^11.0.11",
+    "@nestjs/testing": "^11.0.12",
     "ts-gems": "^3.11.3"
   },
   "type": "module",

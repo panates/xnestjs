@@ -1,6 +1,6 @@
 import process from 'node:process';
 import { clone } from '@jsopen/objects';
-import { toInt } from 'putil-varhelpers';
+import { toBoolean, toInt } from 'putil-varhelpers';
 import type { RabbitmqConnectionOptions } from './types';
 
 export function getRabbitmqConfig(
@@ -17,5 +17,6 @@ export function getRabbitmqConfig(
     options.socketOptions.reconnectTimeInSeconds ?? toInt(env[prefix + 'RECONNECT_TIME']);
   options.socketOptions.heartbeatIntervalInSeconds =
     options.socketOptions.heartbeatIntervalInSeconds ?? toInt(env[prefix + 'HEARTBEAT_INTERVAL']);
+  options.lazyConnect = toBoolean(env[prefix + 'LAZY_CONNECT'] ?? 'false');
   return options;
 }

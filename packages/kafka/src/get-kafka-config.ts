@@ -61,5 +61,6 @@ export function getKafkaConfig(
   options.consumer = options.consumer || ({} as any);
   options.consumer!.groupId =
     options.consumer!.groupId ?? (env[envPrefix + 'CONSUMER_GROUP_ID'] || 'kafka_default_group');
+  options.lazyConnect = toBoolean(env[envPrefix + 'LAZY_CONNECT'] ?? 'false');
   return options;
 }

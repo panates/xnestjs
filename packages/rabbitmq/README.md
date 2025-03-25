@@ -1,23 +1,29 @@
 # @xnestjs/rabbitmq
 
-NestJS extension library for RabbitMQ
+**@xnestjs/rabbitmq** is a powerful extension library for integrating RabbitMQ into your NestJS applications with ease.
 
-## Install
+## 📦 Installation
+
+Use npm:
 
 ```sh
 npm install @xnestjs/rabbitmq
-# or using yarn
+```
+
+Or with yarn:
+
+```sh
 yarn add @xnestjs/rabbitmq
 ```
 
-## Usage
+## 🚀 Getting Started
 
-### Register sync
+### Synchronous Registration
 
-An example of nestjs module that import the @xnestjs/rabbitmq
+Here's how to register the RabbitMQ module synchronously in your NestJS application:
 
 ```ts
-// module.ts
+// my.module.ts
 import { Module } from '@nestjs/common';
 import { RabbitmqModule } from '@xnestjs/rabbitmq';
 
@@ -34,42 +40,51 @@ export class MyModule {
 }
 ```
 
-### Register async
+### Asynchronous Registration
 
-An example of nestjs module that import the @xnestjs/rabbitmq async
+For dynamic configuration (e.g., using a ConfigService), use the async registration method:
 
 ```ts
-// module.ts
+// my.module.ts
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RabbitmqModule } from '@xnestjs/rabbitmq';
 
 @Module({
     imports: [
+        ConfigModule.forRoot(),
         RabbitmqModule.forRootAsync({
-            inject: [ConfigModule],
+            inject: [ConfigService],
             useFactory: (config: ConfigService) => ({
-                urls: config.get('RMQ_URLS'),
+                urls: config.get<string[]>('RMQ_URLS'),
             }),
         }),
-    ]
+    ],
 })
 export class MyModule {
 }
 ```
 
-## Environment Variables
+## ⚙️ Environment Variables
 
-The library supports configuration through environment variables. Environment variables below is accepted.
-All environment variables starts with prefix (RMQ_). This can be configured while registering the module.
+The module supports configuration via environment variables. These can be used in place of or alongside the object-based
+configuration. By default, variables are prefixed with `RMQ_`.
 
 <--- BEGIN env --->
 
-| Environment Variable        | Type      | Default | Description |
-|-----------------------------|-----------|---------|-------------|
-| RMQ_URLS                    | String[]! |         |             |
-| RMQ_PREFETCH_COUNT          | Number    |         |             |
-| RMQ_MAX_CONNECTION_ATTEMPTS | Number    |         |             |
-| RMQ_RECONNECT_TIME          | Number    |         |             |
-| RMQ_HEARTBEAT_INTERVAL      | Number    |         |             |
+| Environment Variable          | Type      | Default | Description                                                              |
+|-------------------------------|-----------|---------|--------------------------------------------------------------------------|
+| `RMQ_URLS`                    | String[]! | —       | A list of RabbitMQ server URLs to connect to.                            |
+| `RMQ_PREFETCH_COUNT`          | Number    | —       | Sets the prefetch count for consumers to control message flow.           |
+| `RMQ_MAX_CONNECTION_ATTEMPTS` | Number    | —       | Maximum number of retry attempts to establish a connection.              |
+| `RMQ_RECONNECT_TIME`          | Number    | —       | Time (in milliseconds) to wait before trying to reconnect.               |
+| `RMQ_HEARTBEAT_INTERVAL`      | Number    | —       | Interval (in seconds) for the RabbitMQ heartbeat mechanism.              |
+| `RMQ_LAZY_CONNECT`            | Boolean   | false   | If true, defers connecting to RabbitMQ until a message is sent/received. |
 
 <--- END env --->
+
+> 💡 You can customize the environment variable prefix during module registration by passing the `envPrefix` option.
+
+## 📚 License
+
+MIT License

@@ -41,5 +41,6 @@ export function getRedisConfig(
     redisOptions.maxRetriesPerRequest === null
       ? null
       : (redisOptions.maxRetriesPerRequest ?? toInt(env[prefix + 'MAX_RETRIES_PER_REQUEST']));
+  out.lazyConnect = toBoolean(env[prefix + 'LAZY_CONNECT'] ?? 'false');
   return out;
 }
