@@ -74,12 +74,12 @@ configuration. By default, variables are prefixed with `RMQ_`.
 
 | Environment Variable          | Type      | Default | Description                                                              |
 |-------------------------------|-----------|---------|--------------------------------------------------------------------------|
-| `RMQ_URLS`                    | String[]! | —       | A list of RabbitMQ server URLs to connect to.                            |
-| `RMQ_PREFETCH_COUNT`          | Number    | —       | Sets the prefetch count for consumers to control message flow.           |
-| `RMQ_MAX_CONNECTION_ATTEMPTS` | Number    | —       | Maximum number of retry attempts to establish a connection.              |
-| `RMQ_RECONNECT_TIME`          | Number    | —       | Time (in milliseconds) to wait before trying to reconnect.               |
-| `RMQ_HEARTBEAT_INTERVAL`      | Number    | —       | Interval (in seconds) for the RabbitMQ heartbeat mechanism.              |
-| `RMQ_LAZY_CONNECT`            | Boolean   | false   | If true, defers connecting to RabbitMQ until a message is sent/received. |
+| `RMQ_URLS`                    | String[]! |         | A list of RabbitMQ server URLs to connect to.                            |
+| `RMQ_PREFETCH_COUNT`          | Number    |         | Sets the prefetch count for consumers to control message flow.           |
+| `RMQ_MAX_CONNECTION_ATTEMPTS` | Number    |         | Maximum number of retry attempts to establish a connection.              |
+| `RMQ_RECONNECT_TIME`          | Number    |         | Time (in milliseconds) to wait before trying to reconnect.               |
+| `RMQ_HEARTBEAT_INTERVAL`      | Number    |         | Interval (in seconds) for the RabbitMQ heartbeat mechanism.              |
+| `RMQ_LAZY_CONNECT`            | Boolean   | `false` | If true, defers connecting to RabbitMQ until a message is sent/received. |
 
 <--- END env --->
 
