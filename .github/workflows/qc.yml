@@ -6,7 +6,7 @@ on:
   # on pull request
   push:
     branches-ignore:
-      - main
+      - master
       - dev
 
 # Only one run per branch at a time

@@ -11,7 +11,7 @@ on:
   # on git push
   push:
     branches:
-      - main
+      - master
     paths:
       - 'packages/*/package.json'
 
