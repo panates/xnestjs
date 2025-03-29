@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig-base.json",
+  "compilerOptions": {
+    "types": ["node", "mocha"],
+    "emitDecoratorMetadata": true,
+    "verbatimModuleSyntax": false,
+    "sourceMap": true
+  }
+}

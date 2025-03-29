@@ -1,21 +1,37 @@
 import * as assert from 'node:assert';
 import * as crypto from 'node:crypto';
 import { omit } from '@jsopen/objects';
-import { DynamicModule, Inject, Logger, OnApplicationBootstrap, OnApplicationShutdown, Provider } from '@nestjs/common';
+import {
+  DynamicModule,
+  Inject,
+  Logger,
+  OnApplicationBootstrap,
+  OnApplicationShutdown,
+  Provider,
+} from '@nestjs/common';
 import colors from 'ansi-colors';
 import { Db, MongoClient, MongoClientOptions } from 'mongodb';
 import { MONGODB_CONNECTION_OPTIONS, MONGODB_MODULE_ID } from './constants.js';
 import { getMongodbConfig } from './get-mongodb-config.js';
-import type { MongodbConnectionOptions, MongodbModuleAsyncOptions, MongodbModuleOptions } from './types.js';
+import type {
+  MongodbConnectionOptions,
+  MongodbModuleAsyncOptions,
+  MongodbModuleOptions,
+} from './types.js';
 
 const CLIENT_TOKEN = Symbol('CLIENT_TOKEN');
 
-export class MongodbCoreModule implements OnApplicationShutdown, OnApplicationBootstrap {
+export class MongodbCoreModule
+  implements OnApplicationShutdown, OnApplicationBootstrap
+{
   /**
    * Configures and returns a dynamic module for MongoDB integration.
    */
   static forRoot(moduleOptions: MongodbModuleOptions): DynamicModule {
-    const connectionOptions = getMongodbConfig(moduleOptions.useValue || {}, moduleOptions.envPrefix);
+    const connectionOptions = getMongodbConfig(
+      moduleOptions.useValue || {},
+      moduleOptions.envPrefix,
+    );
     return this._createDynamicModule(moduleOptions, {
       global: moduleOptions.global,
       providers: [
@@ -57,17 +73,29 @@ export class MongodbCoreModule implements OnApplicationShutdown, OnApplicationBo
       {
         provide: token,
         inject: [MONGODB_CONNECTION_OPTIONS],
-        useFactory: async (connectionOptions: MongodbConnectionOptions): Promise<MongoClient> => {
-          const mongoOptions = omit(connectionOptions, ['url', 'database', 'lazyConnect']) as MongoClientOptions;
-          if (mongoOptions.auth && !mongoOptions.auth?.username) delete mongoOptions.auth;
+        useFactory: async (
+          connectionOptions: MongodbConnectionOptions,
+        ): Promise<MongoClient> => {
+          const mongoOptions = omit(connectionOptions, [
+            'url',
+            'database',
+            'lazyConnect',
+          ]) as MongoClientOptions;
+          if (mongoOptions.auth && !mongoOptions.auth?.username)
+            delete mongoOptions.auth;
           return new MongoClient(connectionOptions.url!, mongoOptions);
         },
       },
       {
         provide: dbToken,
         inject: [token, MONGODB_CONNECTION_OPTIONS],
-        useFactory: async (client: MongoClient, connectionOptions: MongodbConnectionOptions) => {
-          return connectionOptions.database ? client.db(connectionOptions.database) : undefined;
+        useFactory: async (
+          client: MongoClient,
+          connectionOptions: MongodbConnectionOptions,
+        ) => {
+          return connectionOptions.database
+            ? client.db(connectionOptions.database)
+            : undefined;
         },
       },
       {
@@ -76,7 +104,10 @@ export class MongodbCoreModule implements OnApplicationShutdown, OnApplicationBo
       },
       {
         provide: Logger,
-        useValue: typeof opts.logger === 'string' ? new Logger(opts.logger) : opts.logger,
+        useValue:
+          typeof opts.logger === 'string'
+            ? new Logger(opts.logger)
+            : opts.logger,
       },
     ];
     return {
@@ -90,7 +121,12 @@ export class MongodbCoreModule implements OnApplicationShutdown, OnApplicationBo
           useValue: crypto.randomUUID(),
         },
       ],
-      exports: [MONGODB_CONNECTION_OPTIONS, token, dbToken, ...(metadata.exports ?? [])],
+      exports: [
+        MONGODB_CONNECTION_OPTIONS,
+        token,
+        dbToken,
+        ...(metadata.exports ?? []),
+      ],
     } as DynamicModule;
   }
 
@@ -109,7 +145,9 @@ export class MongodbCoreModule implements OnApplicationShutdown, OnApplicationBo
   onApplicationBootstrap() {
     const options = this.connectionOptions;
     if (options.lazyConnect) return;
-    this.logger?.log(`Connecting to MongoDB [${options.database}] at ${colors.blue(options.url!)}`);
+    this.logger?.log(
+      `Connecting to MongoDB [${options.database}] at ${colors.blue(options.url!)}`,
+    );
     Logger.flush();
     return this.client.connect().catch(e => {
       this.logger?.error('MongoDB connection failed: ' + e.message);

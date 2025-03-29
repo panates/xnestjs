@@ -1,6 +1,9 @@
 import type { DynamicModule } from '@nestjs/common';
 import { MongodbCoreModule } from './mongodb-core.module.js';
-import type { MongodbModuleAsyncOptions, MongodbModuleOptions } from './types.js';
+import type {
+  MongodbModuleAsyncOptions,
+  MongodbModuleOptions,
+} from './types.js';
 
 /**
  * The `MongodbCoreModule` class provides static methods to configure and

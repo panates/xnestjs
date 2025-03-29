@@ -28,7 +28,9 @@ export interface StorageModuleOptions extends BaseModuleOptions {
   useValue?: StorageOptions;
 }
 
-export interface StorageModuleAsyncOptions extends BaseModuleOptions, Pick<ModuleMetadata, 'imports'> {
+export interface StorageModuleAsyncOptions
+  extends BaseModuleOptions,
+    Pick<ModuleMetadata, 'imports'> {
   useFactory?: (...args: any[]) => Promise<StorageOptions> | StorageOptions;
   inject?: any[];
 }

@@ -1,9 +1,19 @@
 import assert from 'node:assert';
-import { DynamicModule, Inject, Logger, OnApplicationBootstrap, OnApplicationShutdown, Provider } from '@nestjs/common';
+import {
+  DynamicModule,
+  Inject,
+  Logger,
+  OnApplicationBootstrap,
+  OnApplicationShutdown,
+  Provider,
+} from '@nestjs/common';
 import colors from 'ansi-colors';
 import * as crypto from 'crypto';
 import Redis, { Cluster } from 'ioredis';
-import { IOREDIS_CONNECTION_OPTIONS, IOREDIS_MODULE_TOKEN } from './constants.js';
+import {
+  IOREDIS_CONNECTION_OPTIONS,
+  IOREDIS_MODULE_TOKEN,
+} from './constants.js';
 import { getRedisConfig } from './get-redis-config.js';
 import { RedisClient } from './redis-client.js';
 import type {
@@ -16,9 +26,14 @@ import { isClusterOptions, isStandaloneOptions } from './utils.js';
 
 const CLIENT_TOKEN = Symbol('CLIENT_TOKEN');
 
-export class RedisCoreModule implements OnApplicationBootstrap, OnApplicationShutdown {
+export class RedisCoreModule
+  implements OnApplicationBootstrap, OnApplicationShutdown
+{
   static forRoot(moduleOptions: RedisModuleOptions): DynamicModule {
-    const connectionOptions = getRedisConfig(moduleOptions.useValue, moduleOptions.envPrefix);
+    const connectionOptions = getRedisConfig(
+      moduleOptions.useValue,
+      moduleOptions.envPrefix,
+    );
     return this._createDynamicModule(moduleOptions, {
       global: moduleOptions.global,
       providers: [
@@ -47,13 +62,18 @@ export class RedisCoreModule implements OnApplicationBootstrap, OnApplicationShu
     });
   }
 
-  private static _createDynamicModule(opts: RedisModuleOptions, metadata: Partial<DynamicModule>) {
+  private static _createDynamicModule(
+    opts: RedisModuleOptions,
+    metadata: Partial<DynamicModule>,
+  ) {
     const token = opts.token ?? RedisClient;
     const providers: Provider[] = [
       {
         provide: token,
         inject: [IOREDIS_CONNECTION_OPTIONS],
-        useFactory: async (connectionOptions: RedisStandaloneConnectionOptions): Promise<RedisClient> => {
+        useFactory: async (
+          connectionOptions: RedisStandaloneConnectionOptions,
+        ): Promise<RedisClient> => {
           return this._createClient(connectionOptions);
         },
       },
@@ -63,7 +83,10 @@ export class RedisCoreModule implements OnApplicationBootstrap, OnApplicationShu
       },
       {
         provide: Logger,
-        useValue: typeof opts.logger === 'string' ? new Logger(opts.logger) : opts.logger,
+        useValue:
+          typeof opts.logger === 'string'
+            ? new Logger(opts.logger)
+            : opts.logger,
       },
     ];
     return {
@@ -85,10 +108,11 @@ export class RedisCoreModule implements OnApplicationBootstrap, OnApplicationShu
     const opts = { ...options };
     let client: RedisClient;
     if (isClusterOptions(opts)) {
+      const startupNodes = (opts as any).nodes;
       delete (opts as any).name;
       delete (opts as any).nodes;
       opts.lazyConnect = true;
-      const cluster = new Cluster(opts.nodes, opts);
+      const cluster = new Cluster(startupNodes, opts);
       client = new RedisClient({ cluster });
     } else if (isStandaloneOptions(opts)) {
       if (opts.host && opts.host.includes('://')) {
@@ -130,14 +154,21 @@ export class RedisCoreModule implements OnApplicationBootstrap, OnApplicationShu
     const isCluster = isClusterOptions(opts);
     const hosts = isCluster
       ? opts.nodes
-          .map(x => (typeof x === 'object' ? x.host + ':' + x.port : typeof x === 'number' ? 'localhost:' + x : x))
+          .map(x =>
+            typeof x === 'object'
+              ? x.host + ':' + x.port
+              : typeof x === 'number'
+                ? 'localhost:' + x
+                : x,
+          )
           .join(', ')
       : opts.host;
     if (hosts) {
       this.logger?.log('Connecting to redis at ' + colors.blue(hosts));
       Logger.flush();
       try {
-        if (this.client.redis.status === 'wait') await this.client.redis.connect();
+        if (this.client.redis.status === 'wait')
+          await this.client.redis.connect();
         await this.client.redis.ping();
       } catch (e: any) {
         this.logger?.error('Redis connection failed: ' + e.message);

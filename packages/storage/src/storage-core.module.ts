@@ -5,7 +5,12 @@ import { STORAGE_MODULE_ID, STORAGE_OPTIONS } from './constants.js';
 import { getStorageConfig } from './get-storage-config.js';
 import { S3StorageConnection } from './providers/s3-storage-connection.js';
 import { StorageConnection } from './services/storage-connection.js';
-import type { S3StorageOptions, StorageModuleAsyncOptions, StorageModuleOptions, StorageOptions } from './types.js';
+import type {
+  S3StorageOptions,
+  StorageModuleAsyncOptions,
+  StorageModuleOptions,
+  StorageOptions,
+} from './types.js';
 
 const CLIENT_TOKEN = Symbol('CLIENT_TOKEN');
 
@@ -14,7 +19,10 @@ export class StorageCoreModule {
    * Configures and returns a dynamic module
    */
   static forRoot(moduleOptions: StorageModuleOptions): DynamicModule {
-    const connectionOptions = getStorageConfig(moduleOptions.useValue || {}, moduleOptions.envPrefix);
+    const connectionOptions = getStorageConfig(
+      moduleOptions.useValue || {},
+      moduleOptions.envPrefix,
+    );
     return this._createDynamicModule(moduleOptions, {
       global: moduleOptions.global,
       providers: [
@@ -55,12 +63,18 @@ export class StorageCoreModule {
       {
         provide: token,
         inject: [STORAGE_OPTIONS],
-        useFactory: async (storageOptions: StorageOptions): Promise<S3StorageConnection> => {
+        useFactory: async (
+          storageOptions: StorageOptions,
+        ): Promise<S3StorageConnection> => {
           if (storageOptions.provider === 's3') {
-            return new S3StorageConnection((storageOptions as S3StorageOptions).s3);
+            return new S3StorageConnection(
+              (storageOptions as S3StorageOptions).s3,
+            );
           }
           /** istanbul ignore next */
-          throw new Error(`Unknown Storage provider (${storageOptions.provider})`);
+          throw new Error(
+            `Unknown Storage provider (${storageOptions.provider})`,
+          );
         },
       },
       {
@@ -69,7 +83,10 @@ export class StorageCoreModule {
       },
       {
         provide: Logger,
-        useValue: typeof opts.logger === 'string' ? new Logger(opts.logger) : opts.logger,
+        useValue:
+          typeof opts.logger === 'string'
+            ? new Logger(opts.logger)
+            : opts.logger,
       },
     ];
     return {

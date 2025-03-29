@@ -1,21 +1,42 @@
 import assert from 'node:assert';
 import * as crypto from 'node:crypto';
-import { DynamicModule, Inject, Logger, OnApplicationBootstrap, OnApplicationShutdown, Provider } from '@nestjs/common';
-import { ClientKafka, ClientProvider, ClientsModule, Transport } from '@nestjs/microservices';
+import {
+  DynamicModule,
+  Inject,
+  Logger,
+  OnApplicationBootstrap,
+  OnApplicationShutdown,
+  Provider,
+} from '@nestjs/common';
+import {
+  ClientKafka,
+  ClientProvider,
+  ClientsModule,
+  Transport,
+} from '@nestjs/microservices';
 import colors from 'ansi-colors';
 import { KAFKA_CONNECTION_OPTIONS, KAFKA_MODULE_ID } from './constants.js';
 import { createLogCreator } from './create-log-creator.js';
 import { getKafkaConfig } from './get-kafka-config.js';
-import type { KafkaConnectionOptions, KafkaModuleAsyncOptions, KafkaModuleOptions } from './types';
+import type {
+  KafkaConnectionOptions,
+  KafkaModuleAsyncOptions,
+  KafkaModuleOptions,
+} from './types';
 
 const CLIENT_TOKEN = Symbol('CLIENT_TOKEN');
 
-export class KafkaCoreModule implements OnApplicationShutdown, OnApplicationBootstrap {
+export class KafkaCoreModule
+  implements OnApplicationShutdown, OnApplicationBootstrap
+{
   /**
    *
    */
   static forRoot(moduleOptions: KafkaModuleOptions): DynamicModule {
-    const connectionOptions = getKafkaConfig(moduleOptions.useValue || {}, moduleOptions.envPrefix);
+    const connectionOptions = getKafkaConfig(
+      moduleOptions.useValue || {},
+      moduleOptions.envPrefix,
+    );
     return this._createDynamicModule(moduleOptions, {
       global: moduleOptions.global,
       providers: [
@@ -53,7 +74,8 @@ export class KafkaCoreModule implements OnApplicationShutdown, OnApplicationBoot
   ) {
     const token = opts.token ?? ClientKafka;
     const name = typeof token === 'string' ? token : 'Kafka';
-    const logger = typeof opts.logger === 'string' ? new Logger(opts.logger) : opts.logger;
+    const logger =
+      typeof opts.logger === 'string' ? new Logger(opts.logger) : opts.logger;
     const exports = [KAFKA_CONNECTION_OPTIONS, ...(metadata.exports ?? [])];
     const providers: Provider[] = [
       ...(metadata.providers ?? []),
@@ -88,7 +110,9 @@ export class KafkaCoreModule implements OnApplicationShutdown, OnApplicationBoot
               name,
               extraProviders: metadata.providers,
               inject: [KAFKA_CONNECTION_OPTIONS],
-              useFactory: (connectionOptions: KafkaConnectionOptions): ClientProvider => {
+              useFactory: (
+                connectionOptions: KafkaConnectionOptions,
+              ): ClientProvider => {
                 return {
                   transport: Transport.KAFKA,
                   options: {
@@ -124,7 +148,10 @@ export class KafkaCoreModule implements OnApplicationShutdown, OnApplicationBoot
     const options = this.connectionOptions;
     if (options.lazyConnect) return;
     this.logger?.log(
-      'Connecting to Kafka brokers' + (Array.isArray(options.brokers) ? colors.blue(options.brokers.join(',')) : ''),
+      'Connecting to Kafka brokers' +
+        (Array.isArray(options.brokers)
+          ? colors.blue(options.brokers.join(','))
+          : ''),
     );
     Logger.flush();
     await this.client.connect().catch(e => {

@@ -12,8 +12,12 @@ export interface RedisessModuleOptions extends BaseModuleOptions {
   useValue: RedisessSessionOptions;
 }
 
-export interface RedisessModuleAsyncOptions extends BaseModuleOptions, Pick<ModuleMetadata, 'imports'> {
-  useFactory?: (...args: any[]) => Promise<RedisessSessionOptions> | RedisessSessionOptions;
+export interface RedisessModuleAsyncOptions
+  extends BaseModuleOptions,
+    Pick<ModuleMetadata, 'imports'> {
+  useFactory?: (
+    ...args: any[]
+  ) => Promise<RedisessSessionOptions> | RedisessSessionOptions;
   inject?: any[];
 }
 

@@ -22,17 +22,16 @@ import { Module } from '@nestjs/common';
 import { RedisModule } from '@xnestjs/ioredis';
 
 @Module({
-    imports: [
-        RedisModule.forRoot({
-            useValue: {
-                host: 'localhost',
-                port: 6379
-            }
-        }),
-    ]
+  imports: [
+    RedisModule.forRoot({
+      useValue: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
+  ],
 })
-export class MyModule {
-}
+export class MyModule {}
 ```
 
 ### Register cluster sync
@@ -45,16 +44,15 @@ import { Module } from '@nestjs/common';
 import { RedisModule } from '@xnestjs/ioredis';
 
 @Module({
-    imports: [
-        RedisModule.forRoot({
-            useValue: {
-                nodes: ['localhost'],
-            }
-        }),
-    ]
+  imports: [
+    RedisModule.forRoot({
+      useValue: {
+        nodes: ['localhost'],
+      },
+    }),
+  ],
 })
-export class MyModule {
-}
+export class MyModule {}
 ```
 
 ### Register standalone async
@@ -67,17 +65,16 @@ import { Module } from '@nestjs/common';
 import { RedisModule } from '@xnestjs/ioredis';
 
 @Module({
-    imports: [
-        ElasticsearchModule.forRootAsync({
-            inject: [ConfigModule],
-            useFactory: (config: ConfigService) => ({
-                host: config.get('REDIS_HOST'),
-            }),
-        }),
-    ]
+  imports: [
+    ElasticsearchModule.forRootAsync({
+      inject: [ConfigModule],
+      useFactory: (config: ConfigService) => ({
+        host: config.get('REDIS_HOST'),
+      }),
+    }),
+  ],
 })
-export class MyModule {
-}
+export class MyModule {}
 ```
 
 ### Register cluster async
@@ -90,23 +87,22 @@ import { Module } from '@nestjs/common';
 import { RedisModule } from '@xnestjs/ioredis';
 
 @Module({
-    imports: [
-        ElasticsearchModule.forRootAsync({
-            inject: [ConfigModule],
-            useFactory: (config: ConfigService) => ({
-                nodes: config.get('REDIS_NODES'),
-            }),
-        }),
-    ]
+  imports: [
+    ElasticsearchModule.forRootAsync({
+      inject: [ConfigModule],
+      useFactory: (config: ConfigService) => ({
+        nodes: config.get('REDIS_NODES'),
+      }),
+    }),
+  ],
 })
-export class MyModule {
-}
+export class MyModule {}
 ```
 
 ## Environment Variables
 
 The library supports configuration through environment variables. Environment variables below is accepted.
-All environment variables starts with prefix (REDIS_). This can be configured while registering the module.
+All environment variables starts with prefix (REDIS\_). This can be configured while registering the module.
 
 <--- BEGIN env --->
 
@@ -115,7 +111,7 @@ All environment variables starts with prefix (REDIS_). This can be configured wh
 The following environment variables apply to the standalone connection.
 
 | Environment Variable | Type   | Default   | Description |
-|----------------------|--------|-----------|-------------|
+| -------------------- | ------ | --------- | ----------- |
 | REDIS_HOST           | String | localhost |             |
 | REDIS_PORT           | Number | 6379      |             |
 
@@ -124,13 +120,13 @@ The following environment variables apply to the standalone connection.
 The following environment variables apply to the standalone connection.
 
 | Environment Variable | Type    | Default   | Description |
-|----------------------|---------|-----------|-------------|
+| -------------------- | ------- | --------- | ----------- |
 | NODES                | String! | localhost |             |
 
 ### Common Variables
 
 | Environment Variable          | Type    | Default | Description                                                                                                                       |
-|-------------------------------|---------|---------|-----------------------------------------------------------------------------------------------------------------------------------|
+| ----------------------------- | ------- | ------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | REDIS_DB                      | Number  | 0       | Hostname for Redis Server                                                                                                         |
 | REDIS_USERNAME                | String  |         | Port number                                                                                                                       |
 | REDIS_PASSWORD                | String  |         | If set, client will send AUTH command with the value of this option as the first argument when connected.                         |

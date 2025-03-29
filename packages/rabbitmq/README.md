@@ -28,16 +28,15 @@ import { Module } from '@nestjs/common';
 import { RabbitmqModule } from '@xnestjs/rabbitmq';
 
 @Module({
-    imports: [
-        RabbitmqModule.forRoot({
-            useValue: {
-                urls: ['amqp://localhost:5672'],
-            },
-        }),
-    ],
+  imports: [
+    RabbitmqModule.forRoot({
+      useValue: {
+        urls: ['amqp://localhost:5672'],
+      },
+    }),
+  ],
 })
-export class MyModule {
-}
+export class MyModule {}
 ```
 
 ### Asynchronous Registration
@@ -51,18 +50,17 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RabbitmqModule } from '@xnestjs/rabbitmq';
 
 @Module({
-    imports: [
-        ConfigModule.forRoot(),
-        RabbitmqModule.forRootAsync({
-            inject: [ConfigService],
-            useFactory: (config: ConfigService) => ({
-                urls: config.get<string[]>('RMQ_URLS'),
-            }),
-        }),
-    ],
+  imports: [
+    ConfigModule.forRoot(),
+    RabbitmqModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        urls: config.get<string[]>('RMQ_URLS'),
+      }),
+    }),
+  ],
 })
-export class MyModule {
-}
+export class MyModule {}
 ```
 
 ## ⚙️ Environment Variables
@@ -73,7 +71,7 @@ configuration. By default, variables are prefixed with `RMQ_`.
 <--- BEGIN env --->
 
 | Environment Variable          | Type      | Default | Description                                                              |
-|-------------------------------|-----------|---------|--------------------------------------------------------------------------|
+| ----------------------------- | --------- | ------- | ------------------------------------------------------------------------ |
 | `RMQ_URLS`                    | String[]! |         | A list of RabbitMQ server URLs to connect to.                            |
 | `RMQ_PREFETCH_COUNT`          | Number    |         | Sets the prefetch count for consumers to control message flow.           |
 | `RMQ_MAX_CONNECTION_ATTEMPTS` | Number    |         | Maximum number of retry attempts to establish a connection.              |

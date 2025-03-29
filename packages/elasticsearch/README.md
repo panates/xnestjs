@@ -22,16 +22,15 @@ import { Module } from '@nestjs/common';
 import { ElasticsearchModule } from '@xnestjs/elasticsearch';
 
 @Module({
-    imports: [
-        ElasticsearchModule.forRoot({
-            useValue: {
-                node: 'http://localhost:9201',
-            },
-        }),
-    ],
+  imports: [
+    ElasticsearchModule.forRoot({
+      useValue: {
+        node: 'http://localhost:9201',
+      },
+    }),
+  ],
 })
-export class MyModule {
-}
+export class MyModule {}
 ```
 
 ### Register async
@@ -44,28 +43,27 @@ import { Module } from '@nestjs/common';
 import { ElasticsearchModule } from '@xnestjs/elasticsearch';
 
 @Module({
-    imports: [
-        ElasticsearchModule.forRootAsync({
-            inject: [ConfigModule],
-            useFactory: (config: ConfigService) => ({
-                node: config.get('ELASTIC_NODE'),
-            }),
-        }),
-    ]
+  imports: [
+    ElasticsearchModule.forRootAsync({
+      inject: [ConfigModule],
+      useFactory: (config: ConfigService) => ({
+        node: config.get('ELASTIC_NODE'),
+      }),
+    }),
+  ],
 })
-export class MyModule {
-}
+export class MyModule {}
 ```
 
 ## Environment Variables
 
 The library supports configuration through environment variables. Environment variables below is accepted.
-All environment variables starts with prefix (MONGODB_). This can be configured while registering the module.
+All environment variables starts with prefix (MONGODB\_). This can be configured while registering the module.
 
 <--- BEGIN env --->
 
 | Environment Variable                 | Type    | Default               | Description                                                                                                                                                                                            |
-|--------------------------------------|---------|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ------------------------------------ | ------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | ELASTIC_NODE                         | String  | http://localhost:9200 | Elasticsearch node settings, if there is only one node. Required if `NODES` or `CLOUD_ID` is not set.                                                                                                  |
 | ELASTIC_NODES                        | String  |                       | Elasticsearch node settings, if there is only one node. Required if `NODE` or `CLOUD_ID` is not set.                                                                                                   |
 | ELASTIC_NAME                         | String  | elasticsearch-js      | A name for client                                                                                                                                                                                      |

@@ -11,6 +11,7 @@ export function getRedisessConfig(
   const env = process.env;
   options.namespace = options.namespace ?? env[prefix + 'NAMESPACE'];
   options.ttl = options.ttl ?? toInt(env[prefix + 'TTL']);
-  options.wipeInterval = options.wipeInterval ?? toInt(env[prefix + 'WIPE_INTERVAL']) ?? 5000;
+  options.wipeInterval =
+    options.wipeInterval ?? toInt(env[prefix + 'WIPE_INTERVAL']) ?? 5000;
   return options;
 }

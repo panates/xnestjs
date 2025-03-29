@@ -10,7 +10,9 @@ export function getKafkaConfig(
 ): KafkaConnectionOptions {
   const options = clone(moduleOptions) as KafkaConnectionOptions;
   const env = process.env;
-  options.brokers = options.brokers || (env[envPrefix + 'BROKERS'] ?? 'localhost').split(/\s*,\s*/);
+  options.brokers =
+    options.brokers ||
+    (env[envPrefix + 'BROKERS'] ?? 'localhost').split(/\s*,\s*/);
   if (options.ssl == null && toBoolean(env[envPrefix + 'SSL'])) {
     options.ssl = {
       ca: [env[envPrefix + 'SSL_CA_CERT'] || ''],
@@ -20,14 +22,20 @@ export function getKafkaConfig(
       rejectUnauthorized: toBoolean(env[envPrefix + 'SSL_REJECT_UNAUTHORIZED']),
       checkServerIdentity: (host, cert) => {
         if (cert.subject.CN !== host) {
-          return new Error(`Certificate CN (${cert.subject.CN}) does not match host (${host})`);
+          return new Error(
+            `Certificate CN (${cert.subject.CN}) does not match host (${host})`,
+          );
         }
       },
     };
   }
   const sasl = env[envPrefix + 'SASL'] as SASLMechanism;
   if (options.sasl == null && sasl) {
-    if (sasl === 'plain' || sasl === 'scram-sha-256' || sasl === 'scram-sha-512') {
+    if (
+      sasl === 'plain' ||
+      sasl === 'scram-sha-256' ||
+      sasl === 'scram-sha-512'
+    ) {
       options.sasl = {
         mechanism: sasl,
         username: env[envPrefix + 'SASL_USERNAME'] || '',
@@ -44,12 +52,18 @@ export function getKafkaConfig(
     }
   }
   options.clientId = options.clientId ?? env[envPrefix + 'CLIENT_ID'];
-  options.connectionTimeout = options.connectionTimeout ?? toInt(env[envPrefix + 'CONNECT_TIMEOUT']);
-  options.authenticationTimeout = options.authenticationTimeout ?? toInt(env[envPrefix + 'AUTH_TIMEOUT']);
-  options.reauthenticationThreshold = options.reauthenticationThreshold ?? toInt(env[envPrefix + 'REAUTH_THRESHOLD']);
-  options.requestTimeout = options.requestTimeout ?? toInt(env[envPrefix + 'REQUEST_TIMEOUT']);
+  options.connectionTimeout =
+    options.connectionTimeout ?? toInt(env[envPrefix + 'CONNECT_TIMEOUT']);
+  options.authenticationTimeout =
+    options.authenticationTimeout ?? toInt(env[envPrefix + 'AUTH_TIMEOUT']);
+  options.reauthenticationThreshold =
+    options.reauthenticationThreshold ??
+    toInt(env[envPrefix + 'REAUTH_THRESHOLD']);
+  options.requestTimeout =
+    options.requestTimeout ?? toInt(env[envPrefix + 'REQUEST_TIMEOUT']);
   options.enforceRequestTimeout =
-    options.enforceRequestTimeout ?? toBoolean(env[envPrefix + 'ENFORCE_REQUEST_TIMEOUT']);
+    options.enforceRequestTimeout ??
+    toBoolean(env[envPrefix + 'ENFORCE_REQUEST_TIMEOUT']);
   const retries = toInt(env[envPrefix + 'RETRIES']);
   if (options.retry == null && retries) {
     options.retry = {
@@ -60,7 +74,10 @@ export function getKafkaConfig(
   }
   options.consumer = options.consumer || ({} as any);
   options.consumer!.groupId =
-    options.consumer!.groupId ?? (env[envPrefix + 'CONSUMER_GROUP_ID'] || 'kafka_default_group');
-  options.lazyConnect = toBoolean(env[envPrefix + 'LAZY_CONNECT'] ?? 'false');
+    options.consumer!.groupId ??
+    (env[envPrefix + 'CONSUMER_GROUP_ID'] || 'kafka_default_group');
+  options.lazyConnect =
+    options.lazyConnect ??
+    toBoolean(env[envPrefix + 'LAZY_CONNECT'] ?? 'false');
   return options;
 }

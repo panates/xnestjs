@@ -21,9 +21,13 @@ export interface MongodbModuleOptions extends BaseModuleOptions {
   useValue?: MongodbConnectionOptions;
 }
 
-export interface MongodbModuleAsyncOptions extends BaseModuleOptions, Pick<ModuleMetadata, 'imports'> {
+export interface MongodbModuleAsyncOptions
+  extends BaseModuleOptions,
+    Pick<ModuleMetadata, 'imports'> {
   inject?: InjectionToken[];
-  useFactory: (...args: any[]) => Promise<MongodbConnectionOptions> | MongodbConnectionOptions;
+  useFactory: (
+    ...args: any[]
+  ) => Promise<MongodbConnectionOptions> | MongodbConnectionOptions;
 }
 
 /**

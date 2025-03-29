@@ -1,10 +1,13 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { expect } from 'expect';
 import { Cluster, Redis } from 'ioredis';
 import { RedisClient, RedisModule } from '../src/index.js';
 
 describe('RedisModule', () => {
   let app: INestApplication;
+
+  afterEach(() => app?.close());
 
   it('forRoot - standalone', async () => {
     const module = await Test.createTestingModule({
@@ -27,7 +30,6 @@ describe('RedisModule', () => {
     expect(redisClient.standalone).toBeInstanceOf(Redis);
     expect(redisClient.redis).toBeInstanceOf(Redis);
     expect(typeof redisClient.redis.bzpopmin).toStrictEqual('function');
-    await app.close();
   });
 
   it('forRootAsync - standalone', async () => {
@@ -51,7 +53,6 @@ describe('RedisModule', () => {
     expect(redisClient.standalone).toBeInstanceOf(Redis);
     expect(redisClient.redis).toBeInstanceOf(Redis);
     expect(typeof redisClient.redis.bzpopmin).toStrictEqual('function');
-    await app.close();
   });
 
   it('forRoot - cluster', async () => {
@@ -75,7 +76,6 @@ describe('RedisModule', () => {
     expect(redisClient.standalone).not.toBeDefined();
     expect(redisClient.redis).toBeInstanceOf(Cluster);
     expect(typeof redisClient.redis.bzpopmin).toStrictEqual('function');
-    await app.close();
   });
 
   it('forRootAsync - cluster', async () => {
@@ -99,7 +99,6 @@ describe('RedisModule', () => {
     expect(redisClient.standalone).not.toBeDefined();
     expect(redisClient.redis).toBeInstanceOf(Cluster);
     expect(typeof redisClient.redis.bzpopmin).toStrictEqual('function');
-    await app.close();
   });
 
   it('forRoot - multiple clients', async () => {
@@ -132,7 +131,6 @@ describe('RedisModule', () => {
     expect(client2).toBeInstanceOf(RedisClient);
     expect(client2.isCluster).toStrictEqual(true);
     expect(client2).not.toBe(client1);
-    await app.close();
   });
 
   it('forRootAsync - multiple clients', async () => {
@@ -165,7 +163,6 @@ describe('RedisModule', () => {
     expect(client2).toBeInstanceOf(RedisClient);
     expect(client2.isCluster).toStrictEqual(true);
     expect(client2).not.toBe(client1);
-    await app.close();
   });
 
   it('registerClient - parse host url', async () => {
@@ -188,6 +185,5 @@ describe('RedisModule', () => {
     expect(redisClient.standalone?.options.port).toStrictEqual(1234);
     expect(redisClient.standalone?.options.db).toStrictEqual(2);
     expect(redisClient.standalone?.options.tls).toStrictEqual(true);
-    await app.close();
   });
 });

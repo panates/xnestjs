@@ -1,4 +1,7 @@
-import type { Cluster as IORedisCluster, Redis as IORedisClient } from 'ioredis';
+import type {
+  Cluster as IORedisCluster,
+  Redis as IORedisClient,
+} from 'ioredis';
 import { type LockOptions, Mutex, Semaphore } from 'redis-semaphore';
 import { sharedLock } from './shared-lock.js';
 import type { SharedLock } from './types.js';
@@ -18,7 +21,8 @@ export class RedisClient {
   constructor(options: RedisClient.Options) {
     this.cluster = options.cluster;
     this.standalone = options.standalone;
-    if (!(this.cluster || this.standalone)) throw new TypeError('One of "cluster" or "standalone" must be set');
+    if (!(this.cluster || this.standalone))
+      throw new TypeError('One of "cluster" or "standalone" must be set');
   }
 
   get isCluster(): boolean {
@@ -38,7 +42,9 @@ export class RedisClient {
     if (lock) {
       if (lock.refCount > 0) {
         if ((lock as any)._kind !== kind)
-          throw new Error(`Lock "${key}" is already in use by a different kind of lock (${(lock as any)._kind})`);
+          throw new Error(
+            `Lock "${key}" is already in use by a different kind of lock (${(lock as any)._kind})`,
+          );
         return lock;
       }
       this.locks.delete(key);
@@ -53,7 +59,11 @@ export class RedisClient {
     return lock;
   }
 
-  obtainSemaphore(key: string, limit: number, options?: LockOptions): SharedLock {
+  obtainSemaphore(
+    key: string,
+    limit: number,
+    options?: LockOptions,
+  ): SharedLock {
     let lock = this._getLock('semaphore', key);
     if (lock) return lock;
     lock = sharedLock(new Semaphore(this.redis, key, limit, options));
@@ -61,7 +71,11 @@ export class RedisClient {
     return lock;
   }
 
-  obtainMultiSemaphore(key: string, limit: number, options?: LockOptions): SharedLock {
+  obtainMultiSemaphore(
+    key: string,
+    limit: number,
+    options?: LockOptions,
+  ): SharedLock {
     let lock = this._getLock('multi-semaphore', key);
     if (lock) return lock;
     lock = sharedLock(new Semaphore(this.redis, key, limit, options));

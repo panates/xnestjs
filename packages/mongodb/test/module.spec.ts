@@ -1,5 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { expect } from 'expect';
 import { Db, MongoClient } from 'mongodb';
 import { MONGODB_CONNECTION_OPTIONS, MongodbModule } from '../src/index.js';
 

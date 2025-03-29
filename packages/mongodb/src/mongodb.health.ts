@@ -28,9 +28,13 @@ export class MongodbHealthIndicator {
 
   constructor(private readonly moduleRef: ModuleRef) {}
 
-  async pingCheck<Key extends string>(key: Key, options?: MongodbPingCheckSettings) {
+  async pingCheck<Key extends string>(
+    key: Key,
+    options?: MongodbPingCheckSettings,
+  ) {
     const { HealthIndicatorService } = await import('@nestjs/terminus');
-    this.healthIndicatorService = this.healthIndicatorService || new HealthIndicatorService();
+    this.healthIndicatorService =
+      this.healthIndicatorService || new HealthIndicatorService();
     const indicator = this.healthIndicatorService.check(key);
     let connection: MongoClient | undefined;
     try {

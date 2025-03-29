@@ -1,6 +1,10 @@
 import type { Buffer } from 'buffer';
 import type { Readable } from 'stream';
-import type { GetObjectSignedUrlOptions, ObjectInfo, PutObjectOptions } from '../types.js';
+import type {
+  GetObjectSignedUrlOptions,
+  ObjectInfo,
+  PutObjectOptions,
+} from '../types.js';
 import type { StorageConnection } from './storage-connection';
 
 export class StorageBucket {
@@ -9,8 +13,17 @@ export class StorageBucket {
     private _bucketName: string,
   ) {}
 
-  putObject(objectName: string, buffer: Buffer | Readable | string, options?: PutObjectOptions): Promise<void> {
-    return this._connection.putObject(this._bucketName, objectName, buffer, options);
+  putObject(
+    objectName: string,
+    buffer: Buffer | Readable | string,
+    options?: PutObjectOptions,
+  ): Promise<void> {
+    return this._connection.putObject(
+      this._bucketName,
+      objectName,
+      buffer,
+      options,
+    );
   }
 
   getObjectInfo(objectName: string): Promise<ObjectInfo> {
@@ -29,7 +42,14 @@ export class StorageBucket {
     return this._connection.getObject(this._bucketName, objectName);
   }
 
-  presignedGetObject(objectName: string, options?: GetObjectSignedUrlOptions): Promise<string> {
-    return this._connection.presignedGetObject(this._bucketName, objectName, options);
+  presignedGetObject(
+    objectName: string,
+    options?: GetObjectSignedUrlOptions,
+  ): Promise<string> {
+    return this._connection.presignedGetObject(
+      this._bucketName,
+      objectName,
+      options,
+    );
   }
 }
