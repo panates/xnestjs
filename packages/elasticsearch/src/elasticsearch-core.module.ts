@@ -1,9 +1,22 @@
 import assert from 'node:assert';
 import * as crypto from 'node:crypto';
-import { DynamicModule, Inject, Logger, OnApplicationBootstrap, OnApplicationShutdown, Provider } from '@nestjs/common';
-import { ElasticsearchModule, ElasticsearchService } from '@nestjs/elasticsearch';
-import * as colors from 'ansi-colors';
-import { ELASTICSEARCH_CONNECTION_OPTIONS, ELASTICSEARCH_MODULE_ID } from './constants.js';
+import {
+  DynamicModule,
+  Inject,
+  Logger,
+  OnApplicationBootstrap,
+  OnApplicationShutdown,
+  Provider,
+} from '@nestjs/common';
+import {
+  ElasticsearchModule,
+  ElasticsearchService,
+} from '@nestjs/elasticsearch';
+import colors from 'ansi-colors';
+import {
+  ELASTICSEARCH_CONNECTION_OPTIONS,
+  ELASTICSEARCH_MODULE_ID,
+} from './constants.js';
 import { getElasticsearchConfig } from './get-elasticsearch-config.js';
 import type {
   ElasticsearchConnectionOptions,
@@ -13,12 +26,17 @@ import type {
 
 const CLIENT_TOKEN = Symbol('CLIENT_TOKEN');
 
-export class ElasticsearchCoreModule implements OnApplicationShutdown, OnApplicationBootstrap {
+export class ElasticsearchCoreModule
+  implements OnApplicationShutdown, OnApplicationBootstrap
+{
   /**
    *
    */
   static forRoot(moduleOptions: ElasticsearchModuleOptions): DynamicModule {
-    const connectionOptions = getElasticsearchConfig(moduleOptions.useValue || {}, moduleOptions.envPrefix);
+    const connectionOptions = getElasticsearchConfig(
+      moduleOptions.useValue || {},
+      moduleOptions.envPrefix,
+    );
     return this._createDynamicModule(moduleOptions, {
       providers: [
         {
@@ -32,7 +50,9 @@ export class ElasticsearchCoreModule implements OnApplicationShutdown, OnApplica
   /**
    *
    */
-  static forRootAsync(asyncOptions: ElasticsearchModuleAsyncOptions): DynamicModule {
+  static forRootAsync(
+    asyncOptions: ElasticsearchModuleAsyncOptions,
+  ): DynamicModule {
     assert.ok(asyncOptions.useFactory, 'useFactory is required');
     return this._createDynamicModule(asyncOptions, {
       providers: [
@@ -53,8 +73,14 @@ export class ElasticsearchCoreModule implements OnApplicationShutdown, OnApplica
     metadata: Partial<DynamicModule>,
   ) {
     const token = moduleOptions.token ?? ElasticsearchService;
-    const logger = typeof moduleOptions.logger === 'string' ? new Logger(moduleOptions.logger) : moduleOptions.logger;
-    const exports = [ELASTICSEARCH_CONNECTION_OPTIONS, ...(metadata.exports ?? [])];
+    const logger =
+      typeof moduleOptions.logger === 'string'
+        ? new Logger(moduleOptions.logger)
+        : moduleOptions.logger;
+    const exports = [
+      ELASTICSEARCH_CONNECTION_OPTIONS,
+      ...(metadata.exports ?? []),
+    ];
     const providers: Provider[] = [
       ...(metadata.providers ?? []),
       {
@@ -94,7 +120,9 @@ export class ElasticsearchCoreModule implements OnApplicationShutdown, OnApplica
             },
           ],
           inject: [ELASTICSEARCH_CONNECTION_OPTIONS],
-          useFactory: async (connectionOptions: ElasticsearchConnectionOptions) => {
+          useFactory: async (
+            connectionOptions: ElasticsearchConnectionOptions,
+          ) => {
             return connectionOptions;
           },
         }),
@@ -119,7 +147,9 @@ export class ElasticsearchCoreModule implements OnApplicationShutdown, OnApplica
     const options = this.connectionOptions;
     if (options.lazyConnect) return;
     const nodes = options.node || options.nodes;
-    this.logger?.log(`Connecting to ElasticSearch at ${colors.blue(String(nodes))}`);
+    this.logger?.log(
+      `Connecting to ElasticSearch at ${colors.blue(String(nodes))}`,
+    );
     Logger.flush();
     await this.client.ping({}).catch(e => {
       this.logger.error('ElasticSearch connection failed: ' + e.message);

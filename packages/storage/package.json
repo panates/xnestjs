@@ -1,6 +1,6 @@
 {
   "name": "@xnestjs/storage",
-  "version": "1.6.3",
+  "version": "1.8.0",
   "description": "NestJS extension library for Storage solutions (S3,GS)",
   "author": "Panates",
   "license": "MIT",
@@ -15,8 +15,8 @@
     "lint:fix": "eslint . --max-warnings=0 --fix",
     "format": "prettier . --write --log-level=warn",
     "check": "madge --circular src/**",
-    "test": "jest",
-    "cover": "jest --collect-coverage",
+    "test": "mocha",
+    "cover": "nyc mocha",
     "clean": "npm run clean:src && npm run clean:build && npm run clean:cover",
     "clean:src": "ts-cleanup -s src --all && ts-cleanup -s test --all",
     "clean:build": "rimraf build",
@@ -35,7 +35,8 @@
     "minio": "^8.0.0"
   },
   "devDependencies": {
-    "@nestjs/testing": "*"
+    "@nestjs/testing": "^11.0.12",
+    "expect": "^29.7.0"
   },
   "type": "module",
   "exports": {

@@ -1,6 +1,9 @@
 import { type DynamicModule, Module } from '@nestjs/common';
 import { RabbitmqCoreModule } from './rabbitmq-core.module.js';
-import type { RabbitmqModuleAsyncOptions, RabbitmqModuleOptions } from './types.js';
+import type {
+  RabbitmqModuleAsyncOptions,
+  RabbitmqModuleOptions,
+} from './types.js';
 
 @Module({})
 export class RabbitmqModule {

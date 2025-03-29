@@ -2,7 +2,12 @@ import { Buffer } from 'buffer';
 import * as Minio from 'minio';
 import { Readable } from 'stream';
 import { StorageConnection } from '../services/storage-connection.js';
-import type { GetObjectSignedUrlOptions, ObjectInfo, PutObjectOptions, S3Config } from '../types.js';
+import type {
+  GetObjectSignedUrlOptions,
+  ObjectInfo,
+  PutObjectOptions,
+  S3Config,
+} from '../types.js';
 
 export class S3StorageConnection extends StorageConnection {
   readonly provider = 's3';
@@ -13,7 +18,9 @@ export class S3StorageConnection extends StorageConnection {
     super();
     this.config = config;
     this._client = new Minio.Client(config);
-    this._client.setRequestOptions({ rejectUnauthorized: config.rejectUnauthorized });
+    this._client.setRequestOptions({
+      rejectUnauthorized: config.rejectUnauthorized,
+    });
   }
 
   async putObject(
@@ -23,11 +30,22 @@ export class S3StorageConnection extends StorageConnection {
     options?: PutObjectOptions,
   ): Promise<void> {
     const meta = options ? updateMetadata(options?.metadata, options) : {};
-    if (typeof source === 'string') await this._client.fPutObject(bucketName, objectName, source, meta);
-    else await this._client.putObject(bucketName, objectName, source, undefined, meta);
+    if (typeof source === 'string')
+      await this._client.fPutObject(bucketName, objectName, source, meta);
+    else
+      await this._client.putObject(
+        bucketName,
+        objectName,
+        source,
+        undefined,
+        meta,
+      );
   }
 
-  async getObjectInfo(bucketName: string, objectName: string): Promise<ObjectInfo> {
+  async getObjectInfo(
+    bucketName: string,
+    objectName: string,
+  ): Promise<ObjectInfo> {
     const o = await this._client.statObject(bucketName, objectName);
     const inf: ObjectInfo = {
       size: o.size,
@@ -63,7 +81,11 @@ export class S3StorageConnection extends StorageConnection {
     await this._client.removeObject(bucketName, objectName);
   }
 
-  async getFile(bucketName: string, objectName: string, filePath: string): Promise<void> {
+  async getFile(
+    bucketName: string,
+    objectName: string,
+    filePath: string,
+  ): Promise<void> {
     await this._client.fGetObject(bucketName, objectName, filePath);
   }
 
@@ -71,7 +93,11 @@ export class S3StorageConnection extends StorageConnection {
     return this._client.getObject(bucketName, objectName);
   }
 
-  presignedGetObject(bucketName: string, objectName: string, options?: GetObjectSignedUrlOptions): Promise<string> {
+  presignedGetObject(
+    bucketName: string,
+    objectName: string,
+    options?: GetObjectSignedUrlOptions,
+  ): Promise<string> {
     const expires = options?.expires || 5 * 60 * 60; // 5 minutes
     return this._client.presignedGetObject(bucketName, objectName, expires);
   }

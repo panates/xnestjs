@@ -1,7 +1,12 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { expect } from 'expect';
 import { Redis } from 'ioredis';
-import { REDISESS_SESSION_OPTIONS, RedisessModule, SessionManager } from '../src/index.js';
+import {
+  REDISESS_SESSION_OPTIONS,
+  RedisessModule,
+  SessionManager,
+} from '../src/index.js';
 
 const client = new Redis({ lazyConnect: true });
 

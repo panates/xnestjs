@@ -1,37 +1,52 @@
 name: Test
 on:
+  workflow_call:
+    secrets:
+      PERSONAL_ACCESS_TOKEN:
+
+  # Can be run manually
   workflow_dispatch:
+
+  # on git push
   push:
+    branches:
+      - dev
+
+# Only one run per branch at a time
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  # ***********************************
+  # Job: Test
+  # ***********************************
   test:
-    name: Node v${{ matrix.node }}
-    strategy:
-      fail-fast: false
-      matrix:
-        node: [ '20', '21' ]
+    name: 'Tests'
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'push' &&
+        !(
+          contains(github.event.head_commit.message, 'no-test') ||
+          ( 
+            startsWith(github.event.head_commit.message, 'Merge pull request') &&
+            contains(github.event.head_commit.message, '/dev')
+          )
+        )
+      )
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Setup Environment
+        uses: panates/gh-setup-node@v1
         with:
-          node-version: ${{ matrix.node }}
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
-      - name: Install dependencies
+      - name: Apply tests
         run: |
-          npm install --no-save
-          npm install rman -g
-
-      - name: Run linter test
-        run: rman run lint
-
-      - name: Run circular dependency test
-        run: rman run check
-
-      - name: Run compile test
-        run: rman run compile
-
-      - name: Run unit tests
-        run: npm run citest
+          npm run qc
+          npm run citest
         env:
           NODE_OPTIONS: "--max_old_space_size=4096"

@@ -1,11 +1,21 @@
 import * as assert from 'node:assert';
 import { omit } from '@jsopen/objects';
-import { DynamicModule, Inject, Logger, OnApplicationShutdown, Provider } from '@nestjs/common';
+import {
+  DynamicModule,
+  Inject,
+  Logger,
+  OnApplicationShutdown,
+  Provider,
+} from '@nestjs/common';
 import * as crypto from 'crypto';
 import { SessionManager } from 'redisess';
 import { REDISESS_MODULE_ID, REDISESS_SESSION_OPTIONS } from './constants.js';
 import { getRedisessConfig } from './get-redisess-config.js';
-import type { RedisessModuleAsyncOptions, RedisessModuleOptions, RedisessSessionOptions } from './types.js';
+import type {
+  RedisessModuleAsyncOptions,
+  RedisessModuleOptions,
+  RedisessSessionOptions,
+} from './types.js';
 
 const CLIENT_TOKEN = Symbol('CLIENT_TOKEN');
 
@@ -14,7 +24,10 @@ export class RedisessCoreModule implements OnApplicationShutdown {
    * Configures and returns a dynamic module
    */
   static forRoot(moduleOptions: RedisessModuleOptions): DynamicModule {
-    const redisessOptions = getRedisessConfig(moduleOptions.useValue || {}, moduleOptions.envPrefix);
+    const redisessOptions = getRedisessConfig(
+      moduleOptions.useValue || {},
+      moduleOptions.envPrefix,
+    );
     return this._createDynamicModule(moduleOptions, {
       global: moduleOptions.global,
       providers: [
@@ -55,8 +68,12 @@ export class RedisessCoreModule implements OnApplicationShutdown {
       {
         provide: token,
         inject: [REDISESS_SESSION_OPTIONS],
-        useFactory: async (sessionOptions: RedisessSessionOptions): Promise<SessionManager> => {
-          const redisessOptions = omit(sessionOptions, ['client']) as SessionManager.Options;
+        useFactory: async (
+          sessionOptions: RedisessSessionOptions,
+        ): Promise<SessionManager> => {
+          const redisessOptions = omit(sessionOptions, [
+            'client',
+          ]) as SessionManager.Options;
           return new SessionManager(sessionOptions.client, redisessOptions);
         },
       },
@@ -66,7 +83,10 @@ export class RedisessCoreModule implements OnApplicationShutdown {
       },
       {
         provide: Logger,
-        useValue: typeof opts.logger === 'string' ? new Logger(opts.logger) : opts.logger,
+        useValue:
+          typeof opts.logger === 'string'
+            ? new Logger(opts.logger)
+            : opts.logger,
       },
     ];
     return {

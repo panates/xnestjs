@@ -22,23 +22,22 @@ import { Module } from '@nestjs/common';
 import { StorageModule } from '@xnestjs/storage';
 
 @Module({
-    imports: [
-        StorageModule.forRoot({
-            useValue: {
-                provider: 's3',
-                s3: {
-                    endPoint: 'play.min.io',
-                    port: 9000,
-                    useSSL: true,
-                    accessKey: 'accessKey',
-                    secretKey: 'secretKey',
-                },
-            },
-        }),
-    ],
+  imports: [
+    StorageModule.forRoot({
+      useValue: {
+        provider: 's3',
+        s3: {
+          endPoint: 'play.min.io',
+          port: 9000,
+          useSSL: true,
+          accessKey: 'accessKey',
+          secretKey: 'secretKey',
+        },
+      },
+    }),
+  ],
 })
-export class MyModule {
-}
+export class MyModule {}
 ```
 
 ### Register async
@@ -51,37 +50,36 @@ import { Module } from '@nestjs/common';
 import { StorageModule } from '@xnestjs/storage';
 
 @Module({
-    imports: [
-        StorageModule.forRootAsync({
-            inject: [ConfigModule],
-            useFactory: (config: ConfigService) => ({
-                provider: 's3',
-                s3: {
-                    endPoint: config.get('S3_ENDPOINT'),
-                },
-            }),
-        }),
-    ],
+  imports: [
+    StorageModule.forRootAsync({
+      inject: [ConfigModule],
+      useFactory: (config: ConfigService) => ({
+        provider: 's3',
+        s3: {
+          endPoint: config.get('S3_ENDPOINT'),
+        },
+      }),
+    }),
+  ],
 })
-export class MyModule {
-}
+export class MyModule {}
 ```
 
 ## Environment Variables
 
 The library supports configuration through environment variables. Environment variables below is accepted.
-All environment variables starts with prefix (STORAGE_). This can be configured while registering the module.
+All environment variables starts with prefix (STORAGE\_). This can be configured while registering the module.
 
 <--- BEGIN env --->
 
 | Environment Variable | Type | Default | Description                         |
-|----------------------|------|---------|-------------------------------------|
+| -------------------- | ---- | ------- | ----------------------------------- |
 | STORAGE_PROVIDER     | Enum |         | Storage Provider `s3` for Amazon S3 |
 
 ## Amazon S3 Environment Variables
 
 | Environment Variable     | Type    | Default | Description     |
-|--------------------------|---------|---------|-----------------|
+| ------------------------ | ------- | ------- | --------------- |
 | STORAGE_S3_ENDPOINT      | String  |         | S3 Endpoint URL |
 | STORAGE_S3_SECRET_KEY    | String  |         |                 |
 | STORAGE_S3_SSL           | Boolean |         |                 |

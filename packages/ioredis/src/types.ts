@@ -12,28 +12,44 @@ export interface RedisClusterConnectionOptions extends ClusterOptions {
   nodes: ClusterNode[];
 }
 
-export type RedisConnectionOptions = RedisStandaloneConnectionOptions | RedisClusterConnectionOptions;
+export type RedisConnectionOptions =
+  | RedisStandaloneConnectionOptions
+  | RedisClusterConnectionOptions;
 
 export interface RedisStandaloneModuleOptions extends BaseRedisModuleOptions {
   useValue?: RedisStandaloneConnectionOptions;
 }
 
-export interface RedisStandaloneAsyncModuleOptions extends BaseRedisModuleOptions, Pick<ModuleMetadata, 'imports'> {
+export interface RedisStandaloneAsyncModuleOptions
+  extends BaseRedisModuleOptions,
+    Pick<ModuleMetadata, 'imports'> {
   inject?: InjectionToken[];
-  useFactory: (...args: any[]) => Promise<RedisStandaloneConnectionOptions> | RedisStandaloneConnectionOptions;
+  useFactory: (
+    ...args: any[]
+  ) =>
+    | Promise<RedisStandaloneConnectionOptions>
+    | RedisStandaloneConnectionOptions;
 }
 
 export interface RedisClusterModuleOptions extends BaseRedisModuleOptions {
   useValue?: RedisClusterConnectionOptions;
 }
 
-export interface RedisClusterAsyncModuleOptions extends BaseRedisModuleOptions, Pick<ModuleMetadata, 'imports'> {
+export interface RedisClusterAsyncModuleOptions
+  extends BaseRedisModuleOptions,
+    Pick<ModuleMetadata, 'imports'> {
   inject?: InjectionToken[];
-  useFactory: (...args: any[]) => Promise<RedisClusterConnectionOptions> | RedisClusterConnectionOptions;
+  useFactory: (
+    ...args: any[]
+  ) => Promise<RedisClusterConnectionOptions> | RedisClusterConnectionOptions;
 }
 
-export type RedisModuleOptions = RedisStandaloneModuleOptions | RedisClusterModuleOptions;
-export type RedisAsyncModuleOptions = RedisStandaloneAsyncModuleOptions | RedisClusterAsyncModuleOptions;
+export type RedisModuleOptions =
+  | RedisStandaloneModuleOptions
+  | RedisClusterModuleOptions;
+export type RedisAsyncModuleOptions =
+  | RedisStandaloneAsyncModuleOptions
+  | RedisClusterAsyncModuleOptions;
 
 export interface BaseRedisModuleOptions {
   token?: InjectionToken;

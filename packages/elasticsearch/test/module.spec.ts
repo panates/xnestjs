@@ -1,6 +1,11 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { ELASTICSEARCH_CONNECTION_OPTIONS, ElasticsearchModule, ElasticsearchService } from '../src/index.js';
+import { expect } from 'expect';
+import {
+  ELASTICSEARCH_CONNECTION_OPTIONS,
+  ElasticsearchModule,
+  ElasticsearchService,
+} from '../src/index.js';
 
 describe('ElasticsearchModule', () => {
   let app: INestApplication;

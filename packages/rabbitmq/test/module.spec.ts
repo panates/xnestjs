@@ -1,5 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { expect } from 'expect';
 import { ClientRMQ, RabbitmqModule } from '../src/index.js';
 
 describe('RabbitmqModule', () => {

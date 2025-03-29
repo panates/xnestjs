@@ -11,17 +11,21 @@ export function getElasticsearchConfig(
   const env = process.env;
   options.node = options.node || env[prefix + 'NODE'];
   if (options.node) {
-    if (typeof options.node === 'string' && options.node.includes(',')) options.node.split(/\s*,\s*/);
+    if (typeof options.node === 'string' && options.node.includes(','))
+      options.node.split(/\s*,\s*/);
   } else {
     options.nodes = options.nodes || env[prefix + 'NODES'];
     if (options.nodes) {
-      if (typeof options.nodes === 'string' && options.nodes.includes(',')) options.nodes.split(/\s*,\s*/);
+      if (typeof options.nodes === 'string' && options.nodes.includes(','))
+        options.nodes.split(/\s*,\s*/);
     }
   }
   if (!(options.node || options.nodes)) options.node = 'http://localhost:9200';
   options.maxRetries = options.maxRetries ?? toInt(env[prefix + 'MAX_RETRIES']);
-  options.requestTimeout = options.requestTimeout ?? toInt(env[prefix + 'REQUEST_TIMEOUT']);
-  options.pingTimeout = options.pingTimeout ?? toInt(env[prefix + 'PING_TIMEOUT']);
+  options.requestTimeout =
+    options.requestTimeout ?? toInt(env[prefix + 'REQUEST_TIMEOUT']);
+  options.pingTimeout =
+    options.pingTimeout ?? toInt(env[prefix + 'PING_TIMEOUT']);
 
   if (options.tls == null && toBoolean(env[prefix + 'TLS'])) {
     options.tls = {
@@ -32,7 +36,9 @@ export function getElasticsearchConfig(
       rejectUnauthorized: toBoolean(env[prefix + 'TLS_REJECT_UNAUTHORIZED']),
       checkServerIdentity: (host, cert) => {
         if (cert.subject.CN !== host) {
-          return new Error(`Certificate CN (${cert.subject.CN}) does not match host (${host})`);
+          return new Error(
+            `Certificate CN (${cert.subject.CN}) does not match host (${host})`,
+          );
         }
       },
     };
@@ -61,9 +67,12 @@ export function getElasticsearchConfig(
       };
     }
   }
-  options.caFingerprint = options.caFingerprint ?? env[prefix + 'CA_FINGERPRINT'];
-  options.maxResponseSize = options.maxResponseSize ?? toInt(env[prefix + 'MAX_RESPONSE_SIZE']);
+  options.caFingerprint =
+    options.caFingerprint ?? env[prefix + 'CA_FINGERPRINT'];
+  options.maxResponseSize =
+    options.maxResponseSize ?? toInt(env[prefix + 'MAX_RESPONSE_SIZE']);
   options.maxCompressedResponseSize =
-    options.maxCompressedResponseSize ?? toInt(env[prefix + 'MAX_COMPRESSED_RESPONSE_SIZE']);
+    options.maxCompressedResponseSize ??
+    toInt(env[prefix + 'MAX_COMPRESSED_RESPONSE_SIZE']);
   return options;
 }

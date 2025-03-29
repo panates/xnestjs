@@ -1,5 +1,4 @@
 import panatesEslint from '@panates/eslint-config-ts';
-import globals from 'globals';
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
@@ -13,11 +12,4 @@ export default [
     ],
   },
   ...panatesEslint.configs.node,
-  {
-    languageOptions: {
-      globals: {
-        ...globals.jest,
-      },
-    },
-  },
 ];
