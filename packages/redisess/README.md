@@ -66,7 +66,7 @@ export class MyModule {}
 The library supports configuration through environment variables. Environment variables below is accepted.
 All environment variables starts with prefix (RMQ\_). This can be configured while registering the module.
 
-<--- BEGIN env --->
+<!--- BEGIN env --->
 
 | Environment Variable  | Type   | Default | Description                        |
 | --------------------- | ------ | ------- | ---------------------------------- |
@@ -74,4 +74,4 @@ All environment variables starts with prefix (RMQ\_). This can be configured whi
 | SESSION_TTL           | Number | 1800    | Time-To-Live value in seconds      |
 | SESSION_WIPE_INTERVAL | Number | 5000    | Interval in ms to run wipe process |
 
-<--- END env --->
+<!--- END env --->

@@ -70,7 +70,7 @@ export class MyModule {}
 The library supports configuration through environment variables. Environment variables below is accepted.
 All environment variables starts with prefix (STORAGE\_). This can be configured while registering the module.
 
-<--- BEGIN env --->
+<!--- BEGIN env --->
 
 | Environment Variable | Type | Default | Description                         |
 | -------------------- | ---- | ------- | ----------------------------------- |
@@ -90,4 +90,4 @@ All environment variables starts with prefix (STORAGE\_). This can be configured
 | STORAGE_S3_SECRET_KEY    | String  |         |                 |
 | STORAGE_S3_ACC_ENDPOINT  | String  |         |                 |
 
-<--- END env --->
+<!--- END env --->

@@ -62,7 +62,7 @@ export class MyModule {}
 The library supports configuration through environment variables. Environment variables below is accepted.
 All environment variables starts with prefix (MONGODB\_). This can be configured while registering the module.
 
-<--- BEGIN env --->
+<!--- BEGIN env --->
 
 | Environment Variable                   | Type    | Default                   | Description                                                                                                                                                                                                                            |
 | -------------------------------------- | ------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -105,4 +105,4 @@ All environment variables starts with prefix (MONGODB\_). This can be configured
 | MONGODB_PROXY_USERNAME                 | String  |                           | Configures a Socks5 proxy username when the proxy in proxyHost requires username/password authentication.                                                                                                                              |
 | MONGODB_PROXY_PASSWORD                 | String  |                           | Configures a Socks5 proxy password when the proxy in proxyHost requires username/password authentication.                                                                                                                              |
 
-<--- END env --->
+<!--- END env --->

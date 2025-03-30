@@ -68,7 +68,7 @@ export class MyModule {}
 The module supports configuration via environment variables. These can be used in place of or alongside the object-based
 configuration. By default, variables are prefixed with `RMQ_`.
 
-<--- BEGIN env --->
+<!--- BEGIN env --->
 
 | Environment Variable          | Type      | Default | Description                                                              |
 | ----------------------------- | --------- | ------- | ------------------------------------------------------------------------ |
@@ -79,7 +79,7 @@ configuration. By default, variables are prefixed with `RMQ_`.
 | `RMQ_HEARTBEAT_INTERVAL`      | Number    |         | Interval (in seconds) for the RabbitMQ heartbeat mechanism.              |
 | `RMQ_LAZY_CONNECT`            | Boolean   | `false` | If true, defers connecting to RabbitMQ until a message is sent/received. |
 
-<--- END env --->
+<!--- END env --->
 
 > 💡 You can customize the environment variable prefix during module registration by passing the `envPrefix` option.
 
