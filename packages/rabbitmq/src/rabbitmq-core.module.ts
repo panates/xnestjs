@@ -8,19 +8,14 @@ import {
   OnApplicationShutdown,
   Provider,
 } from '@nestjs/common';
-import {
-  ClientProvider,
-  ClientRMQ,
-  ClientsModule,
-  Transport,
-} from '@nestjs/microservices';
 import colors from 'ansi-colors';
 import { RMQ_CONNECTION_OPTIONS, RMQ_MODULE_ID } from './constants.js';
 import { getRabbitmqConfig } from './get-rabbitmq-config.js';
-import type {
-  RabbitmqConnectionOptions,
-  RabbitmqModuleAsyncOptions,
-  RabbitmqModuleOptions,
+import { RmqClient } from './rmq-client.js';
+import {
+  type RabbitmqConnectionOptions,
+  type RabbitmqModuleAsyncOptions,
+  type RabbitmqModuleOptions,
 } from './types.js';
 
 const CLIENT_TOKEN = Symbol('CLIENT_TOKEN');
@@ -71,8 +66,8 @@ export class RabbitmqCoreModule
     opts: RabbitmqModuleOptions | RabbitmqModuleAsyncOptions,
     metadata: Partial<DynamicModule>,
   ) {
-    const token = opts.token ?? ClientRMQ;
-    const name = typeof token === 'string' ? token : 'RabbitMQ';
+    const token = opts.token ?? RmqClient;
+    // const name = typeof token === 'string' ? token : 'RabbitMQ';
     const logger =
       typeof opts.logger === 'string' ? new Logger(opts.logger) : opts.logger;
     const exports = [RMQ_CONNECTION_OPTIONS, ...(metadata.exports ?? [])];
@@ -90,37 +85,17 @@ export class RabbitmqCoreModule
         provide: RMQ_MODULE_ID,
         useValue: crypto.randomUUID(),
       },
-    ];
-    if (name !== token) {
-      exports.push(token);
-      providers.push({
+      {
         provide: token,
-        useExisting: name,
-      });
-    }
+        inject: [RMQ_CONNECTION_OPTIONS],
+        useFactory: async (connectionOptions: RabbitmqConnectionOptions) => {
+          return new RmqClient(connectionOptions);
+        },
+      },
+    ];
     return {
       module: RabbitmqCoreModule,
       providers,
-      imports: [
-        /** Import ClientsModule */
-        ClientsModule.registerAsync({
-          clients: [
-            {
-              name,
-              extraProviders: metadata.providers,
-              inject: [RMQ_CONNECTION_OPTIONS],
-              useFactory: (
-                connectionOptions: RabbitmqConnectionOptions,
-              ): ClientProvider => {
-                return {
-                  transport: Transport.RMQ,
-                  options: connectionOptions,
-                };
-              },
-            },
-          ],
-        }),
-      ],
       exports,
     } as DynamicModule;
   }
@@ -131,7 +106,7 @@ export class RabbitmqCoreModule
    */
   constructor(
     @Inject(CLIENT_TOKEN)
-    protected client: ClientRMQ,
+    protected client: RmqClient,
     @Inject(RMQ_CONNECTION_OPTIONS)
     private connectionOptions: RabbitmqConnectionOptions,
     private logger?: Logger,
@@ -140,11 +115,11 @@ export class RabbitmqCoreModule
   async onApplicationBootstrap() {
     const options = this.connectionOptions;
     this.client.on('error', e => {
-      console.log(e);
+      this.logger?.error(e);
     });
-    if (options.lazyConnect || !options.urls?.length) return;
+    if (options.lazyConnect || !options.hostname) return;
     this.logger?.log(
-      'Connecting to RabbitMQ at ' + colors.blue(options.urls.join(',')),
+      'Connecting to RabbitMQ at ' + colors.blue(options.hostname),
     );
     Logger.flush();
     await this.client.connect().catch(e => {

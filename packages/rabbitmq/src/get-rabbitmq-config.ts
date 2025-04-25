@@ -9,22 +9,18 @@ export function getRabbitmqConfig(
 ): RabbitmqConnectionOptions {
   const options = clone(moduleOptions) as RabbitmqConnectionOptions;
   const env = process.env;
-  options.urls =
-    options.urls ||
-    (env[prefix + 'URLS'] ?? 'amqp://localhost:5672').split(/\s*,\s*/);
-  options.prefetchCount =
-    options.prefetchCount ?? toInt(env[prefix + 'PREFETCH_COUNT']);
-  options.maxConnectionAttempts =
-    options.maxConnectionAttempts ??
-    toInt(env[prefix + 'MAX_CONNECTION_ATTEMPTS']);
-  options.socketOptions = options.socketOptions ?? {};
-  options.socketOptions.reconnectTimeInSeconds =
-    options.socketOptions.reconnectTimeInSeconds ??
-    toInt(env[prefix + 'RECONNECT_TIME']);
-  options.socketOptions.heartbeatIntervalInSeconds =
-    options.socketOptions.heartbeatIntervalInSeconds ??
-    toInt(env[prefix + 'HEARTBEAT_INTERVAL']);
+  options.hostname =
+    options.hostname ?? env[prefix + 'HOSTNAME'] ?? 'localhost';
+  options.port = options.port ?? toInt(env[prefix + 'PORT'] ?? '5672');
+  options.username = options.username ?? env[prefix + 'USERNAME'];
+  options.password = options.password ?? env[prefix + 'PASSWORD'];
+  options.locale = options.locale ?? env[prefix + 'LOCALE'];
+  options.frameMax = toInt(options.frameMax ?? env[prefix + 'FRAME_MAX']);
+  options.heartbeat = toInt(
+    options.frameMax ?? env[prefix + 'HEARTBEAT_INTERVAL'],
+  );
+  options.vhost = options.vhost ?? env[prefix + 'RMQ_VHOST'];
   options.lazyConnect =
-    options.lazyConnect ?? toBoolean(env[prefix + 'LAZY_CONNECT'] ?? 'false');
+    options.lazyConnect ?? toBoolean(env[prefix + 'LAZY_CONNECT']);
   return options;
 }

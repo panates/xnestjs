@@ -36,7 +36,8 @@ import { RabbitmqModule } from '@xnestjs/rabbitmq';
     }),
   ],
 })
-export class MyModule {}
+export class MyModule {
+}
 ```
 
 ### Asynchronous Registration
@@ -60,7 +61,8 @@ import { RabbitmqModule } from '@xnestjs/rabbitmq';
     }),
   ],
 })
-export class MyModule {}
+export class MyModule {
+}
 ```
 
 ## ⚙️ Environment Variables
@@ -70,14 +72,18 @@ configuration. By default, variables are prefixed with `RMQ_`.
 
 <!--- BEGIN env --->
 
-| Environment Variable          | Type      | Default | Description                                                              |
-| ----------------------------- | --------- | ------- | ------------------------------------------------------------------------ |
-| `RMQ_URLS`                    | String[]! |         | A list of RabbitMQ server URLs to connect to.                            |
-| `RMQ_PREFETCH_COUNT`          | Number    |         | Sets the prefetch count for consumers to control message flow.           |
-| `RMQ_MAX_CONNECTION_ATTEMPTS` | Number    |         | Maximum number of retry attempts to establish a connection.              |
-| `RMQ_RECONNECT_TIME`          | Number    |         | Time (in milliseconds) to wait before trying to reconnect.               |
-| `RMQ_HEARTBEAT_INTERVAL`      | Number    |         | Interval (in seconds) for the RabbitMQ heartbeat mechanism.              |
-| `RMQ_LAZY_CONNECT`            | Boolean   | `false` | If true, defers connecting to RabbitMQ until a message is sent/received. |
+| Environment Variable     | Type    | Default        | Description                                                                                                                                                                           |
+|--------------------------|---------|----------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `RMQ_HOSTNAME`           | String  | `localhost`    | Hostname used for connecting to the server                                                                                                                                            |
+| `RMQ_PORT`               | Number  | `5672`         | Port used for connecting to the server                                                                                                                                                |
+| `RMQ_PORT`               | Number  |                | Port used for connecting to the server                                                                                                                                                |
+| `RMQ_USERNAME`           | String  |                | Username used for authenticating against the server                                                                                                                                   |
+| `RMQ_PASSWORD`           | String  |                | Password used for authenticating against the server                                                                                                                                   |
+| `RMQ_LOCALE`             | String  | `en_US`        | The desired locale for error messages. RabbitMQ only ever uses en_US                                                                                                                  |
+| `RMQ_FRAME_MAX`          | Number  | `0x1000` (4kb) | The size in bytes of the maximum frame allowed over the connection. 0 means no limit (but since frames have a size field which is an unsigned 32 bit integer, it’s perforce 2^32 - 1) |
+| `RMQ_HEARTBEAT_INTERVAL` | Number  | `0`            | The period of the connection heartbeat in seconds                                                                                                                                     |
+| `RMQ_VHOST`              | String  | `/`            | What VHost shall be used                                                                                                                                                              |
+| `RMQ_LAZY_CONNECT`       | Boolean | `false`        | If true, defers connecting to RabbitMQ until a message is sent/received.                                                                                                              |
 
 <!--- END env --->
 
