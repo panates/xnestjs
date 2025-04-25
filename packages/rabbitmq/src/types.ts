@@ -1,12 +1,13 @@
+import * as net from 'node:net';
+import * as tls from 'node:tls';
 import type { Logger } from '@nestjs/common';
 import type { ModuleMetadata } from '@nestjs/common/interfaces';
 import type { InjectionToken } from '@nestjs/common/interfaces/modules/injection-token.interface';
-import type { RmqOptions } from '@nestjs/microservices';
+import { Options } from 'amqplib';
 
-type ExtractRmqOptions = Required<RmqOptions>['options'];
-
-export interface RabbitmqConnectionOptions extends ExtractRmqOptions {
+export interface RabbitmqConnectionOptions extends Options.Connect {
   lazyConnect?: boolean;
+  socketOptions?: net.SocketConnectOpts | tls.TLSSocketOptions;
 }
 
 export interface RabbitmqModuleOptions extends BaseModuleOptions {
