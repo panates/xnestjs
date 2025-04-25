@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { expect } from 'expect';
-import { ClientKafka, KafkaModule } from '../src/index.js';
+import { Kafka, KafkaModule } from '../src/index.js';
 
 describe('KafkaModule', () => {
   let app: INestApplication;
@@ -16,9 +16,9 @@ describe('KafkaModule', () => {
     }).compile();
     app = module.createNestApplication();
     await app.init();
-    const client = await app.resolve(ClientKafka);
+    const client = await app.resolve(Kafka);
     expect(client).toBeDefined();
-    expect(client).toBeInstanceOf(ClientKafka);
+    expect(client).toBeInstanceOf(Kafka);
     await app.close();
   });
 
@@ -35,9 +35,9 @@ describe('KafkaModule', () => {
     }).compile();
     app = module.createNestApplication();
     await app.init();
-    const client = await app.resolve(ClientKafka);
+    const client = await app.resolve(Kafka);
     expect(client).toBeDefined();
-    expect(client).toBeInstanceOf(ClientKafka);
+    expect(client).toBeInstanceOf(Kafka);
     await app.close();
   });
 
@@ -64,10 +64,10 @@ describe('KafkaModule', () => {
     await app.init();
     const client1 = await app.resolve('client1');
     expect(client1).toBeDefined();
-    expect(client1).toBeInstanceOf(ClientKafka);
+    expect(client1).toBeInstanceOf(Kafka);
     const client2 = await app.resolve('client2');
     expect(client2).toBeDefined();
-    expect(client2).toBeInstanceOf(ClientKafka);
+    expect(client2).toBeInstanceOf(Kafka);
     expect(client2).not.toBe(client1);
     await app.close();
   });
@@ -95,10 +95,10 @@ describe('KafkaModule', () => {
     await app.init();
     const client1 = await app.resolve('kafka1');
     expect(client1).toBeDefined();
-    expect(client1).toBeInstanceOf(ClientKafka);
+    expect(client1).toBeInstanceOf(Kafka);
     const client2 = await app.resolve('kafka2');
     expect(client2).toBeDefined();
-    expect(client2).toBeInstanceOf(ClientKafka);
+    expect(client2).toBeInstanceOf(Kafka);
     expect(client2).not.toBe(client1);
     await app.close();
   });

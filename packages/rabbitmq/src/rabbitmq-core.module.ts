@@ -115,7 +115,7 @@ export class RabbitmqCoreModule
   async onApplicationBootstrap() {
     const options = this.connectionOptions;
     this.client.on('error', e => {
-      console.log(e);
+      this.logger?.error(e);
     });
     if (options.lazyConnect || !options.hostname) return;
     this.logger?.log(
