@@ -36,7 +36,8 @@
     "amqplib": "*"
   },
   "devDependencies": {
-    "@nestjs/testing": "^11.0.12",
+    "@nestjs/testing": "^11.1.0",
+    "@types/amqplib": "^0.10.7",
     "expect": "^29.7.0",
     "ts-gems": "^3.11.3"
   },

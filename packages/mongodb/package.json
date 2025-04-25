@@ -31,10 +31,10 @@
   "peerDependencies": {
     "@nestjs/common": "^10.0.0 || ^11.0.0",
     "@nestjs/core": "^10.0.0 || ^11.0.0",
-    "mongodb": "^6.15.0"
+    "mongodb": "^6.16.0"
   },
   "devDependencies": {
-    "@nestjs/testing": "^11.0.12",
+    "@nestjs/testing": "^11.1.0",
     "@nestjs/terminus": "^11.0.0",
     "expect": "^29.7.0",
     "ts-gems": "^3.11.3"
