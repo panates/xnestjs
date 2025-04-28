@@ -95,7 +95,7 @@ export class RabbitmqCoreModule
           );
           if (logger) {
             client.on('connect', ({ url }) => {
-              logger.error('RabbitMQ connected to ' + url);
+              logger.log('RabbitMQ connected to ' + url);
             });
             client.on('connectFailed', ({ err }) => {
               logger.error('RabbitMQ connection failed: ' + err?.message);
