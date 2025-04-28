@@ -11,11 +11,11 @@ import {
 import colors from 'ansi-colors';
 import { RMQ_CONNECTION_OPTIONS, RMQ_MODULE_ID } from './constants.js';
 import { getRabbitmqConfig } from './get-rabbitmq-config.js';
-import { RmqClient } from './rmq-client.js';
 import {
   type RabbitmqConnectionOptions,
   type RabbitmqModuleAsyncOptions,
   type RabbitmqModuleOptions,
+  RmqClient,
 } from './types.js';
 
 const CLIENT_TOKEN = Symbol('CLIENT_TOKEN');
@@ -89,7 +89,7 @@ export class RabbitmqCoreModule
         provide: token,
         inject: [RMQ_CONNECTION_OPTIONS],
         useFactory: async (connectionOptions: RabbitmqConnectionOptions) => {
-          return new RmqClient(connectionOptions);
+          return new RmqClient(connectionOptions.urls, connectionOptions);
         },
       },
     ];
@@ -117,9 +117,9 @@ export class RabbitmqCoreModule
     this.client.on('error', e => {
       this.logger?.error(e);
     });
-    if (options.lazyConnect || !options.hostname) return;
+    if (options.lazyConnect || !options.urls?.length) return;
     this.logger?.log(
-      'Connecting to RabbitMQ at ' + colors.blue(options.hostname),
+      'Connecting to RabbitMQ at ' + colors.blue(options.urls.toString()),
     );
     Logger.flush();
     await this.client.connect().catch(e => {

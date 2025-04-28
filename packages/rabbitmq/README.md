@@ -72,18 +72,19 @@ configuration. By default, variables are prefixed with `RMQ_`.
 
 <!--- BEGIN env --->
 
-| Environment Variable     | Type    | Default        | Description                                                                                                                                                                           |
-|--------------------------|---------|----------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `RMQ_HOSTNAME`           | String  | `localhost`    | Hostname used for connecting to the server                                                                                                                                            |
-| `RMQ_PORT`               | Number  | `5672`         | Port used for connecting to the server                                                                                                                                                |
-| `RMQ_PORT`               | Number  |                | Port used for connecting to the server                                                                                                                                                |
-| `RMQ_USERNAME`           | String  |                | Username used for authenticating against the server                                                                                                                                   |
-| `RMQ_PASSWORD`           | String  |                | Password used for authenticating against the server                                                                                                                                   |
-| `RMQ_LOCALE`             | String  | `en_US`        | The desired locale for error messages. RabbitMQ only ever uses en_US                                                                                                                  |
-| `RMQ_FRAME_MAX`          | Number  | `0x1000` (4kb) | The size in bytes of the maximum frame allowed over the connection. 0 means no limit (but since frames have a size field which is an unsigned 32 bit integer, it’s perforce 2^32 - 1) |
-| `RMQ_HEARTBEAT_INTERVAL` | Number  | `0`            | The period of the connection heartbeat in seconds                                                                                                                                     |
-| `RMQ_VHOST`              | String  | `/`            | What VHost shall be used                                                                                                                                                              |
-| `RMQ_LAZY_CONNECT`       | Boolean | `false`        | If true, defers connecting to RabbitMQ until a message is sent/received.                                                                                                              |
+| Environment Variable     | Type      | Default | Description                                                                                         |
+|--------------------------|-----------|---------|-----------------------------------------------------------------------------------------------------|
+| `RMQ_URLS`               | String[]! |         | A list of RabbitMQ server URLs to connect to.                                                       |
+| `RMQ_USERNAME`           | String    |         | Username used for authenticating against the server                                                 |
+| `RMQ_PASSWORD`           | String    |         | Password used for authenticating against the server                                                 |
+| `RMQ_HEARTBEAT_INTERVAL` | Number    | `5`     | Interval in seconds to send heartbeats to broker. Defaults to 5 seconds.                            |
+| `RMQ_RECONNECT_TIME`     | Number    |         | The time to wait before trying to reconnect. If not specified, defaults to `RMQ_HEARTBEAT_INTERVAL` |
+| `RMQ_NO_DELAY`           | Boolean   |         | when true sets TCP_NODELAY on the underlying socket.                                                |
+| `RMQ_CONNECT_TIMEOUT`    | Number    |         | Specifies the socket timeout in milliseconds while establishing the connection                      |
+| `RMQ_KEEP_ALIVE`         | Boolean   |         |                                                                                                     |
+| `RMQ_KEEP_ALIVE_DELAY`   | Number    |         |                                                                                                     |
+| `RMQ_CONNECTION_NAME`    | String    |         | Name of the connection. (Used for debugging)                                                        |
+| `RMQ_LAZY_CONNECT`       | Boolean   | `false` | If true, defers connecting to RabbitMQ until a message is                                           |
 
 <!--- END env --->
 
