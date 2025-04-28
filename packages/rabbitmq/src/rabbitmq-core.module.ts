@@ -89,7 +89,26 @@ export class RabbitmqCoreModule
         provide: token,
         inject: [RMQ_CONNECTION_OPTIONS],
         useFactory: async (connectionOptions: RabbitmqConnectionOptions) => {
-          return new RmqClient(connectionOptions.urls, connectionOptions);
+          const client = new RmqClient(
+            connectionOptions.urls,
+            connectionOptions,
+          );
+          if (logger) {
+            client.on('connect', (_, url) => {
+              logger.error('RabbitMQ connected to ' + url);
+            });
+            client.on('connectFailed', e => {
+              logger.error('RabbitMQ connection failed: ' + e.message);
+            });
+            client.on('disconnect', err => {
+              if (err)
+                logger.error(
+                  'RabbitMQ client disconnected upon error. ' + err?.message,
+                );
+              else logger.log('RabbitMQ client disconnected.');
+            });
+          }
+          return client;
         },
       },
     ];
@@ -114,18 +133,12 @@ export class RabbitmqCoreModule
 
   async onApplicationBootstrap() {
     const options = this.connectionOptions;
-    this.client.on('error', e => {
-      this.logger?.error(e);
-    });
     if (options.lazyConnect || !options.urls?.length) return;
     this.logger?.log(
       'Connecting to RabbitMQ at ' + colors.blue(options.urls.toString()),
     );
     Logger.flush();
-    await this.client.connect().catch(e => {
-      this.logger?.error('RabbitMQ connection failed: ' + e.message);
-      throw e;
-    });
+    await this.client.connect();
   }
 
   onApplicationShutdown() {
