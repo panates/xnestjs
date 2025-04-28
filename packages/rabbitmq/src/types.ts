@@ -5,12 +5,23 @@ import {
   type AmqpConnectionManager,
   AmqpConnectionManagerClass,
   type AmqpConnectionManagerOptions,
+  type Channel,
+  type ChannelWrapper,
   type ConnectionUrl,
+  type CreateChannelOpts,
+  type SetupFunc,
 } from 'amqp-connection-manager';
 
 export type RmqClient = AmqpConnectionManager;
 export const RmqClient = AmqpConnectionManagerClass;
-export { AmqpConnectionManagerOptions, ConnectionUrl };
+export {
+  AmqpConnectionManagerOptions,
+  Channel,
+  ChannelWrapper,
+  ConnectionUrl,
+  CreateChannelOpts,
+  SetupFunc,
+};
 
 export interface RabbitmqConnectionOptions
   extends AmqpConnectionManagerOptions {
