@@ -94,13 +94,13 @@ export class RabbitmqCoreModule
             connectionOptions,
           );
           if (logger) {
-            client.on('connect', (_, url) => {
+            client.on('connect', ({ url }) => {
               logger.error('RabbitMQ connected to ' + url);
             });
-            client.on('connectFailed', e => {
-              logger.error('RabbitMQ connection failed: ' + e.message);
+            client.on('connectFailed', ({ err }) => {
+              logger.error('RabbitMQ connection failed: ' + err?.message);
             });
-            client.on('disconnect', err => {
+            client.on('disconnect', ({ err }) => {
               if (err)
                 logger.error(
                   'RabbitMQ client disconnected upon error. ' + err?.message,
