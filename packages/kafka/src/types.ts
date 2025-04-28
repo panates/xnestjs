@@ -1,4 +1,4 @@
-import type { Logger } from '@nestjs/common';
+import type { LoggerService } from '@nestjs/common';
 import type { ModuleMetadata } from '@nestjs/common/interfaces';
 import type { InjectionToken } from '@nestjs/common/interfaces/modules/injection-token.interface';
 import type { ConsumerConfig } from '@nestjs/microservices/external/kafka.interface';
@@ -14,7 +14,7 @@ export interface KafkaConnectionOptions
 interface BaseModuleOptions {
   token?: InjectionToken;
   envPrefix?: string;
-  logger?: Logger | string;
+  logger?: LoggerService | string;
   global?: boolean;
 }
 

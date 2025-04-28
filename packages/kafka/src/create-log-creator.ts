@@ -1,7 +1,7 @@
-import { Logger } from '@nestjs/common';
+import { LoggerService } from '@nestjs/common';
 import { logLevel } from 'kafkajs';
 
-export function createLogCreator(logger?: Logger) {
+export function createLogCreator(logger?: LoggerService) {
   return ({ namespace, level, log }) => {
     if (!logger) return;
     const { message, ...extra } = log;
@@ -23,12 +23,12 @@ export function createLogCreator(logger?: Logger) {
           namespace,
         });
       case logLevel.DEBUG:
-        return logger.debug(message, {
+        return logger.debug?.(message, {
           ...extra,
           namespace,
         });
       default:
-        return logger.verbose(message, {
+        return logger.verbose?.(message, {
           ...extra,
           namespace,
         });
