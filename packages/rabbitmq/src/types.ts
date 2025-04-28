@@ -1,17 +1,25 @@
-import * as net from 'node:net';
-import * as tls from 'node:tls';
 import type { Logger } from '@nestjs/common';
 import type { ModuleMetadata } from '@nestjs/common/interfaces';
 import type { InjectionToken } from '@nestjs/common/interfaces/modules/injection-token.interface';
-import { Options } from 'amqplib';
+import {
+  type AmqpConnectionManager,
+  AmqpConnectionManagerClass,
+  type AmqpConnectionManagerOptions,
+  type ConnectionUrl,
+} from 'amqp-connection-manager';
 
-export interface RabbitmqConnectionOptions extends Options.Connect {
+export type RmqClient = AmqpConnectionManager;
+export const RmqClient = AmqpConnectionManagerClass;
+export { AmqpConnectionManagerOptions, ConnectionUrl };
+
+export interface RabbitmqConnectionOptions
+  extends AmqpConnectionManagerOptions {
+  urls?: ConnectionUrl[];
   lazyConnect?: boolean;
-  socketOptions?: net.SocketConnectOpts | tls.TLSSocketOptions;
 }
 
 export interface RabbitmqModuleOptions extends BaseModuleOptions {
-  useValue?: Partial<RabbitmqConnectionOptions>;
+  useValue?: RabbitmqConnectionOptions;
 }
 
 export interface RabbitmqModuleAsyncOptions
@@ -20,9 +28,7 @@ export interface RabbitmqModuleAsyncOptions
   inject?: any[];
   useFactory: (
     ...args: any[]
-  ) =>
-    | Promise<Partial<RabbitmqConnectionOptions>>
-    | Partial<RabbitmqConnectionOptions>;
+  ) => Promise<RabbitmqConnectionOptions> | RabbitmqConnectionOptions;
 }
 
 interface BaseModuleOptions {
