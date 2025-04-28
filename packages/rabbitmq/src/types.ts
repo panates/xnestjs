@@ -1,5 +1,3 @@
-import * as net from 'node:net';
-import * as tls from 'node:tls';
 import type { Logger } from '@nestjs/common';
 import type { ModuleMetadata } from '@nestjs/common/interfaces';
 import type { InjectionToken } from '@nestjs/common/interfaces/modules/injection-token.interface';
