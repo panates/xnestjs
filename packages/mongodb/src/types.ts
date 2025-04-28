@@ -1,4 +1,4 @@
-import type { Logger } from '@nestjs/common';
+import type { LoggerService } from '@nestjs/common';
 import type { ModuleMetadata } from '@nestjs/common/interfaces';
 import type { InjectionToken } from '@nestjs/common/interfaces/modules/injection-token.interface';
 import type { MongoClientOptions } from 'mongodb';
@@ -13,7 +13,7 @@ interface BaseModuleOptions {
   token?: InjectionToken;
   dbToken?: InjectionToken;
   envPrefix?: string;
-  logger?: Logger | string;
+  logger?: LoggerService | string;
   global?: boolean;
 }
 

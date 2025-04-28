@@ -1,5 +1,5 @@
 import type { ClientOptions } from '@elastic/elasticsearch';
-import type { Logger } from '@nestjs/common';
+import type { LoggerService } from '@nestjs/common';
 import type { ModuleMetadata } from '@nestjs/common/interfaces';
 import type { InjectionToken } from '@nestjs/common/interfaces/modules/injection-token.interface';
 
@@ -10,7 +10,7 @@ export interface ElasticsearchConnectionOptions extends ClientOptions {
 interface BaseModuleOptions {
   token?: InjectionToken;
   envPrefix?: string;
-  logger?: Logger | string;
+  logger?: LoggerService | string;
   global?: boolean;
 }
 
