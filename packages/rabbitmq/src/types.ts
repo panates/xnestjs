@@ -1,36 +1,34 @@
 import type { LoggerService } from '@nestjs/common';
 import type { ModuleMetadata } from '@nestjs/common/interfaces';
 import type { InjectionToken } from '@nestjs/common/interfaces/modules/injection-token.interface';
-import {
-  type AmqpConnectionManager,
-  AmqpConnectionManagerClass,
-  type AmqpConnectionManagerOptions,
-  type Channel,
-  type ChannelWrapper,
-  type ConnectionUrl,
-  type CreateChannelOpts,
-  type SetupFunc,
-} from 'amqp-connection-manager';
+import * as rabbit from 'rabbitmq-client';
 
-export type RmqClient = AmqpConnectionManager;
-export const RmqClient = AmqpConnectionManagerClass;
-export {
-  AmqpConnectionManagerOptions,
-  Channel,
-  ChannelWrapper,
-  ConnectionUrl,
-  CreateChannelOpts,
-  SetupFunc,
-};
+export type RmqClient = rabbit.Connection;
+export const RmqClient = rabbit.Connection;
 
 export interface RabbitmqConnectionOptions
-  extends AmqpConnectionManagerOptions {
-  urls?: ConnectionUrl[];
+  extends Pick<
+    rabbit.ConnectionOptions,
+    | 'username'
+    | 'password'
+    | 'acquireTimeout'
+    | 'connectionName'
+    | 'connectionTimeout'
+    | 'frameMax'
+    | 'heartbeat'
+    | 'maxChannels'
+    | 'retryHigh'
+    | 'retryLow'
+    | 'noDelay'
+    | 'tls'
+    | 'socket'
+  > {
+  urls?: string[];
   lazyConnect?: boolean;
 }
 
 export interface RabbitmqModuleOptions extends BaseModuleOptions {
-  useValue?: RabbitmqConnectionOptions;
+  useValue?: string | string[] | RabbitmqConnectionOptions;
 }
 
 export interface RabbitmqModuleAsyncOptions
@@ -39,7 +37,11 @@ export interface RabbitmqModuleAsyncOptions
   inject?: any[];
   useFactory: (
     ...args: any[]
-  ) => Promise<RabbitmqConnectionOptions> | RabbitmqConnectionOptions;
+  ) =>
+    | Promise<string | string[] | RabbitmqConnectionOptions>
+    | string
+    | string[]
+    | RabbitmqConnectionOptions;
 }
 
 interface BaseModuleOptions {
