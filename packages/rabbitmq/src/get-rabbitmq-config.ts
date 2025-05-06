@@ -1,50 +1,37 @@
 import process from 'node:process';
-import { clone } from '@jsopen/objects';
-import amqplib from 'amqplib';
+import { merge, omitNullish } from '@jsopen/objects';
 import { toBoolean, toInt } from 'putil-varhelpers';
 import type { RabbitmqConnectionOptions } from './types';
 
 export function getRabbitmqConfig(
-  moduleOptions: Partial<RabbitmqConnectionOptions>,
+  urls: string | string[] | Partial<RabbitmqConnectionOptions>,
   prefix: string = 'RMQ_',
 ): RabbitmqConnectionOptions {
-  const options = clone(moduleOptions) as RabbitmqConnectionOptions;
   const env = process.env;
-  options.urls =
-    options.urls ||
-    (env[prefix + 'URLS'] ?? 'amqp://localhost:5672').split(/\s*,\s*/);
-  options.heartbeatIntervalInSeconds =
-    options.heartbeatIntervalInSeconds ??
-    toInt(env[prefix + 'HEARTBEAT_INTERVAL']);
-  options.reconnectTimeInSeconds =
-    options.reconnectTimeInSeconds ??
-    toInt(env[prefix + 'MAX_CONNECTION_ATTEMPTS']);
-
-  options.connectionOptions = options.connectionOptions || {};
-  const username = env[prefix + 'USERNAME'];
-  if (username) {
-    options.connectionOptions.credentials = amqplib.credentials.plain(
-      username,
-      env[prefix + 'PASSWORD'] || '',
-    );
-  }
-  options.connectionOptions.noDelay =
-    options.connectionOptions.noDelay ?? toBoolean(env[prefix + 'NO_DELAY']);
-  options.connectionOptions.timeout =
-    options.connectionOptions.timeout ?? toInt(env[prefix + 'CONNECT_TIMEOUT']);
-  options.connectionOptions.keepAlive =
-    options.connectionOptions.keepAlive ??
-    toBoolean(env[prefix + 'KEEP_ALIVE']);
-  options.connectionOptions.keepAliveDelay =
-    options.connectionOptions.keepAliveDelay ??
-    toInt(env[prefix + 'KEEP_ALIVE_DELAY']);
-  if (env[prefix + 'CONNECTION_NAME']) {
-    options.connectionOptions.clientProperties =
-      options.connectionOptions.clientProperties || {};
-    options.connectionOptions.clientProperties.connection_name =
-      env[prefix + 'CONNECTION_NAME'];
-  }
+  const options: RabbitmqConnectionOptions = {};
+  if (Array.isArray(urls)) options.urls = urls;
+  else if (typeof urls === 'object') {
+    merge(options, urls, { deep: true });
+  } else
+    options.urls = (
+      urls ||
+      env[prefix + 'URLS'] ||
+      'amqp://localhost:5672'
+    ).split(/\s*,\s*/) || ['amqp://guest:guest@localhost:5672'];
+  options.username = options.username ?? env[prefix + 'USERNAME'];
+  options.password = options.password ?? env[prefix + 'PASSWORD'];
+  options.acquireTimeout =
+    options.acquireTimeout ?? toInt(env[prefix + 'ACQUIRE_TIMEOUT']);
+  options.connectionTimeout =
+    options.connectionTimeout ?? toInt(env[prefix + 'CONNECTION_TIMEOUT']);
+  options.frameMax = options.frameMax ?? toInt(env[prefix + 'FRAME_MAX']);
+  options.heartbeat =
+    options.heartbeat ?? toInt(env[prefix + 'HEARTBEAT_INTERVAL']);
+  options.maxChannels =
+    options.maxChannels ?? toInt(env[prefix + 'MAX_CHANNELS']);
+  options.retryHigh = options.retryHigh ?? toInt(env[prefix + 'RETRY_HIGH']);
+  options.retryLow = options.retryLow ?? toInt(env[prefix + 'NO_DELAY']);
   options.lazyConnect =
     options.lazyConnect ?? toBoolean(env[prefix + 'LAZY_CONNECT']);
-  return options;
+  return omitNullish(options);
 }
