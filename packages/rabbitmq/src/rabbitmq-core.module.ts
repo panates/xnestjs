@@ -70,7 +70,11 @@ export class RabbitmqCoreModule
     // const name = typeof token === 'string' ? token : 'RabbitMQ';
     const logger =
       typeof opts.logger === 'string' ? new Logger(opts.logger) : opts.logger;
-    const exports = [RMQ_CONNECTION_OPTIONS, ...(metadata.exports ?? [])];
+    const exports = [
+      RMQ_CONNECTION_OPTIONS,
+      token,
+      ...(metadata.exports ?? []),
+    ];
     const providers: Provider[] = [
       ...(metadata.providers ?? []),
       {
@@ -103,6 +107,7 @@ export class RabbitmqCoreModule
       },
     ];
     return {
+      global: opts.global,
       module: RabbitmqCoreModule,
       providers,
       exports,
