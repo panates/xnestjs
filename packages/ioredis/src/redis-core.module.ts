@@ -35,7 +35,6 @@ export class RedisCoreModule
       moduleOptions.envPrefix,
     );
     return this._createDynamicModule(moduleOptions, {
-      global: moduleOptions.global,
       providers: [
         {
           provide: IOREDIS_CONNECTION_OPTIONS,
@@ -48,7 +47,6 @@ export class RedisCoreModule
   static forRootAsync(asyncOptions: RedisAsyncModuleOptions): DynamicModule {
     assert.ok(asyncOptions.useFactory, 'useFactory is required');
     return this._createDynamicModule(asyncOptions, {
-      global: asyncOptions.global,
       providers: [
         {
           provide: IOREDIS_CONNECTION_OPTIONS,
@@ -90,6 +88,7 @@ export class RedisCoreModule
       },
     ];
     return {
+      global: opts.global,
       module: RedisCoreModule,
       ...metadata,
       providers: [
