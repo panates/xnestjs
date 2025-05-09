@@ -1,6 +1,6 @@
 {
   "name": "@xnestjs/storage",
-  "version": "1.11.2",
+  "version": "1.11.3",
   "description": "NestJS extension library for Storage solutions (S3,GS)",
   "author": "Panates",
   "license": "MIT",
@@ -23,7 +23,7 @@
     "clean:cover": "rimraf coverage"
   },
   "dependencies": {
-    "@jsopen/objects": "^1.5.2",
+    "@jsopen/objects": "^1.6.0",
     "ansi-colors": "^4.1.3",
     "putil-varhelpers": "^1.6.5",
     "tslib": "^2.8.1"

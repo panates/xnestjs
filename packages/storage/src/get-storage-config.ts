@@ -18,7 +18,7 @@ export function getStorageConfig(
     options.s3 = options.s3 || {};
     options.s3.endPoint = options.s3.endPoint ?? env[prefix + 'S3_ENDPOINT'];
     options.s3.accessKey =
-      options.s3.secretKey ?? env[prefix + 'S3_ACCESS_KEY'];
+      options.s3.accessKey ?? env[prefix + 'S3_ACCESS_KEY'];
     options.s3.secretKey =
       options.s3.secretKey ?? env[prefix + 'S3_SECRET_KEY'];
     options.s3.useSSL = options.s3.useSSL ?? toBoolean(env[prefix + 'S3_SSL']);
