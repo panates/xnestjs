@@ -4,20 +4,19 @@ import { toBoolean, toInt } from 'putil-varhelpers';
 import type { RabbitmqConnectionOptions } from './types';
 
 export function getRabbitmqConfig(
-  urls: string | string[] | Partial<RabbitmqConnectionOptions>,
+  init: string | string[] | Partial<RabbitmqConnectionOptions>,
   prefix: string = 'RMQ_',
 ): RabbitmqConnectionOptions {
   const env = process.env;
   const options: RabbitmqConnectionOptions = {};
-  if (Array.isArray(urls)) options.urls = urls;
-  else if (typeof urls === 'object') {
-    merge(options, urls, { deep: true });
+  if (Array.isArray(init)) options.hosts = init;
+  else if (typeof init === 'object') {
+    merge(options, init, { deep: true });
   } else
-    options.urls = (
-      urls ||
-      env[prefix + 'URLS'] ||
-      'amqp://localhost:5672'
-    ).split(/\s*,\s*/) || ['amqp://guest:guest@localhost:5672'];
+    options.hosts = (init || env[prefix + 'HOSTS'] || 'localhost:5672').split(
+      /\s*,\s*/,
+    ) || ['localhost:5672'];
+  options.vhost = options.vhost ?? env[prefix + 'VHOST'];
   options.username = options.username ?? env[prefix + 'USERNAME'];
   options.password = options.password ?? env[prefix + 'PASSWORD'];
   options.acquireTimeout =

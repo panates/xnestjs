@@ -25,10 +25,10 @@
     "qc": "rman run lint && rman run check && rman run compile"
   },
   "devDependencies": {
-    "@nestjs/common": "^11.1.0",
-    "@nestjs/core": "^11.1.0",
-    "@nestjs/platform-express": "^11.1.0",
-    "@nestjs/testing": "^11.1.0",
+    "@nestjs/common": "^11.1.1",
+    "@nestjs/core": "^11.1.1",
+    "@nestjs/platform-express": "^11.1.1",
+    "@nestjs/testing": "^11.1.1",
     "@panates/eslint-config": "^2.0.4",
     "@panates/eslint-config-ts": "^2.0.4",
     "@panates/tsconfig": "^2.0.4",
@@ -36,7 +36,7 @@
     "@swc/core": "^1.11.24",
     "@swc/helpers": "^0.5.17",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^22.15.17",
+    "@types/node": "^22.15.18",
     "@types/sinon": "^17.0.4",
     "eslint": "^9.26.0",
     "globals": "^16.0.0",

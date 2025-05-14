@@ -9,6 +9,8 @@ export const RmqClient = rabbit.Connection;
 export interface RabbitmqConnectionOptions
   extends Pick<
     rabbit.ConnectionOptions,
+    | 'hosts'
+    | 'vhost'
     | 'username'
     | 'password'
     | 'acquireTimeout'
@@ -23,7 +25,6 @@ export interface RabbitmqConnectionOptions
     | 'tls'
     | 'socket'
   > {
-  urls?: string[];
   lazyConnect?: boolean;
 }
 
