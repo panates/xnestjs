@@ -28,7 +28,7 @@ export class RabbitmqCoreModule
    */
   static forRoot(moduleOptions: RabbitmqModuleOptions): DynamicModule {
     const connectionOptions = getRabbitmqConfig(
-      moduleOptions.useValue || {},
+      moduleOptions.useValue,
       moduleOptions.envPrefix,
     );
     return this._createDynamicModule(moduleOptions, {

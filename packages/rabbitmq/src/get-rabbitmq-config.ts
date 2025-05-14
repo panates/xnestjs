@@ -4,7 +4,7 @@ import { toBoolean, toInt } from 'putil-varhelpers';
 import type { RabbitmqConnectionOptions } from './types';
 
 export function getRabbitmqConfig(
-  init: string | string[] | Partial<RabbitmqConnectionOptions>,
+  init?: string | string[] | Partial<RabbitmqConnectionOptions>,
   prefix: string = 'RMQ_',
 ): RabbitmqConnectionOptions {
   const env = process.env;
@@ -15,7 +15,7 @@ export function getRabbitmqConfig(
   } else
     options.hosts = (init || env[prefix + 'HOSTS'] || 'localhost:5672').split(
       /\s*,\s*/,
-    ) || ['localhost:5672'];
+    );
   options.vhost = options.vhost ?? env[prefix + 'VHOST'];
   options.username = options.username ?? env[prefix + 'USERNAME'];
   options.password = options.password ?? env[prefix + 'PASSWORD'];
