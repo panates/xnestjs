@@ -128,9 +128,9 @@ export class RabbitmqCoreModule
 
   async onApplicationBootstrap() {
     const options = this.connectionOptions;
-    if (options.lazyConnect || !options.urls?.length) return;
+    if (options.lazyConnect || !options.hosts?.length) return;
     this.logger?.log(
-      'Connecting to RabbitMQ at ' + colors.blue(options.urls.toString()),
+      'Connecting to RabbitMQ at ' + colors.blue(options.hosts.toString()),
     );
     Logger.flush();
     await this.client.onConnect();

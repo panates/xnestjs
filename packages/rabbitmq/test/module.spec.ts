@@ -10,7 +10,7 @@ describe('RabbitmqModule', () => {
     const module = await Test.createTestingModule({
       imports: [
         RabbitmqModule.forRoot({
-          useValue: { urls: ['localhost'], lazyConnect: true },
+          useValue: { hosts: ['localhost'], lazyConnect: true },
         }),
       ],
     }).compile();
