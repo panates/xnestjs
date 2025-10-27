@@ -61,7 +61,7 @@ export class RedisCoreModule
   }
 
   private static _createDynamicModule(
-    opts: RedisModuleOptions,
+    opts: RedisModuleOptions | RedisAsyncModuleOptions,
     metadata: Partial<DynamicModule>,
   ) {
     const token = opts.token ?? RedisClient;
@@ -90,6 +90,7 @@ export class RedisCoreModule
     return {
       global: opts.global,
       module: RedisCoreModule,
+      imports: (opts as RedisAsyncModuleOptions).imports,
       ...metadata,
       providers: [
         ...(metadata.providers ?? []),
