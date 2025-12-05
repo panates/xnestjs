@@ -19,8 +19,7 @@ export interface ElasticsearchModuleOptions extends BaseModuleOptions {
 }
 
 export interface ElasticsearchModuleAsyncOptions
-  extends BaseModuleOptions,
-    Pick<ModuleMetadata, 'imports'> {
+  extends BaseModuleOptions, Pick<ModuleMetadata, 'imports'> {
   inject?: InjectionToken[];
   useFactory: (
     ...args: any[]
