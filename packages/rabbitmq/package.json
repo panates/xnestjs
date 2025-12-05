@@ -1,6 +1,6 @@
 {
   "name": "@xnestjs/rabbitmq",
-  "version": "1.12.2",
+  "version": "1.12.3",
   "description": "NestJS extension library for RabbitMQ",
   "author": "Panates",
   "license": "MIT",
