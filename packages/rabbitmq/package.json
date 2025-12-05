@@ -1,6 +1,6 @@
 {
   "name": "@xnestjs/rabbitmq",
-  "version": "1.12.2",
+  "version": "1.12.3",
   "description": "NestJS extension library for RabbitMQ",
   "author": "Panates",
   "license": "MIT",
@@ -35,7 +35,7 @@
     "rabbitmq-client": ">=5.0.0 <6"
   },
   "devDependencies": {
-    "@nestjs/testing": "^11.1.7",
+    "@nestjs/testing": "^11.1.9",
     "expect": "^30.2.0",
     "ts-gems": "^3.11.3"
   },

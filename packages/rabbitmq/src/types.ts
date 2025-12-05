@@ -6,25 +6,24 @@ import * as rabbit from 'rabbitmq-client';
 export type RmqClient = rabbit.Connection;
 export const RmqClient = rabbit.Connection;
 
-export interface RabbitmqConnectionOptions
-  extends Pick<
-    rabbit.ConnectionOptions,
-    | 'hosts'
-    | 'vhost'
-    | 'username'
-    | 'password'
-    | 'acquireTimeout'
-    | 'connectionName'
-    | 'connectionTimeout'
-    | 'frameMax'
-    | 'heartbeat'
-    | 'maxChannels'
-    | 'retryHigh'
-    | 'retryLow'
-    | 'noDelay'
-    | 'tls'
-    | 'socket'
-  > {
+export interface RabbitmqConnectionOptions extends Pick<
+  rabbit.ConnectionOptions,
+  | 'hosts'
+  | 'vhost'
+  | 'username'
+  | 'password'
+  | 'acquireTimeout'
+  | 'connectionName'
+  | 'connectionTimeout'
+  | 'frameMax'
+  | 'heartbeat'
+  | 'maxChannels'
+  | 'retryHigh'
+  | 'retryLow'
+  | 'noDelay'
+  | 'tls'
+  | 'socket'
+> {
   lazyConnect?: boolean;
 }
 
@@ -33,8 +32,7 @@ export interface RabbitmqModuleOptions extends BaseModuleOptions {
 }
 
 export interface RabbitmqModuleAsyncOptions
-  extends BaseModuleOptions,
-    Pick<ModuleMetadata, 'imports'> {
+  extends BaseModuleOptions, Pick<ModuleMetadata, 'imports'> {
   inject?: any[];
   useFactory: (
     ...args: any[]

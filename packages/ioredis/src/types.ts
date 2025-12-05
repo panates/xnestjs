@@ -21,8 +21,7 @@ export interface RedisStandaloneModuleOptions extends BaseRedisModuleOptions {
 }
 
 export interface RedisStandaloneAsyncModuleOptions
-  extends BaseRedisModuleOptions,
-    Pick<ModuleMetadata, 'imports'> {
+  extends BaseRedisModuleOptions, Pick<ModuleMetadata, 'imports'> {
   inject?: InjectionToken[];
   useFactory: (
     ...args: any[]
@@ -36,8 +35,7 @@ export interface RedisClusterModuleOptions extends BaseRedisModuleOptions {
 }
 
 export interface RedisClusterAsyncModuleOptions
-  extends BaseRedisModuleOptions,
-    Pick<ModuleMetadata, 'imports'> {
+  extends BaseRedisModuleOptions, Pick<ModuleMetadata, 'imports'> {
   inject?: InjectionToken[];
   useFactory: (
     ...args: any[]

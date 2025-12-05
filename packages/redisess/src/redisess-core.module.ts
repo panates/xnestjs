@@ -65,6 +65,7 @@ export class RedisessCoreModule implements OnApplicationShutdown {
   ) {
     const token = opts.token ?? SessionManager;
     const providers: Provider[] = [
+      ...(metadata.providers ?? []),
       {
         provide: token,
         inject: [REDISESS_SESSION_OPTIONS],
@@ -88,18 +89,16 @@ export class RedisessCoreModule implements OnApplicationShutdown {
             ? new Logger(opts.logger)
             : opts.logger,
       },
+      {
+        provide: REDISESS_MODULE_ID,
+        useValue: crypto.randomUUID(),
+      },
     ];
     return {
+      global: opts.global,
       module: RedisessCoreModule,
       ...metadata,
-      providers: [
-        ...(metadata.providers ?? []),
-        ...providers,
-        {
-          provide: REDISESS_MODULE_ID,
-          useValue: crypto.randomUUID(),
-        },
-      ],
+      providers,
       exports: [REDISESS_SESSION_OPTIONS, token, ...(metadata.exports ?? [])],
     } as DynamicModule;
   }

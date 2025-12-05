@@ -70,6 +70,7 @@ export class MongodbCoreModule
     const token = opts.token ?? MongoClient;
     const dbToken = opts.dbToken ?? Db;
     const providers: Provider[] = [
+      ...(metadata.providers ?? []),
       {
         provide: token,
         inject: [MONGODB_CONNECTION_OPTIONS],
@@ -109,23 +110,20 @@ export class MongodbCoreModule
             ? new Logger(opts.logger)
             : opts.logger,
       },
+      {
+        provide: MONGODB_MODULE_ID,
+        useValue: crypto.randomUUID(),
+      },
     ];
     return {
       module: MongodbCoreModule,
       ...metadata,
-      providers: [
-        ...(metadata.providers ?? []),
-        ...providers,
-        {
-          provide: MONGODB_MODULE_ID,
-          useValue: crypto.randomUUID(),
-        },
-      ],
+      providers,
       exports: [
+        ...(metadata.exports ?? []),
         MONGODB_CONNECTION_OPTIONS,
         token,
         dbToken,
-        ...(metadata.exports ?? []),
       ],
     } as DynamicModule;
   }

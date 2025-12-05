@@ -69,14 +69,12 @@ export class ElasticsearchCoreModule
   }
 
   private static _createDynamicModule(
-    moduleOptions: ElasticsearchModuleOptions | ElasticsearchModuleAsyncOptions,
+    opts: ElasticsearchModuleOptions | ElasticsearchModuleAsyncOptions,
     metadata: Partial<DynamicModule>,
   ) {
-    const token = moduleOptions.token ?? ElasticsearchService;
+    const token = opts.token ?? ElasticsearchService;
     const logger =
-      typeof moduleOptions.logger === 'string'
-        ? new Logger(moduleOptions.logger)
-        : moduleOptions.logger;
+      typeof opts.logger === 'string' ? new Logger(opts.logger) : opts.logger;
     const exports = [
       ELASTICSEARCH_CONNECTION_OPTIONS,
       ...(metadata.exports ?? []),
@@ -107,10 +105,11 @@ export class ElasticsearchCoreModule
     class InnerProvidersModule {}
 
     return {
+      global: opts.global,
       module: ElasticsearchCoreModule,
       providers,
-      global: moduleOptions.global,
       imports: [
+        ...(metadata.imports ?? []),
         ElasticsearchModule.registerAsync({
           imports: [
             {

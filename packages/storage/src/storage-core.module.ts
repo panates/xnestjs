@@ -60,6 +60,7 @@ export class StorageCoreModule {
   ) {
     const token = opts.token ?? StorageConnection;
     const providers: Provider[] = [
+      ...(metadata.providers ?? []),
       {
         provide: token,
         inject: [STORAGE_OPTIONS],
@@ -88,18 +89,17 @@ export class StorageCoreModule {
             ? new Logger(opts.logger)
             : opts.logger,
       },
+      {
+        provide: STORAGE_MODULE_ID,
+        useValue: crypto.randomUUID(),
+      },
     ];
     return {
+      global: opts.global,
       module: StorageCoreModule,
+      imports: (opts as StorageModuleAsyncOptions).imports,
       ...metadata,
-      providers: [
-        ...(metadata.providers ?? []),
-        ...providers,
-        {
-          provide: STORAGE_MODULE_ID,
-          useValue: crypto.randomUUID(),
-        },
-      ],
+      providers,
       exports: [STORAGE_OPTIONS, token, ...(metadata.exports ?? [])],
     } as DynamicModule;
   }

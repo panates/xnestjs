@@ -36,8 +36,7 @@ import { RabbitmqModule } from '@xnestjs/rabbitmq';
     }),
   ],
 })
-export class MyModule {
-}
+export class MyModule {}
 ```
 
 ### Asynchronous Registration
@@ -61,8 +60,7 @@ import { RabbitmqModule } from '@xnestjs/rabbitmq';
     }),
   ],
 })
-export class MyModule {
-}
+export class MyModule {}
 ```
 
 ## ⚙️ Environment Variables
@@ -73,7 +71,7 @@ configuration. By default, variables are prefixed with `RMQ_`.
 <!--- BEGIN env --->
 
 | Environment Variable     | Type      | Default          | Description                                                                                                                                                                                                                                                                                                                  |
-|--------------------------|-----------|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ------------------------ | --------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `RMQ_HOSTS`              | String[]! | `localhost:5672` | A list of RabbitMQ server hosts (hostname:port) to connect to. eg                                                                                                                                                                                                                                                            |
 | `RMQ_VHOST`              | String    |                  | VHost                                                                                                                                                                                                                                                                                                                        |
 | `RMQ_USERNAME`           | String    |                  | Username used for authenticating against the server                                                                                                                                                                                                                                                                          |

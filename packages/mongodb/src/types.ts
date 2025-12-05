@@ -22,8 +22,7 @@ export interface MongodbModuleOptions extends BaseModuleOptions {
 }
 
 export interface MongodbModuleAsyncOptions
-  extends BaseModuleOptions,
-    Pick<ModuleMetadata, 'imports'> {
+  extends BaseModuleOptions, Pick<ModuleMetadata, 'imports'> {
   inject?: InjectionToken[];
   useFactory: (
     ...args: any[]
