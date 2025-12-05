@@ -35,7 +35,7 @@
     "redisess": "^2.6.1"
   },
   "devDependencies": {
-    "@nestjs/testing": "^11.1.7",
+    "@nestjs/testing": "^11.1.9",
     "expect": "^30.2.0",
     "ioredis": "^5.8.2"
   },

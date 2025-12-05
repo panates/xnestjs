@@ -34,7 +34,7 @@
     "kafkajs": "^2.2.4"
   },
   "devDependencies": {
-    "@nestjs/testing": "^11.1.7",
+    "@nestjs/testing": "^11.1.9",
     "expect": "^30.2.0",
     "ts-gems": "^3.11.3"
   },

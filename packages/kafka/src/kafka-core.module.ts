@@ -70,7 +70,6 @@ export class KafkaCoreModule
     const token = opts.token ?? Kafka;
     const logger =
       typeof opts.logger === 'string' ? new Logger(opts.logger) : opts.logger;
-    const exports = [KAFKA_CONNECTION_OPTIONS, ...(metadata.exports ?? [])];
     const providers: Provider[] = [
       ...(metadata.providers ?? []),
       {
@@ -97,9 +96,12 @@ export class KafkaCoreModule
       },
     ];
     return {
+      global: opts.global,
       module: KafkaCoreModule,
+      imports: (opts as KafkaModuleAsyncOptions).imports,
+      ...metadata,
       providers,
-      exports,
+      exports: [KAFKA_CONNECTION_OPTIONS, ...(metadata.exports ?? [])],
     } as DynamicModule;
   }
 
