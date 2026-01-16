@@ -56,5 +56,8 @@
   "keywords": [
     "nestjs",
     "kafka"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }

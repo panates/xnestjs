@@ -60,5 +60,8 @@
     "session",
     "manager",
     "redis"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }

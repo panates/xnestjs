@@ -57,5 +57,8 @@
   "keywords": [
     "nestjs",
     "rabitmq"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }
