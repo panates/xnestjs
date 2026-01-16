@@ -57,5 +57,8 @@
     "nestjs",
     "storage",
     "s3"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }

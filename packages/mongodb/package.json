@@ -57,5 +57,8 @@
   "keywords": [
     "nestjs",
     "mongodb"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }
