@@ -1,6 +1,6 @@
 {
   "name": "@xnestjs/ioredis",
-  "version": "1.12.3",
+  "version": "1.13.0",
   "description": "NestJS extension library for ioredis",
   "author": "Panates",
   "license": "MIT",
