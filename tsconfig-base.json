@@ -2,6 +2,11 @@
   "extends": "@panates/tsconfig/node.json",
   "compilerOptions": {
     "types": ["node"],
-    "isolatedModules": true
+    "sourceMap": true,
+    "moduleResolution": "nodenext",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "module": "NodeNext",
+    "target": "ESNext"
   }
 }
