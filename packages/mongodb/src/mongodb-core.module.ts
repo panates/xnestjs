@@ -138,19 +138,31 @@ export class MongodbCoreModule
     @Inject(MONGODB_CONNECTION_OPTIONS)
     private connectionOptions: MongodbConnectionOptions,
     private logger?: Logger,
-  ) {}
+  ) {
+    this.logger = logger || new Logger('MongoDB');
+  }
 
   onApplicationBootstrap() {
     const options = this.connectionOptions;
     if (options.lazyConnect) return;
-    this.logger?.log(
-      `Connecting to MongoDB [${options.database}] at ${colors.blue(options.url!)}`,
-    );
+
     Logger.flush();
-    return this.client.connect().catch(e => {
-      this.logger?.error('MongoDB connection failed: ' + e.message);
-      throw e;
-    });
+    const logTimer = setTimeout(() => {
+      this.logger?.verbose(
+        `Waiting to connect to MongoDB [${colors.blue(options.url!)}]`,
+      );
+    }, 1000);
+    return this.client
+      .connect()
+      .catch(e => {
+        clearTimeout(logTimer);
+        this.logger?.error('MongoDB connection failed: ' + e.message);
+        throw e;
+      })
+      .then(() => {
+        clearTimeout(logTimer);
+        this.logger?.log(`MongoDB connection established`);
+      });
   }
 
   onApplicationShutdown() {

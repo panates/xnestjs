@@ -119,7 +119,9 @@ export class KafkaCoreModule
     @Inject(KAFKA_CONNECTION_OPTIONS)
     private connectionOptions: KafkaConnectionOptions,
     private logger?: Logger,
-  ) {}
+  ) {
+    this.logger = logger || new Logger('Kafka');
+  }
 
   async onApplicationBootstrap() {
     const options = this.connectionOptions;
@@ -144,19 +146,23 @@ export class KafkaCoreModule
     };
 
     if (options.lazyConnect || !options.brokers) return;
-    this.logger?.log(
-      'Testing to Kafka brokers' +
-        (Array.isArray(options.brokers)
-          ? colors.blue(options.brokers.join(','))
-          : ''),
-    );
+    const brokersText = Array.isArray(options.brokers)
+      ? colors.blue(options.brokers.join(','))
+      : '';
+    const logTimer = setTimeout(() => {
+      this.logger?.verbose(
+        `Waiting to connect to Kafka brokers [${colors.blue(brokersText)}]`,
+      );
+    }, 1000);
     Logger.flush();
     const admin = this.client.admin();
     try {
       await admin.connect();
       await admin.fetchTopicMetadata(); // this will fail if Kafka is not reachable
-      this.logger?.log('Kafka connection is healthy');
+      clearTimeout(logTimer);
+      this.logger?.log(`Kafka connection established`);
     } catch (error: any) {
+      clearTimeout(logTimer);
       this.logger?.error('Kafka connection failed: ' + error.message);
       throw error;
     } finally {
