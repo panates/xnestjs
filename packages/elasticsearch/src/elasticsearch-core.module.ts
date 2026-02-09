@@ -140,20 +140,31 @@ export class ElasticsearchCoreModule
     private logger: Logger,
     @Inject(ELASTICSEARCH_CONNECTION_OPTIONS)
     private connectionOptions: ElasticsearchConnectionOptions,
-  ) {}
+  ) {
+    this.logger = logger || new Logger('Elastic');
+  }
 
   async onApplicationBootstrap() {
     const options = this.connectionOptions;
     if (options.lazyConnect) return;
     const nodes = options.node || options.nodes;
-    this.logger?.log(
-      `Connecting to ElasticSearch at ${colors.blue(String(nodes))}`,
-    );
+    const logTimer = setTimeout(() => {
+      this.logger?.verbose(
+        `Waiting to connect to ElasticSearch [${colors.blue(String(nodes))}]`,
+      );
+    }, 1000);
     Logger.flush();
-    await this.client.ping({}).catch(e => {
-      this.logger.error('ElasticSearch connection failed: ' + e.message);
-      throw e;
-    });
+    await this.client
+      .ping({})
+      .catch(e => {
+        clearTimeout(logTimer);
+        this.logger.error('ElasticSearch connection failed: ' + e.message);
+        throw e;
+      })
+      .then(() => {
+        clearTimeout(logTimer);
+        this.logger?.log(`ElasticSearch connection established`);
+      });
   }
 
   onApplicationShutdown() {

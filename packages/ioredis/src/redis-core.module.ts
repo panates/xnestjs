@@ -146,7 +146,9 @@ export class RedisCoreModule
     @Inject(IOREDIS_CONNECTION_OPTIONS)
     private readonly connectionOptions: RedisConnectionOptions,
     private logger?: Logger,
-  ) {}
+  ) {
+    this.logger = logger || new Logger('Redis');
+  }
 
   async onApplicationBootstrap() {
     const opts = this.connectionOptions;
@@ -166,11 +168,19 @@ export class RedisCoreModule
     if (hosts) {
       this.logger?.log('Connecting to redis at ' + colors.blue(hosts));
       Logger.flush();
+      const logTimer = setTimeout(() => {
+        this.logger?.verbose(
+          'Waiting to connect to redis at ' + colors.blue(hosts),
+        );
+      }, 1000);
       try {
         if (this.client.redis.status === 'wait')
           await this.client.redis.connect();
         await this.client.redis.ping();
+        clearTimeout(logTimer);
+        this.logger?.log(`Redis connection established`);
       } catch (e: any) {
+        clearTimeout(logTimer);
         this.logger?.error('Redis connection failed: ' + e.message);
         throw e;
       }

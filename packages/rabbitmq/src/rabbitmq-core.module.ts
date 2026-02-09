@@ -120,16 +120,30 @@ export class RabbitmqCoreModule
     @Inject(RMQ_CONNECTION_OPTIONS)
     private connectionOptions: RabbitmqConnectionOptions,
     private logger?: Logger,
-  ) {}
+  ) {
+    this.logger = logger || new Logger('RabbitMQ');
+  }
 
   async onApplicationBootstrap() {
     const options = this.connectionOptions;
     if (options.lazyConnect || !options.hosts?.length) return;
-    this.logger?.log(
-      'Connecting to RabbitMQ at ' + colors.blue(options.hosts.toString()),
-    );
+    const logTimer = setTimeout(() => {
+      this.logger?.verbose(
+        `Waiting to connect to RabbitMQ [${colors.blue(options.hosts!.toString())}]`,
+      );
+    }, 1000);
     Logger.flush();
-    await this.client.onConnect();
+    await this.client
+      .onConnect()
+      .catch(e => {
+        clearTimeout(logTimer);
+        this.logger?.error('RabbitMQ connection failed: ' + e.message);
+        throw e;
+      })
+      .then(() => {
+        clearTimeout(logTimer);
+        this.logger?.log(`RabbitMQ connection established`);
+      });
   }
 
   onApplicationShutdown() {
