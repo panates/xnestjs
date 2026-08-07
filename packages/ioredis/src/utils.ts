@@ -1,4 +1,4 @@
-import {
+import type {
   RedisClusterConnectionOptions,
   RedisStandaloneConnectionOptions,
 } from './types.js';

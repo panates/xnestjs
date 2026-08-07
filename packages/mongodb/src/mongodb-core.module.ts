@@ -2,15 +2,15 @@ import * as assert from 'node:assert';
 import * as crypto from 'node:crypto';
 import { omit } from '@jsopen/objects';
 import {
-  DynamicModule,
+  type DynamicModule,
   Inject,
   Logger,
-  OnApplicationBootstrap,
-  OnApplicationShutdown,
-  Provider,
+  type OnApplicationBootstrap,
+  type OnApplicationShutdown,
+  type Provider,
 } from '@nestjs/common';
 import colors from 'ansi-colors';
-import { Db, MongoClient, MongoClientOptions } from 'mongodb';
+import { Db, MongoClient, type MongoClientOptions } from 'mongodb';
 import { MONGODB_CONNECTION_OPTIONS, MONGODB_MODULE_ID } from './constants.js';
 import { getMongodbConfig } from './get-mongodb-config.js';
 import type {

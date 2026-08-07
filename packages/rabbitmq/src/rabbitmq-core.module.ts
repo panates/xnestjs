@@ -1,12 +1,12 @@
 import assert from 'node:assert';
 import * as crypto from 'node:crypto';
 import {
-  DynamicModule,
+  type DynamicModule,
   Inject,
   Logger,
-  OnApplicationBootstrap,
-  OnApplicationShutdown,
-  Provider,
+  type OnApplicationBootstrap,
+  type OnApplicationShutdown,
+  type Provider,
 } from '@nestjs/common';
 import colors from 'ansi-colors';
 import { RMQ_CONNECTION_OPTIONS, RMQ_MODULE_ID } from './constants.js';

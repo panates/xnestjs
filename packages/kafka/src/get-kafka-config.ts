@@ -1,8 +1,8 @@
 import process from 'node:process';
 import { clone } from '@jsopen/objects';
-import { SASLMechanism } from 'kafkajs';
+import type { SASLMechanism } from 'kafkajs';
 import { toBoolean, toInt } from 'putil-varhelpers';
-import type { KafkaConnectionOptions } from './types';
+import type { KafkaConnectionOptions } from './types.js';
 
 export function getKafkaConfig(
   moduleOptions: Partial<KafkaConnectionOptions>,

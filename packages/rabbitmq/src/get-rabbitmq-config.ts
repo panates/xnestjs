@@ -1,7 +1,7 @@
 import process from 'node:process';
 import { merge, omitNullish } from '@jsopen/objects';
 import { toBoolean, toInt } from 'putil-varhelpers';
-import type { RabbitmqConnectionOptions } from './types';
+import type { RabbitmqConnectionOptions } from './types.js';
 
 export function getRabbitmqConfig(
   init?: string | string[] | Partial<RabbitmqConnectionOptions>,

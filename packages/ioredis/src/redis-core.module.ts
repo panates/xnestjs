@@ -1,15 +1,15 @@
 import assert from 'node:assert';
 import {
-  DynamicModule,
+  type DynamicModule,
   Inject,
   Logger,
-  OnApplicationBootstrap,
-  OnApplicationShutdown,
-  Provider,
+  type OnApplicationBootstrap,
+  type OnApplicationShutdown,
+  type Provider,
 } from '@nestjs/common';
 import colors from 'ansi-colors';
 import * as crypto from 'crypto';
-import Redis, { Cluster } from 'ioredis';
+import { Cluster, Redis } from 'ioredis';
 import {
   IOREDIS_CONNECTION_OPTIONS,
   IOREDIS_MODULE_TOKEN,

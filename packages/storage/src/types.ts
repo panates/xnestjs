@@ -1,5 +1,4 @@
-import type { InjectionToken, Logger } from '@nestjs/common';
-import type { ModuleMetadata } from '@nestjs/common/interfaces';
+import type { InjectionToken, Logger, ModuleMetadata } from '@nestjs/common';
 import type * as minio from 'minio';
 
 export type S3Config = minio.ClientOptions & { rejectUnauthorized?: boolean };

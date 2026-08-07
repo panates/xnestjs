@@ -1,11 +1,11 @@
 import process from 'node:process';
 import { clone } from '@jsopen/objects';
-import type { RedisOptions } from 'ioredis/built/redis/RedisOptions';
+import type { RedisOptions } from 'ioredis';
 import { toBoolean, toInt, toIntDef } from 'putil-varhelpers';
 import type {
   RedisClusterConnectionOptions,
   RedisStandaloneConnectionOptions,
-} from './types';
+} from './types.js';
 import { isClusterOptions } from './utils.js';
 
 export function getRedisConfig(

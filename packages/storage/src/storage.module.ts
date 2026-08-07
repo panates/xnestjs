@@ -1,4 +1,4 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { type DynamicModule, Module } from '@nestjs/common';
 import { StorageCoreModule } from './storage-core.module.js';
 import type {
   StorageModuleAsyncOptions,

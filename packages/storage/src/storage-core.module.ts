@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import { DynamicModule, Logger, Provider } from '@nestjs/common';
+import { type DynamicModule, Logger, type Provider } from '@nestjs/common';
 import crypto from 'crypto';
 import { STORAGE_MODULE_ID, STORAGE_OPTIONS } from './constants.js';
 import { getStorageConfig } from './get-storage-config.js';

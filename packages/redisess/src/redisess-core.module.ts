@@ -1,11 +1,11 @@
 import * as assert from 'node:assert';
 import { omit } from '@jsopen/objects';
 import {
-  DynamicModule,
+  type DynamicModule,
   Inject,
   Logger,
-  OnApplicationShutdown,
-  Provider,
+  type OnApplicationShutdown,
+  type Provider,
 } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { SessionManager } from 'redisess';

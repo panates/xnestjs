@@ -1,7 +1,9 @@
-import type { LoggerService } from '@nestjs/common';
-import type { ModuleMetadata } from '@nestjs/common/interfaces';
-import type { InjectionToken } from '@nestjs/common/interfaces/modules/injection-token.interface';
-import type { ConsumerConfig } from '@nestjs/microservices/external/kafka.interface';
+import type {
+  InjectionToken,
+  LoggerService,
+  ModuleMetadata,
+} from '@nestjs/common';
+import type { ConsumerConfig } from '@nestjs/microservices/external/kafka.interface.js';
 import type { KafkaConfig } from 'kafkajs';
 import type { StrictOmit } from 'ts-gems';
 
@@ -30,6 +32,5 @@ export interface KafkaModuleAsyncOptions
   useFactory: (
     ...args: any[]
   ) =>
-    | Promise<Partial<KafkaConnectionOptions>>
-    | Partial<KafkaConnectionOptions>;
+    Promise<Partial<KafkaConnectionOptions>> | Partial<KafkaConnectionOptions>;
 }

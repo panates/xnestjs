@@ -1,10 +1,10 @@
 import type { Buffer } from 'buffer';
 import type { Readable } from 'stream';
-import type { StorageProvider } from '../types';
 import type {
   GetObjectSignedUrlOptions,
   ObjectInfo,
   PutObjectOptions,
+  StorageProvider,
 } from '../types.js';
 import { StorageBucket } from './storage-bucket.js';
 

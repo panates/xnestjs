@@ -1,6 +1,8 @@
-import type { LoggerService } from '@nestjs/common';
-import type { ModuleMetadata } from '@nestjs/common/interfaces';
-import type { InjectionToken } from '@nestjs/common/interfaces/modules/injection-token.interface';
+import type {
+  InjectionToken,
+  LoggerService,
+  ModuleMetadata,
+} from '@nestjs/common';
 import type { MongoClientOptions } from 'mongodb';
 
 export interface MongodbConnectionOptions extends MongoClientOptions {
@@ -22,7 +24,7 @@ export interface MongodbModuleOptions extends BaseModuleOptions {
 }
 
 export interface MongodbModuleAsyncOptions
-  extends BaseModuleOptions, Pick<ModuleMetadata, 'imports'> {
+  extends BaseModuleOptions, Partial<Pick<ModuleMetadata, 'imports'>> {
   inject?: InjectionToken[];
   useFactory: (
     ...args: any[]

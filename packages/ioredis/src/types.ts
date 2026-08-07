@@ -1,10 +1,7 @@
-import type { Logger } from '@nestjs/common';
-import type { ModuleMetadata } from '@nestjs/common/interfaces';
-import type { InjectionToken } from '@nestjs/common/interfaces/modules/injection-token.interface';
-import type { RedisOptions } from 'ioredis';
-import type { ClusterOptions } from 'ioredis/built/cluster/ClusterOptions';
+import type { InjectionToken, Logger, ModuleMetadata } from '@nestjs/common';
+import type { ClusterOptions, RedisOptions } from 'ioredis';
 import type { ClusterNode } from 'ioredis/built/cluster/index.js';
-import type { Lock } from 'redis-semaphore/lib/Lock';
+import type { Lock } from 'redis-semaphore/lib/Lock.js';
 
 export interface RedisStandaloneConnectionOptions extends RedisOptions {}
 
@@ -13,8 +10,7 @@ export interface RedisClusterConnectionOptions extends ClusterOptions {
 }
 
 export type RedisConnectionOptions =
-  | RedisStandaloneConnectionOptions
-  | RedisClusterConnectionOptions;
+  RedisStandaloneConnectionOptions | RedisClusterConnectionOptions;
 
 export interface RedisStandaloneModuleOptions extends BaseRedisModuleOptions {
   useValue?: RedisStandaloneConnectionOptions;
@@ -43,11 +39,9 @@ export interface RedisClusterAsyncModuleOptions
 }
 
 export type RedisModuleOptions =
-  | RedisStandaloneModuleOptions
-  | RedisClusterModuleOptions;
+  RedisStandaloneModuleOptions | RedisClusterModuleOptions;
 export type RedisAsyncModuleOptions =
-  | RedisStandaloneAsyncModuleOptions
-  | RedisClusterAsyncModuleOptions;
+  RedisStandaloneAsyncModuleOptions | RedisClusterAsyncModuleOptions;
 
 export interface BaseRedisModuleOptions {
   token?: InjectionToken;

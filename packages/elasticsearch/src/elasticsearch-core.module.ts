@@ -1,12 +1,12 @@
 import assert from 'node:assert';
 import * as crypto from 'node:crypto';
 import {
-  DynamicModule,
+  type DynamicModule,
   Inject,
   Logger,
-  OnApplicationBootstrap,
-  OnApplicationShutdown,
-  Provider,
+  type OnApplicationBootstrap,
+  type OnApplicationShutdown,
+  type Provider,
 } from '@nestjs/common';
 import {
   ElasticsearchModule,
@@ -122,7 +122,7 @@ export class ElasticsearchCoreModule
           useFactory: async (
             connectionOptions: ElasticsearchConnectionOptions,
           ) => {
-            return connectionOptions;
+            return connectionOptions as any;
           },
         }),
       ],
