@@ -3,7 +3,7 @@ import { ElasticsearchCoreModule } from './elasticsearch-core.module.js';
 import type {
   ElasticsearchModuleAsyncOptions,
   ElasticsearchModuleOptions,
-} from './types';
+} from './types.js';
 
 /**
  * The ElasticsearchModule class is responsible for providing integration with Elasticsearch

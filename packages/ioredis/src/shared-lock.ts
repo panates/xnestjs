@@ -1,4 +1,4 @@
-import type { Lock } from 'redis-semaphore/lib/Lock';
+import type { Lock } from 'redis-semaphore/lib/Lock.js';
 import type { SharedLock } from './types.js';
 
 export function sharedLock(lock: Lock): SharedLock {

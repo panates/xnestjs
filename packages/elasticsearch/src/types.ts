@@ -1,7 +1,9 @@
 import type { ClientOptions } from '@elastic/elasticsearch';
-import type { LoggerService } from '@nestjs/common';
-import type { ModuleMetadata } from '@nestjs/common/interfaces';
-import type { InjectionToken } from '@nestjs/common/interfaces/modules/injection-token.interface';
+import type {
+  InjectionToken,
+  LoggerService,
+  ModuleMetadata,
+} from '@nestjs/common';
 
 export interface ElasticsearchConnectionOptions extends ClientOptions {
   lazyConnect?: boolean;

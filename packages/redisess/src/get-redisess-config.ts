@@ -1,7 +1,7 @@
 import process from 'node:process';
 import { clone } from '@jsopen/objects';
 import { toInt } from 'putil-varhelpers';
-import { SessionManager } from 'redisess/types/session-manager';
+import type { SessionManager } from 'redisess';
 
 export function getRedisessConfig(
   moduleOptions: Partial<SessionManager.Options>,

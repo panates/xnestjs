@@ -1,15 +1,15 @@
 import assert from 'node:assert';
 import * as crypto from 'node:crypto';
 import {
-  DynamicModule,
+  type DynamicModule,
   Inject,
   Logger,
-  OnApplicationBootstrap,
-  OnApplicationShutdown,
-  Provider,
+  type OnApplicationBootstrap,
+  type OnApplicationShutdown,
+  type Provider,
 } from '@nestjs/common';
 import colors from 'ansi-colors';
-import { Admin, Consumer, Kafka, Producer } from 'kafkajs';
+import { type Admin, type Consumer, Kafka, type Producer } from 'kafkajs';
 import { KAFKA_CONNECTION_OPTIONS, KAFKA_MODULE_ID } from './constants.js';
 import { createLogCreator } from './create-log-creator.js';
 import { getKafkaConfig } from './get-kafka-config.js';
@@ -17,7 +17,7 @@ import type {
   KafkaConnectionOptions,
   KafkaModuleAsyncOptions,
   KafkaModuleOptions,
-} from './types';
+} from './types.js';
 
 const CLIENT_TOKEN = Symbol('CLIENT_TOKEN');
 

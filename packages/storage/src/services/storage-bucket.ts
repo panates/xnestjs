@@ -5,7 +5,7 @@ import type {
   ObjectInfo,
   PutObjectOptions,
 } from '../types.js';
-import type { StorageConnection } from './storage-connection';
+import type { StorageConnection } from './storage-connection.js';
 
 export class StorageBucket {
   constructor(

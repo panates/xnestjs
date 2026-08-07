@@ -1,5 +1,4 @@
-import { Injectable, Scope } from '@nestjs/common';
-import type { InjectionToken } from '@nestjs/common/interfaces/modules/injection-token.interface';
+import { Injectable, type InjectionToken, Scope } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import type { HealthIndicatorService } from '@nestjs/terminus';
 import { MongoClient } from 'mongodb';
