@@ -1,6 +1,5 @@
 import { Injectable, type InjectionToken, Scope } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import type { HealthIndicatorService } from '@nestjs/terminus';
 import { MongoClient } from 'mongodb';
 
 export interface MongodbPingCheckSettings {
@@ -23,27 +22,22 @@ export interface MongodbPingCheckSettings {
  */
 @Injectable({ scope: Scope.TRANSIENT })
 export class MongodbHealthIndicator {
-  healthIndicatorService?: HealthIndicatorService;
-
   constructor(private readonly moduleRef: ModuleRef) {}
 
   async pingCheck<Key extends string>(
     key: Key,
     options?: MongodbPingCheckSettings,
   ) {
-    const { HealthIndicatorService } = await import('@nestjs/terminus');
-    this.healthIndicatorService =
-      this.healthIndicatorService || new HealthIndicatorService();
-    const indicator = this.healthIndicatorService.check(key);
     let connection: MongoClient | undefined;
     try {
       connection =
         options?.connection instanceof MongoClient
           ? options?.connection
           : this.moduleRef.get(options?.connection || MongoClient);
-      if (!connection) return indicator.down('No connection provided');
+      if (!connection)
+        return { status: 'down', message: 'No connection provided' };
     } catch (err: any) {
-      return indicator.down(err.message);
+      return { status: 'down', message: err.message };
     }
     const timeout = options?.timeout || 5000;
     try {
@@ -51,8 +45,8 @@ export class MongodbHealthIndicator {
         timeoutMS: timeout,
       });
     } catch (err: any) {
-      return indicator.down(err.message);
+      return { status: 'down', message: err.message };
     }
-    return indicator.up();
+    return { status: 'up' };
   }
 }
